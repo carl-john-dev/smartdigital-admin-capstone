@@ -14,6 +14,8 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="icon" type="icon" href="calendar.png"/>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -825,39 +827,161 @@
             </div>
             
             <!-- Add New Event Section -->
-            <div class="col-lg-4">
-                <div class="calendar-container">
-                    <h3 class="section-title"><i class="fas fa-plus-circle"></i> Event Management</h3>
-                    <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#eventModal">
-                        <i class="fas fa-plus me-2"></i> Create New Event
-                    </button>
-                    
-                    <div class="mb-4">
-                        <h6 class="mb-3">Event Statistics</h6>
-                        <div class="row text-center">
-                            <div class="col-6">
-                                <div class="stat-number" id="totalEvents">0</div>
-                                <div class="stat-label">Total Events</div>
-                            </div>
-                            <div class="col-6">
-                                <div class="stat-number" id="publishedCount">0</div>
-                                <div class="stat-label">Published</div>
+            <div id="defaultEventManagement">
+                <!-- Default -->
+                <div class="col-lg-4">
+                    <div class="calendar-container">
+                        <h3 class="section-title">
+                            <i class="fas fa-plus-circle"></i> Event Management
+                        </h3>
+
+                        <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#eventModal">
+                            <i class="fas fa-plus me-2"></i> Create New Event
+                        </button>
+
+                        <div class="mb-4">
+                            <h6 class="mb-3">Event Statistics</h6>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="stat-number" id="totalEvents">0</div>
+                                    <div class="stat-label">Total Events</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-number" id="publishedCount">0</div>
+                                    <div class="stat-label">Published</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="event-categories">
-                        <h6 class="mb-3">Event Categories</h6>
-                        <div class="d-flex flex-wrap gap-2">
-                            <span class="badge bg-primary">Meeting</span>
-                            <span class="badge bg-danger">Deadline</span>
-                            <span class="badge bg-purple">Event</span>
-                            <span class="badge bg-success">Training</span>
-                            <span class="badge bg-warning">Reminder</span>
+
+                        <div class="event-categories">
+                            <h6 class="mb-3">Event Categories</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge bg-primary">Meeting</span>
+                                <span class="badge bg-danger">Deadline</span>
+                                <span class="badge bg-purple">Event</span>
+                                <span class="badge bg-success">Training</span>
+                                <span class="badge bg-warning">Reminder</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Pending Approval List (if there are any) -->
+            <div id="pendingEventsContainer" class="d-none"></div>
+
+            <script type="module">
+                import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+                import {
+                    getFirestore,
+                    collection,
+                    query,
+                    where,
+                    getDocs,
+                    updateDoc,
+                    deleteDoc,
+                    doc
+                } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyAQLWlfqnxqNCoHxTh6RL0ZSXZeJ7legz0",
+                    authDomain: "smartcard-475413.firebaseapp.com",
+                    projectId: "smartcard-475413",
+                    storageBucket: "smartcard-475413.firebasestorage.app",
+                    messagingSenderId: "731351689459",
+                    appId: "1:731351689459:web:1331697726d9aab1092f86",
+                    measurementId: "G-LHS2EQ9Z5F"
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+
+                async function testFirestore() {
+                    try {
+                        const snapshot = await getDocs(collection(db, "events"));
+                        console.log("Number of documents in 'events':", snapshot.size);
+                        snapshot.forEach(docSnap => {
+                            console.log(docSnap.id, docSnap.data());
+                        });
+                    } catch (error) {
+                        console.error("Firestore error:", error);
+                    }
+                }
+
+                testFirestore();
+                
+                const defaultUI = document.getElementById("defaultEventManagement");
+                const pendingContainer = document.getElementById("pendingEventsContainer");
+
+                async function loadPendingEvents() {
+                    const q = query(
+                        collection(db, "events"),
+                        where("approved", "==", false)
+                    );
+
+                    const snapshot = await getDocs(q);
+
+                    // 🔹 No pending events → show original UI
+                    if (snapshot.empty) {
+                        defaultUI.classList.remove("d-none");
+                        pendingContainer.classList.add("d-none");
+                        return;
+                    }
+
+                    // 🔹 Pending events exist
+                    defaultUI.classList.add("d-none");
+                    pendingContainer.classList.remove("d-none");
+
+                    pendingContainer.innerHTML = `
+                        <div class="col-lg-4">
+                            <div class="calendar-container">
+                                <h3 class="section-title">
+                                    <i class="fas fa-clock"></i> Pending Event Approvals
+                                </h3>
+                                <div class="list-group" id="pendingList"></div>
+                            </div>
+                        </div>
+                    `;
+
+                    const list = document.getElementById("pendingList");
+
+                    snapshot.forEach(docSnap => {
+                        const event = docSnap.data();
+
+                        list.innerHTML += `
+                            <div class="list-group-item mb-2">
+                                <h6 class="mb-1">${event.title ?? "Untitled Event"}</h6>
+                                <p class="mb-2 text-muted">${event.description ?? ""}</p>
+
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-success btn-sm"
+                                        onclick="approveEvent('${docSnap.id}')">
+                                        Accept
+                                    </button>
+                                    <button class="btn btn-danger btn-sm"
+                                        onclick="rejectEvent('${docSnap.id}')">
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                window.approveEvent = async (id) => {
+                    await updateDoc(doc(db, "events", id), {
+                        approved: true
+                    });
+                    loadPendingEvents();
+                };
+
+                window.rejectEvent = async (id) => {
+                    await deleteDoc(doc(db, "events", id));
+                    loadPendingEvents();
+                };
+
+                loadPendingEvents();
+            </script>
         </div>
 
         <!-- Calendar Container -->
