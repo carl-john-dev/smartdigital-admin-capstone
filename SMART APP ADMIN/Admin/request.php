@@ -700,13 +700,14 @@
             getDocs,
             updateDoc,
             deleteDoc,
-            doc
+            doc,
+            onSnapshot
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
         async function testFirestore() {
             try {
-                const snapshot = await getDocs(collection(db, "registration_requests"));
-                console.log("Number of documents in 'registration_requests':", snapshot.size);
+                const snapshot = await getDocs(collection(db, "users"));
+                console.log("Number of documents in 'users':", snapshot.size);
                 snapshot.forEach(docSnap => {
                     console.log(docSnap.id, docSnap.data());
                 });
@@ -768,46 +769,48 @@
             // ];
 
             // Render requests table
-            async function renderRequests() {
+            function renderRequests() {
                 const tableBody = document.getElementById('requestsTableBody');
                 tableBody.innerHTML = '';
 
                 const q = query(
-                    collection(db, "registration_requests"),
+                    collection(db, "users"),
                     where("approved", "==", false)
                 );
 
-                const snapshot = await getDocs(q);
+                onSnapshot(q, (snapshot) => {
+                    tableBody.innerHTML = '';
 
-                snapshot.forEach(docSnap  => {
-                    const data = docSnap.data();
-                    const id = docSnap.id;
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+                        const id = docSnap.id;
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${data.username ?? '-'}</td>
-                        <td>Membership Application</td>
-                        <td>${data.email ?? '-'}</td>
-                        <td>Create</td>
-                        <td><span class="request-status status-pending">Pending</span></td>
-                        <td>
-                            <button class="request-action-btn edit" data-id="${id}" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="request-action-btn accept" data-id="${id}" title="Accept">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="request-action-btn delete" data-id="${id}" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${data.username ?? '-'}</td>
+                            <td>Membership Application</td>
+                            <td>${data.email ?? '-'}</td>
+                            <td>Create</td>
+                            <td><span class="request-status status-pending">Pending</span></td>
+                            <td>
+                                <button class="request-action-btn edit" data-id="${id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="request-action-btn accept" data-id="${id}">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="request-action-btn delete" data-id="${id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+
+                        tableBody.appendChild(row);
+                    });
+
+                    attachRequestHandlers();
+                    updateStats();
                 });
-
-                attachRequestHandlers();
-                // Update stats
-                updateStats();
             }
 
             function attachRequestHandlers() {
@@ -823,7 +826,7 @@
                         const id = btn.dataset.id;
 
                         await updateDoc(
-                            doc(db, "registration_requests", id),
+                            doc(db, "users", id),
                             { approved: true }
                         );
 
@@ -838,7 +841,7 @@
                         if (!confirm("Delete this request?")) return;
 
                         await deleteDoc(
-                            doc(db, "registration_requests", id)
+                            doc(db, "users", id)
                         );
 
                         renderRequests(); // refresh table
