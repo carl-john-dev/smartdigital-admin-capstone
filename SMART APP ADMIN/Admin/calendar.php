@@ -877,6 +877,7 @@
                     query,
                     where,
                     getDocs,
+                    onSnapshot,
                     updateDoc,
                     deleteDoc,
                     doc
@@ -899,58 +900,60 @@
                 const defaultUI = document.getElementById("defaultEventManagement");
                 const pendingContainer = document.getElementById("pendingEventsContainer");
 
-                async function loadPendingEvents() {
+                function loadPendingEvents() {
                     const q = query(
                         collection(db, "events"),
                         where("approved", "==", false)
                     );
 
-                    const snapshot = await getDocs(q);
+                    //const snapshot = await getDocs(q);
+                    onSnapshot(q, (snapshot) => {
 
-                    // 🔹 No pending events → show original UI
-                    if (snapshot.empty) {
-                        defaultUI.classList.remove("d-none");
-                        pendingContainer.classList.add("d-none");
-                        return;
-                    }
+                        // 🔹 No pending events → show original UI
+                        if (snapshot.empty) {
+                            defaultUI.classList.remove("d-none");
+                            pendingContainer.classList.add("d-none");
+                            return;
+                        }
 
-                    // 🔹 Pending events exist
-                    defaultUI.classList.add("d-none");
-                    pendingContainer.classList.remove("d-none");
+                        // 🔹 Pending events exist
+                        defaultUI.classList.add("d-none");
+                        pendingContainer.classList.remove("d-none");
 
-                    pendingContainer.innerHTML = `
-                        <div class="col-lg-4">
-                            <div class="calendar-container">
-                                <h3 class="section-title">
-                                    <i class="fas fa-clock"></i> Pending Event Approvals
-                                </h3>
-                                <div class="list-group" id="pendingList"></div>
-                            </div>
-                        </div>
-                    `;
-
-                    const list = document.getElementById("pendingList");
-
-                    snapshot.forEach(docSnap => {
-                        const event = docSnap.data();
-
-                        list.innerHTML += `
-                            <div class="list-group-item mb-2">
-                                <h6 class="mb-1">${event.title ?? "Untitled Event"}</h6>
-                                <p class="mb-2 text-muted">${event.description ?? ""}</p>
-
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-success btn-sm"
-                                        onclick="approveEvent('${docSnap.id}')">
-                                        Accept
-                                    </button>
-                                    <button class="btn btn-danger btn-sm"
-                                        onclick="rejectEvent('${docSnap.id}')">
-                                        Reject
-                                    </button>
+                        pendingContainer.innerHTML = `
+                            <div class="col-lg-4">
+                                <div class="calendar-container">
+                                    <h3 class="section-title">
+                                        <i class="fas fa-clock"></i> Pending Event Approvals
+                                    </h3>
+                                    <div class="list-group" id="pendingList"></div>
                                 </div>
                             </div>
                         `;
+
+                        const list = document.getElementById("pendingList");
+
+                        snapshot.forEach(docSnap => {
+                            const event = docSnap.data();
+
+                            list.innerHTML += `
+                                <div class="list-group-item mb-2">
+                                    <h6 class="mb-1">${event.title ?? "Untitled Event"}</h6>
+                                    <p class="mb-2 text-muted">${event.description ?? ""}</p>
+
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-success btn-sm"
+                                            onclick="approveEvent('${docSnap.id}')">
+                                            Accept
+                                        </button>
+                                        <button class="btn btn-danger btn-sm"
+                                            onclick="rejectEvent('${docSnap.id}')">
+                                            Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
                     });
                 }
 
@@ -958,14 +961,11 @@
                     await updateDoc(doc(db, "events", id), {
                         approved: true
                     });
-                    loadPendingEvents();
                 };
 
                 window.rejectEvent = async (id) => {
                     await deleteDoc(doc(db, "events", id));
-                    loadPendingEvents();
                 };
-
                 loadPendingEvents();
             </script>
         </div>
