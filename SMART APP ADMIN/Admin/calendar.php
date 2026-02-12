@@ -1141,6 +1141,7 @@
                 const date = document.getElementById("eventDate").value;
                 const venue = document.getElementById("eventVenue").value.trim();
                 const description = document.getElementById("eventDescription").value;
+                const createdBy = "Admin";
 
                 // Time parsing
                 const startTime = document.getElementById("startTime").value;
@@ -1181,6 +1182,7 @@
                     description,
                     pub_to_cal,
                     send_notif,
+                    createdBy,
                     createdAt: serverTimestamp()
                 });
 
