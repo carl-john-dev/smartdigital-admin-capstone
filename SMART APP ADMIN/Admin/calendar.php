@@ -1071,11 +1071,6 @@
         </div>
     </div>
 
-    <!-- Admin Event Creation JS -->
-    <script type="module">
-
-    </script>
-
     <!-- Event Details Modal -->
     <div class="modal fade event-details-modal" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -1198,6 +1193,7 @@
                 phTimeElement.textContent = formattedTime;
             }
 
+            // Upload images to Firebase
             async function uploadImages(files) {
                 const urls = [];
 
@@ -1215,6 +1211,7 @@
                 return urls;
             }
 
+            // Create data on Firebase DB
             document.getElementById("saveEvent").addEventListener("click", async () => {
                 try {
                     // Basic fields
