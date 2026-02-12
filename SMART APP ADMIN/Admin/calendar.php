@@ -827,41 +827,38 @@
             </div>
             
             <!-- Add New Event Section -->
-            <div id="defaultEventManagement">
-                <!-- Default -->
-                <div class="col-lg-4">
-                    <div class="calendar-container">
-                        <h3 class="section-title">
-                            <i class="fas fa-plus-circle"></i> Event Management
-                        </h3>
+            <div class="col-lg-4">
+                <div class="calendar-container">
+                    <h3 class="section-title">
+                        <i class="fas fa-plus-circle"></i> Event Management
+                    </h3>
 
-                        <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#eventModal">
-                            <i class="fas fa-plus me-2"></i> Create New Event
-                        </button>
+                    <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#eventModal">
+                        <i class="fas fa-plus me-2"></i> Create New Event
+                    </button>
 
-                        <div class="mb-4">
-                            <h6 class="mb-3">Event Statistics</h6>
-                            <div class="row text-center">
-                                <div class="col-6">
-                                    <div class="stat-number" id="totalEvents">0</div>
-                                    <div class="stat-label">Total Events</div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="stat-number" id="publishedCount">0</div>
-                                    <div class="stat-label">Published</div>
-                                </div>
+                    <div class="mb-4">
+                        <h6 class="mb-3">Event Statistics</h6>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="stat-number" id="totalEvents">0</div>
+                                <div class="stat-label">Total Events</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-number" id="publishedCount">0</div>
+                                <div class="stat-label">Published</div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="event-categories">
-                            <h6 class="mb-3">Event Categories</h6>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge bg-primary">Meeting</span>
-                                <span class="badge bg-danger">Deadline</span>
-                                <span class="badge bg-purple">Event</span>
-                                <span class="badge bg-success">Training</span>
-                                <span class="badge bg-warning">Reminder</span>
-                            </div>
+                    <div class="event-categories">
+                        <h6 class="mb-3">Event Categories</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-primary">Meeting</span>
+                            <span class="badge bg-danger">Deadline</span>
+                            <span class="badge bg-purple">Event</span>
+                            <span class="badge bg-success">Training</span>
+                            <span class="badge bg-warning">Reminder</span>
                         </div>
                     </div>
                 </div>
@@ -911,13 +908,11 @@
 
                         // 🔹 No pending events → show original UI
                         if (snapshot.empty) {
-                            defaultUI.classList.remove("d-none");
                             pendingContainer.classList.add("d-none");
                             return;
                         }
 
                         // 🔹 Pending events exist
-                        defaultUI.classList.add("d-none");
                         pendingContainer.classList.remove("d-none");
 
                         pendingContainer.innerHTML = `
@@ -1089,6 +1084,115 @@
             </div>
         </div>
     </div>
+
+    <!-- Admin Event Creation JS -->
+    <script type="module">
+        import { db, storage } from "./Firebase/firebase_conn.js";
+
+        import {
+            collection,
+            addDoc,
+            getDocs,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+        import {
+            ref,
+            uploadBytes,
+            getDownloadURL
+        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
+
+        async function testFirestore() {
+            try {
+                const snapshot = await getDocs(collection(db, "events"));
+                console.log("Number of documents in 'events':", snapshot.size);
+                snapshot.forEach(docSnap => {
+                    console.log(docSnap.id, docSnap.data());
+                });
+            } catch (error) {
+                console.error("Firestore error:", error);
+            }
+        }
+
+        testFirestore();
+
+        async function uploadImages(files) {
+            const urls = [];
+
+            for (const file of files) {
+                const storageRef = ref(
+                storage,
+                `events/${Date.now()}_${file.name}`
+                );
+
+                await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(storageRef);
+                urls.push(url);
+            }
+
+            return urls;
+        }
+
+        document.getElementById("saveEvent").addEventListener("click", async () => {
+            try {
+                // Basic fields
+                const title = document.getElementById("eventTitle").value.trim();
+                const category = document.getElementById("eventCategory").value;
+                const date = document.getElementById("eventDate").value;
+                const venue = document.getElementById("eventVenue").value.trim();
+                const description = document.getElementById("eventDescription").value;
+
+                // Time parsing
+                const startTime = document.getElementById("startTime").value;
+                const endTime = document.getElementById("endTime").value;
+
+                let startHour = null, startMinute = null;
+                let endHour = null, endMinute = null;
+
+                if (startTime) {
+                [startHour, startMinute] = startTime.split(":").map(Number);
+                }
+
+                if (endTime) {
+                [endHour, endMinute] = endTime.split(":").map(Number);
+                }
+
+                // Switches
+                const pub_to_cal = document.getElementById("publishEvent").checked;
+                const send_notif = document.getElementById("sendNotification").checked;
+
+                // Images
+                const imageFiles = document.getElementById("eventImages").files;
+                const imageUrl = imageFiles.length
+                ? await uploadImages(imageFiles)
+                : [];
+
+                // Firestore write
+                await addDoc(collection(db, "events"), {
+                    title,
+                    category,
+                    date,
+                    startHour,
+                    startMinute,
+                    endHour,
+                    endMinute,
+                    venue,
+                    imageUrl,
+                    description,
+                    pub_to_cal,
+                    send_notif,
+                    createdAt: serverTimestamp()
+                });
+
+                alert("Event saved successfully!");
+                document.getElementById("eventForm").reset();
+
+            } catch (error) {
+                console.error("Error saving event:", error);
+                alert("Failed to save event.");
+            }
+        });
+    </script>
 
     <!-- Event Details Modal -->
     <div class="modal fade event-details-modal" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
