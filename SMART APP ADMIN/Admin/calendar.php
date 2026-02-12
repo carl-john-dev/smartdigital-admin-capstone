@@ -879,20 +879,6 @@
                     deleteDoc,
                     doc
                 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-                async function testFirestore() {
-                    try {
-                        const snapshot = await getDocs(collection(db, "events"));
-                        console.log("Number of documents in 'events':", snapshot.size);
-                        snapshot.forEach(docSnap => {
-                            console.log(docSnap.id, docSnap.data());
-                        });
-                    } catch (error) {
-                        console.error("Firestore error:", error);
-                    }
-                }
-
-                testFirestore();
                 
                 const defaultUI = document.getElementById("defaultEventManagement");
                 const pendingContainer = document.getElementById("pendingEventsContainer");
@@ -1087,113 +1073,7 @@
 
     <!-- Admin Event Creation JS -->
     <script type="module">
-        import { db, storage } from "./Firebase/firebase_conn.js";
 
-        import {
-            collection,
-            addDoc,
-            getDocs,
-            serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-        import {
-            ref,
-            uploadBytes,
-            getDownloadURL
-        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
-
-        async function testFirestore() {
-            try {
-                const snapshot = await getDocs(collection(db, "events"));
-                console.log("Number of documents in 'events':", snapshot.size);
-                snapshot.forEach(docSnap => {
-                    console.log(docSnap.id, docSnap.data());
-                });
-            } catch (error) {
-                console.error("Firestore error:", error);
-            }
-        }
-
-        testFirestore();
-
-        async function uploadImages(files) {
-            const urls = [];
-
-            for (const file of files) {
-                const storageRef = ref(
-                storage,
-                `events/${Date.now()}_${file.name}`
-                );
-
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
-                urls.push(url);
-            }
-
-            return urls;
-        }
-
-        document.getElementById("saveEvent").addEventListener("click", async () => {
-            try {
-                // Basic fields
-                const title = document.getElementById("eventTitle").value.trim();
-                const category = document.getElementById("eventCategory").value;
-                const date = document.getElementById("eventDate").value;
-                const venue = document.getElementById("eventVenue").value.trim();
-                const description = document.getElementById("eventDescription").value;
-                const createdBy = "Admin";
-
-                // Time parsing
-                const startTime = document.getElementById("startTime").value;
-                const endTime = document.getElementById("endTime").value;
-
-                let startHour = null, startMinute = null;
-                let endHour = null, endMinute = null;
-
-                if (startTime) {
-                [startHour, startMinute] = startTime.split(":").map(Number);
-                }
-
-                if (endTime) {
-                [endHour, endMinute] = endTime.split(":").map(Number);
-                }
-
-                // Switches
-                const pub_to_cal = document.getElementById("publishEvent").checked;
-                const send_notif = document.getElementById("sendNotification").checked;
-
-                // Images
-                const imageFiles = document.getElementById("eventImages").files;
-                const imageUrl = imageFiles.length
-                ? await uploadImages(imageFiles)
-                : [];
-
-                // Firestore write
-                await addDoc(collection(db, "events"), {
-                    title,
-                    category,
-                    date,
-                    startHour,
-                    startMinute,
-                    endHour,
-                    endMinute,
-                    venue,
-                    imageUrl,
-                    description,
-                    pub_to_cal,
-                    send_notif,
-                    createdBy,
-                    createdAt: serverTimestamp()
-                });
-
-                alert("Event saved successfully!");
-                document.getElementById("eventForm").reset();
-
-            } catch (error) {
-                console.error("Error saving event:", error);
-                alert("Failed to save event.");
-            }
-        });
     </script>
 
     <!-- Event Details Modal -->
@@ -1246,7 +1126,26 @@
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     
     <!-- JavaScript for Calendar -->
-    <script>
+    <script type="module">
+        import { db, storage } from './Firebase/firebase_conn.js';
+        import { collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
+
+        async function testFirestore() {
+            try {
+                const q = query(collection(db, "events"), where("createdBy", "==", "Admin"));
+                const snapshot = await getDocs(q);
+                console.log("Number of documents in 'events':", snapshot.size);
+                snapshot.forEach(docSnap => {
+                    console.log(docSnap.id, docSnap.data());
+                });
+            } catch (error) {
+                console.error("Firestore error:", error);
+            }
+        }
+
+        testFirestore();
+
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize Quill Rich Text Editor
             const quill = new Quill('#richTextEditor', {
@@ -1298,6 +1197,85 @@
                 phDateElement.textContent = formattedDate;
                 phTimeElement.textContent = formattedTime;
             }
+
+            async function uploadImages(files) {
+                const urls = [];
+
+                for (const file of files) {
+                    const storageRef = ref(
+                    storage,
+                    `events/${Date.now()}_${file.name}`
+                    );
+
+                    await uploadBytes(storageRef, file);
+                    const url = await getDownloadURL(storageRef);
+                    urls.push(url);
+                }
+
+                return urls;
+            }
+
+            document.getElementById("saveEvent").addEventListener("click", async () => {
+                try {
+                    // Basic fields
+                    const title = document.getElementById("eventTitle").value.trim();
+                    const category = document.getElementById("eventCategory").value;
+                    const date = document.getElementById("eventDate").value;
+                    const venue = document.getElementById("eventVenue").value.trim();
+                    const description = quill.root.innerHTML;
+                    const createdBy = "Admin";
+
+                    // Time parsing
+                    const startTime = document.getElementById("startTime").value;
+                    const endTime = document.getElementById("endTime").value;
+
+                    let startHour = null, startMinute = null;
+                    let endHour = null, endMinute = null;
+
+                    if (startTime) {
+                    [startHour, startMinute] = startTime.split(":").map(Number);
+                    }
+
+                    if (endTime) {
+                    [endHour, endMinute] = endTime.split(":").map(Number);
+                    }
+
+                    // Switches
+                    const pub_to_cal = document.getElementById("publishEvent").checked;
+                    const send_notif = document.getElementById("sendNotification").checked;
+
+                    // Images
+                    const imageFiles = document.getElementById("eventImages").files;
+                    const imageUrl = imageFiles.length
+                    ? await uploadImages(imageFiles)
+                    : [];
+
+                    // Firestore write
+                    await addDoc(collection(db, "events"), {
+                        title,
+                        category,
+                        date,
+                        startHour,
+                        startMinute,
+                        endHour,
+                        endMinute,
+                        venue,
+                        imageUrl,
+                        description,
+                        pub_to_cal,
+                        send_notif,
+                        createdBy,
+                        createdAt: serverTimestamp()
+                    });
+
+                    alert("Event saved successfully!");
+                    document.getElementById("eventForm").reset();
+
+                } catch (error) {
+                    console.error("Error saving event:", error);
+                    alert("Failed to save event.");
+                }
+            });
 
             // Initialize and update clock every second
             updatePhilippineTime();
@@ -1547,114 +1525,134 @@
             }
             
             // Render published events
-            function renderPublishedEvents() {
+            async function renderPublishedEvents() {
                 const publishedEventsContainer = document.getElementById('publishedEvents');
                 publishedEventsContainer.innerHTML = '';
-                
-                // Sort events by date (newest first)
-                const sortedEvents = events.sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                // Filter published events
-                const publishedEvents = sortedEvents.filter(event => event.published);
-                
-                if (publishedEvents.length === 0) {
-                    publishedEventsContainer.innerHTML = `
-                        <div class="text-center py-5">
-                            <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">No published events yet</p>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal">
-                                <i class="fas fa-plus me-2"></i> Create First Event
-                            </button>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                publishedEvents.forEach(event => {
-                    const eventElement = document.createElement('div');
-                    eventElement.className = 'event-card';
-                    
-                    const eventDate = new Date(event.date);
-                    const formattedDate = eventDate.toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
+
+                try {
+                    // Query Firestore for events created by Admin
+                    const q = query(collection(db, "events"), where("createdBy", "==", "Admin"));
+                    const querySnapshot = await getDocs(q);
+
+                    // Convert snapshot to array of event objects
+                    const publishedEvents = [];
+                    querySnapshot.forEach(doc => {
+                        const data = doc.data();
+                        publishedEvents.push({
+                            id: doc.id,
+                            title: data.title,
+                            date: data.date,
+                            startTime: data.startTime,
+                            endTime: data.endTime,
+                            description: data.description,
+                            venue: data.venue,
+                            category: data.category,
+                            imageUrl: data.imageUrl || null,
+                            published: data.published || false
+                        });
                     });
-                    
-                    let timeInfo = '';
-                    if (event.startTime && event.endTime) {
-                        timeInfo = `${event.startTime} - ${event.endTime}`;
-                    } else if (event.startTime) {
-                        timeInfo = `${event.startTime}`;
+
+                    // Sort by date (newest first)
+                    publishedEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    if (publishedEvents.length === 0) {
+                        publishedEventsContainer.innerHTML = `
+                            <div class="text-center py-5">
+                                <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No published events yet</p>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal">
+                                    <i class="fas fa-plus me-2"></i> Create First Event
+                                </button>
+                            </div>
+                        `;
+                        return;
                     }
-                    
-                    // Get first image if available
-                    const imageHtml = event.images && event.images.length > 0 ? 
-                        `<img src="${event.images[0]}" class="event-card-image" alt="${event.title}">` : 
-                        `<div class="event-card-image d-flex align-items-center justify-content-center bg-light">
-                            <i class="fas fa-calendar-alt fa-3x text-muted"></i>
-                        </div>`;
-                    
-                    eventElement.innerHTML = `
-                        ${imageHtml}
-                        <h4 class="event-card-title">${event.title}</h4>
-                        <div class="event-card-meta">
-                            <span class="event-meta-item">
-                                <i class="fas fa-calendar"></i> ${formattedDate}
-                            </span>
-                            ${timeInfo ? `<span class="event-meta-item">
-                                <i class="fas fa-clock"></i> ${timeInfo}
-                            </span>` : ''}
-                            ${event.venue ? `<span class="event-meta-item">
-                                <i class="fas fa-map-marker-alt"></i> ${event.venue}
-                            </span>` : ''}
-                        </div>
-                        <div class="event-card-description">
-                            ${event.description ? event.description.substring(0, 200) + '...' : 'No description'}
-                        </div>
-                        <div class="event-card-footer">
-                            <div class="event-status">
-                                <span class="status-published">
-                                    <i class="fas fa-check-circle"></i> Published
+
+                    // Render each event
+                    publishedEvents.forEach(event => {
+                        const eventElement = document.createElement('div');
+                        eventElement.className = 'event-card';
+
+                        const eventDate = new Date(event.date);
+                        const formattedDate = eventDate.toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        });
+
+                        let timeInfo = '';
+                        if (event.startTime && event.endTime) {
+                            timeInfo = `${event.startTime} - ${event.endTime}`;
+                        } else if (event.startTime) {
+                            timeInfo = `${event.startTime}`;
+                        }
+
+                        const imageHtml = event.imageUrl ? 
+                            `<img src="${event.imageUrl}" class="event-card-image" alt="${event.title}">` : 
+                            `<div class="event-card-image d-flex align-items-center justify-content-center bg-light">
+                                <i class="fas fa-calendar-alt fa-3x text-muted"></i>
+                            </div>`;
+
+                        eventElement.innerHTML = `
+                            ${imageHtml}
+                            <h4 class="event-card-title">${event.title}</h4>
+                            <div class="event-card-meta">
+                                <span class="event-meta-item">
+                                    <i class="fas fa-calendar"></i> ${formattedDate}
                                 </span>
-                                <span class="badge bg-${getCategoryColor(event.category)}">${event.category}</span>
+                                ${timeInfo ? `<span class="event-meta-item">
+                                    <i class="fas fa-clock"></i> ${timeInfo}
+                                </span>` : ''}
+                                ${event.venue ? `<span class="event-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i> ${event.venue}
+                                </span>` : ''}
                             </div>
-                            <div class="event-actions">
-                                <button class="btn btn-sm btn-outline-primary view-event" data-id="${event.id}">
-                                    <i class="fas fa-eye"></i> View
-                                </button>
-                                <button class="btn btn-sm btn-outline-warning edit-event" data-id="${event.id}">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
+                            <div class="event-card-description">
+                                ${event.description ? event.description.substring(0, 200) + '...' : 'No description'}
                             </div>
-                        </div>
-                    `;
-                    
-                    publishedEventsContainer.appendChild(eventElement);
-                });
-                
-                // Add event listeners to view buttons
-                document.querySelectorAll('.view-event').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const eventId = parseInt(this.dataset.id);
-                        const event = events.find(e => e.id === eventId);
-                        if (event) {
-                            showEventDetails(event);
-                        }
+                            <div class="event-card-footer">
+                                <div class="event-status">
+                                    <span class="status-published">
+                                        <i class="fas fa-check-circle"></i> Published
+                                    </span>
+                                    <span class="badge bg-${getCategoryColor(event.category)}">${event.category}</span>
+                                </div>
+                                <div class="event-actions">
+                                    <button class="btn btn-sm btn-outline-primary view-event" data-id="${event.id}">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning edit-event" data-id="${event.id}">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+
+                        publishedEventsContainer.appendChild(eventElement);
                     });
-                });
-                
-                // Add event listeners to edit buttons
-                document.querySelectorAll('.edit-event').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const eventId = parseInt(this.dataset.id);
-                        const event = events.find(e => e.id === eventId);
-                        if (event) {
-                            editEvent(event);
-                        }
+
+                    // Event listeners
+                    document.querySelectorAll('.view-event').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const eventId = this.dataset.id;
+                            const event = publishedEvents.find(e => e.id === eventId);
+                            if (event) showEventDetails(event);
+                        });
                     });
-                });
+
+                    document.querySelectorAll('.edit-event').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const eventId = this.dataset.id;
+                            const event = publishedEvents.find(e => e.id === eventId);
+                            if (event) editEvent(event);
+                        });
+                    });
+
+                } catch (error) {
+                    console.error("Error fetching events:", error);
+                    publishedEventsContainer.innerHTML = `<p class="text-danger">Failed to load events.</p>`;
+                }
             }
             
             // Save event function
