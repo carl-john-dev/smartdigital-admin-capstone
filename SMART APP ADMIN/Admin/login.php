@@ -1,34 +1,3 @@
-<?php
-session_start(); 
-
-include 'connection.php';
-
-$error = ''; 
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = $_POST['password'];
-
-    $query = "SELECT * FROM tbl_users WHERE username='$username'";
-    $result = mysqli_query($conn, $query);
-
-    if ($result && mysqli_num_rows($result) > 0) {
-        $user = mysqli_fetch_assoc($result);
-        if (password_verify($password, $user['pass'])) {
-            
-            $_SESSION['username'] = $username;
-            header("Location: index.php"); 
-            exit;
-        } else {
-            $error = "Invalid username or password!";
-        }
-    } else {
-        $error = "Invalid username or password!";
-    }
-}
-?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -360,7 +329,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="error-message"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
-            <form action="login.php" method="post">
+            <form id="loginForm">
                 <div class="form-group">
                     <label for="login-username">Username</label>
                     <div class="input-with-icon">
@@ -386,19 +355,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.parentElement.style.transform = 'translateY(-5px)';
-                    this.parentElement.parentElement.style.transition = 'transform 0.3s ease';
-                });
-                
-                input.addEventListener('blur', function() {
-                    this.parentElement.parentElement.style.transform = 'translateY(0)';
-                });
-            });
+    <script type="module">
+        import { db, app } from './Firebase/firebase_conn.js';
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
+        const auth = getAuth(app);
+
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const TEST_DOMAIN = "@cboc.test";
+            const username = document.getElementById("login-username").value.trim();
+            const password = document.getElementById("login-password").value;
+
+            // Map username → email (temporary testing logic)
+            const email = username.includes("@") ? username : username + TEST_DOMAIN;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = "admin_profile.php";
+
+            } catch (error) {
+                alert("Login failed: " + error.message);
+            }
         });
     </script>
 </body>

@@ -1,50 +1,27 @@
 <?php
-// Database connection code
-$host = 'localhost';
-$user = 'root';
-$password = ''; // Replace with actual password
-$database = 'crudproj_db';
+    $error = "";
+    $success = "";
 
-// Create connection
-$conn = new mysqli($host, $user, $password, $database);
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $fullname = trim($_POST["fullname"] ?? "");
+        $username = trim($_POST["username"] ?? "");
+        $email = trim($_POST["email"] ?? "");
+        $password = $_POST["password"] ?? "";
+        $confirm = $_POST["confirm_password"] ?? "";
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-session_start(); 
-$error = '';
-$success = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $fullname = mysqli_real_escape_string($conn, $_POST['fullname']);
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-
-    if ($password !== $confirm_password) {
-        $error = "Passwords do not match!";
-    } else {
-        $checkQuery = "SELECT * FROM tbl_users WHERE username='$username'";
-        $checkResult = mysqli_query($conn, $checkQuery);
-
-        if (mysqli_num_rows($checkResult) > 0) {
-            $error = "Username already taken!";
+        if (!$fullname || !$username || !$email || !$password || !$confirm) {
+            $error = "All fields are required.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = "Invalid email address.";
+        } elseif ($password !== $confirm) {
+            $error = "Passwords do not match.";
+        } elseif (strlen($password) < 8) {
+            $error = "Password must be at least 8 characters.";
         } else {
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-            // Only insert username and password as per your DB structure
-            $insertQuery = "INSERT INTO tbl_users (username, pass) VALUES ('$username', '$hashed_password')";
-            if (mysqli_query($conn, $insertQuery)) {
-                $success = "Signup successful! You can now <a href='login.php'>login</a>.";
-            } else {
-                $error = "Database error: " . mysqli_error($conn);
-            }
+            // Pass validated data to JS
+            $success = "validated";
         }
     }
-}
 ?>
 
 <!DOCTYPE html>
@@ -509,93 +486,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Already have an account? <a href="login.php">Login Here</a>
                 </div>
             </form>
-            
-            <!-- Database Connection Status -->
-            <div class="db-status <?php echo $conn->connect_error ? 'db-error' : 'db-connected'; ?>">
-                <?php 
-                if ($conn->connect_error) {
-                    echo "Database Connection Error: " . $conn->connect_error;
-                } else {
-                    echo "Database Connection: Successful";
-                }
-                ?>
-            </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.parentElement.style.transform = 'translateY(-5px)';
-                    this.parentElement.parentElement.style.transition = 'transform 0.3s ease';
+    <script type="module">
+        import { app, db } from "./Firebase/firebase_conn.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
+        import {
+            doc,
+            setDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+        const auth = getAuth(app);
+
+        const phpValidated = "<?php echo $success; ?>";
+
+        if (phpValidated === "validated") {
+            const fullname = "<?php echo htmlspecialchars($fullname); ?>";
+            const username = "<?php echo htmlspecialchars($username); ?>";
+            const email = "<?php echo htmlspecialchars($email); ?>";
+            const password = "<?php echo htmlspecialchars($password); ?>";
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+
+                    const userData = {
+                        name: fullname,
+                        username: username,
+                        email: email,
+
+                        address: "",
+                        approved: false,
+                        businessName: null,
+                        businessNature: null,
+                        businesses: [],
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp(),
+                        location: null,
+                        phone: "",
+                        professionalTitle: "",
+                        status: "pending",
+                        userType: ""
+                    };
+
+                    await setDoc(doc(db, "users", user.uid), userData);
+
+                    window.location.href = "login.php?registered=1";
+                })
+                .catch((error) => {
+                    alert("Signup failed: " + error.message);
                 });
-                
-                input.addEventListener('blur', function() {
-                    this.parentElement.parentElement.style.transform = 'translateY(0)';
-                });
-            });
-            
-            // Add animation to button on hover
-            const btn = document.querySelector('.btn');
-            btn.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-3px)';
-            });
-            
-            btn.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-            
-            // Add pulse animation to logo
-            const logo = document.querySelector('.logo');
-            setInterval(() => {
-                logo.style.transform = 'scale(1.05)';
-                setTimeout(() => {
-                    logo.style.transform = 'scale(1)';
-                }, 500);
-            }, 3000);
-            
-            // Password strength indicator
-            const passwordInput = document.getElementById('signup-password');
-            const strengthBar = document.getElementById('password-strength-bar');
-            
-            passwordInput.addEventListener('input', function() {
-                const password = this.value;
-                let strength = 0;
-                
-                if (password.length >= 8) strength += 25;
-                if (password.match(/[a-z]+/)) strength += 25;
-                if (password.match(/[A-Z]+/)) strength += 25;
-                if (password.match(/[0-9]+/)) strength += 25;
-                
-                strengthBar.style.width = strength + '%';
-                
-                if (strength < 50) {
-                    strengthBar.style.background = '#e74c3c';
-                } else if (strength < 75) {
-                    strengthBar.style.background = '#f39c12';
-                } else {
-                    strengthBar.style.background = '#27ae60';
-                }
-            });
-            
-            // Confirm password validation
-            const confirmPasswordInput = document.getElementById('signup-confirm-password');
-            
-            confirmPasswordInput.addEventListener('input', function() {
-                const password = passwordInput.value;
-                const confirmPassword = this.value;
-                
-                if (confirmPassword && password !== confirmPassword) {
-                    this.style.borderColor = '#e74c3c';
-                    this.style.boxShadow = '0 0 0 3px rgba(231, 76, 60, 0.2)';
-                } else {
-                    this.style.borderColor = '#e1e5eb';
-                    this.style.boxShadow = 'none';
-                }
-            });
-        });
+        }
     </script>
 </body>
 </html>
