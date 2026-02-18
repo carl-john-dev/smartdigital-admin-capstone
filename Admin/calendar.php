@@ -9,6 +9,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="icon" type="icon" href="calendar.png"/>
     <style>
         :root {
             --primary: #4361ee;
@@ -37,6 +42,37 @@
             --sidebar-bg: #0d1117;
             --sidebar-color: #c9d1d9;
             --sidebar-hover-bg: rgba(255,255,255,0.05);
+        }
+
+        .dark-mode .ql-toolbar.ql-snow {
+            border-color: #444 !important;
+            background-color: #2a2a2a !important;
+        }
+
+        .dark-mode .ql-container.ql-snow {
+            border-color: #444 !important;
+            background-color: #2a2a2a !important;
+        }
+
+        .dark-mode .ql-editor {
+            color: #e9ecef !important;
+        }
+
+        .dark-mode .ql-snow .ql-stroke {
+            stroke: #e9ecef !important;
+        }
+
+        .dark-mode .ql-snow .ql-fill {
+            fill: #e9ecef !important;
+        }
+
+        .dark-mode .ql-snow .ql-picker {
+            color: #e9ecef !important;
+        }
+
+        .dark-mode .ql-snow .ql-picker-options {
+            background-color: #2a2a2a !important;
+            border-color: #444 !important;
         }
 
         * {
@@ -156,6 +192,41 @@
         .sidebar-menu li:nth-child(5) span { transition-delay: 0.25s; }
         .sidebar-menu li:nth-child(6) span { transition-delay: 0.3s; }
         .sidebar-menu li:nth-child(7) span { transition-delay: 0.35s; }
+
+        /* Philippine Time Clock Styles */
+        .ph-time-clock {
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            color: var(--gray);
+            margin-top: 5px;
+            background: rgba(67, 97, 238, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(67, 97, 238, 0.2);
+            width: fit-content;
+        }
+
+        .ph-time-clock i {
+            color: var(--primary);
+        }
+
+        #phTime {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin: 0 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timezone-label {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        .dark-mode .ph-time-clock {
+            background: rgba(67, 97, 238, 0.15);
+            border-color: rgba(67, 97, 238, 0.3);
+        }
 
         .main-content {
             flex: 1;
@@ -359,6 +430,164 @@
             box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
         }
 
+        /* Image Preview Styles */
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-preview {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .remove-image:hover {
+            background: rgba(255, 0, 0, 0.8);
+        }
+
+        /* Rich Text Editor */
+        .ql-toolbar.ql-snow {
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            background-color: var(--card-bg);
+            border-color: var(--border-color) !important;
+        }
+
+        .ql-container.ql-snow {
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            border-color: var(--border-color) !important;
+            background-color: var(--card-bg);
+            min-height: 150px;
+        }
+
+        .ql-editor {
+            color: var(--text-color);
+            min-height: 150px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Event Card Styles */
+        .event-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .event-card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .event-card-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .event-meta-item i {
+            color: var(--primary);
+        }
+
+        .event-card-description {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .event-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .event-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-published {
+            color: #2a9d8f;
+            background: rgba(42, 157, 143, 0.1);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .status-draft {
+            color: #e76f51;
+            background: rgba(231, 111, 81, 0.1);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 10px;
+        }
+
         /* Dark Mode Toggle */
         .dark-mode-toggle {
             position: fixed;
@@ -384,10 +613,26 @@
         }
 
         /* Event Details Modal */
-        .event-details-modal .event-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
+        .event-details-modal .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .event-details-modal .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .event-details-modal .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .event-details-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
         /* Delete Confirmation Modal */
@@ -403,6 +648,17 @@
 
         .delete-confirm-modal .modal-footer {
             border-top: 1px solid var(--border-color);
+        }
+
+        /* Switch toggle */
+        .form-switch .form-check-input {
+            width: 3em;
+            height: 1.5em;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
         }
 
         /* Responsive */
@@ -439,6 +695,21 @@
                 font-size: 0.7rem;
                 padding: 1px 3px;
             }
+            
+            .event-card-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .ph-time-clock {
+                font-size: 0.85rem;
+                padding: 4px 8px;
+            }
+            
+            #phTime {
+                font-size: 1rem;
+                margin: 0 5px;
+            }
         }
         
         @media (max-width: 576px) {
@@ -463,6 +734,39 @@
                 right: 5px;
                 font-size: 1.2rem;
             }
+            
+            .event-card-footer {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .event-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .ph-time-clock {
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            #phDate {
+                order: 1;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 3px;
+            }
+            
+            #phTime {
+                order: 2;
+            }
+            
+            .timezone-label {
+                order: 3;
+            }
         }
     </style>
 </head>
@@ -475,10 +779,13 @@
         <ul class="sidebar-menu">
             <li><a href="index.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
             <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
-            <li><a href="invoice.php"><i class="fas fa-file-invoice"></i> <span>Invoices</span></a></li>
             <li><a href="calendar.php" class="active"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
+            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
+            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
+            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>  
             <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
     </div>
@@ -487,12 +794,68 @@
     <div class="main-content">
         <!-- Top Bar -->
         <div class="top-bar">
-            <h1>Event Calendar</h1>
+            <div>
+                <h1>Event Calendar</h1>
+                <div id="philippineClock" class="ph-time-clock">
+                    <i class="fas fa-clock me-2"></i>
+                    <span id="phDate"></span>
+                    <span id="phTime" class="fw-bold"></span>
+                    <small class="timezone-label">(PHT)</small>
+                </div>
+            </div>
             <div class="user-info">
                 <div class="user-avatar">AD</div>
                 <div>
                     <div class="fw-bold">Admin User</div>
                     <small class="text-muted">Administrator</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Moved sections to the top (BEFORE calendar) -->
+        <div class="row mb-4">
+            <!-- Upcoming Events Section -->
+            <div class="col-lg-8">
+                <div class="calendar-container">
+                    <h3 class="section-title"><i class="fas fa-list"></i> Published Events</h3>
+                    <div id="publishedEvents">
+                        <!-- Published events will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add New Event Section -->
+            <div class="col-lg-4">
+                <div class="calendar-container">
+                    <h3 class="section-title"><i class="fas fa-plus-circle"></i> Event Management</h3>
+                    <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#eventModal">
+                        <i class="fas fa-plus me-2"></i> Create New Event
+                    </button>
+                    
+                    <div class="mb-4">
+                        <h6 class="mb-3">Event Statistics</h6>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="stat-number" id="totalEvents">0</div>
+                                <div class="stat-label">Total Events</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-number" id="publishedCount">0</div>
+                                <div class="stat-label">Published</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="event-categories">
+                        <h6 class="mb-3">Event Categories</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-primary">Meeting</span>
+                            <span class="badge bg-danger">Deadline</span>
+                            <span class="badge bg-purple">Event</span>
+                            <span class="badge bg-success">Training</span>
+                            <span class="badge bg-warning">Reminder</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -523,84 +886,95 @@
             </div>
         </div>
 
-        <!-- Upcoming Events Section -->
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="calendar-container">
-                    <h3 class="section-title"><i class="fas fa-list"></i> Upcoming Events</h3>
-                    <div id="upcomingEvents">
-                        <!-- Upcoming events will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="calendar-container">
-                    <h3 class="section-title"><i class="fas fa-plus-circle"></i> Add New Event</h3>
-                    <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#eventModal">
-                        <i class="fas fa-plus me-2"></i> Create Event
-                    </button>
-                    <div class="event-categories">
-                        <h6 class="mb-3">Event Categories</h6>
-                        <div class="d-flex flex-wrap gap-2">
-                            <span class="badge bg-primary">Meeting</span>
-                            <span class="badge bg-danger">Deadline</span>
-                            <span class="badge bg-purple">Event</span>
-                            <span class="badge bg-success">Training</span>
-                            <span class="badge bg-warning">Reminder</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- Event Modal -->
     <div class="modal fade event-modal" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="eventModalLabel">Add New Event</h5>
+                    <h5 class="modal-title" id="eventModalLabel">Create New Event</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="eventForm" class="event-form">
-                        <div class="mb-3">
-                            <label for="eventTitle" class="form-label">Event Title</label>
-                            <input type="text" class="form-control" id="eventTitle" required>
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="eventTitle" class="form-label">Event Title *</label>
+                                <input type="text" class="form-control" id="eventTitle" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="eventCategory" class="form-label">Category</label>
+                                <select class="form-select" id="eventCategory">
+                                    <option value="meeting">Meeting</option>
+                                    <option value="deadline">Deadline</option>
+                                    <option value="event" selected>Event</option>
+                                    <option value="training">Training</option>
+                                    <option value="reminder">Reminder</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="eventDate" class="form-label">Date</label>
-                            <input type="date" class="form-control" id="eventDate" required>
-                        </div>
+
                         <div class="row mb-3">
-                            <div class="col">
+                            <div class="col-md-6">
+                                <label for="eventDate" class="form-label">Date *</label>
+                                <input type="date" class="form-control" id="eventDate" required>
+                            </div>
+                            <div class="col-md-3">
                                 <label for="startTime" class="form-label">Start Time</label>
                                 <input type="time" class="form-control" id="startTime">
                             </div>
-                            <div class="col">
+                            <div class="col-md-3">
                                 <label for="endTime" class="form-label">End Time</label>
                                 <input type="time" class="form-control" id="endTime">
                             </div>
                         </div>
+
                         <div class="mb-3">
-                            <label for="eventCategory" class="form-label">Category</label>
-                            <select class="form-select" id="eventCategory">
-                                <option value="meeting">Meeting</option>
-                                <option value="deadline">Deadline</option>
-                                <option value="event">Event</option>
-                                <option value="training">Training</option>
-                                <option value="reminder">Reminder</option>
-                            </select>
+                            <label for="eventVenue" class="form-label">Venue/Location</label>
+                            <input type="text" class="form-control" id="eventVenue" placeholder="Enter event location">
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Event Images</label>
+                            <div class="input-group">
+                                <input type="file" class="form-control" id="eventImages" accept="image/*" multiple>
+                                <button class="btn btn-outline-secondary" type="button" id="clearImages">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                            <div class="form-text">You can upload multiple images</div>
+                            <div class="image-preview-container" id="imagePreview"></div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="eventDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                            <div id="richTextEditor"></div>
+                            <input type="hidden" id="eventDescription">
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="publishEvent">
+                                    <label class="form-check-label" for="publishEvent">Publish to Calendar</label>
+                                </div>
+                                <div class="form-text">Published events will be visible to everyone</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="sendNotification">
+                                    <label class="form-check-label" for="sendNotification">Send Notifications</label>
+                                </div>
+                                <div class="form-text">Send email notifications to members</div>
+                            </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveEvent">Save Event</button>
+                    <button type="button" class="btn btn-outline-primary" id="saveDraft">Save as Draft</button>
+                    <button type="button" class="btn btn-primary" id="saveEvent">Save & Publish</button>
                 </div>
             </div>
         </div>
@@ -608,7 +982,7 @@
 
     <!-- Event Details Modal -->
     <div class="modal fade event-details-modal" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="eventDetailsModalLabel">Event Details</h5>
@@ -619,6 +993,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-warning" id="editEventBtn">Edit</button>
                     <button type="button" class="btn btn-danger" id="deleteEventBtn">Delete Event</button>
                 </div>
             </div>
@@ -651,18 +1026,71 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Quill Rich Text Editor -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     
     <!-- JavaScript for Calendar -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Quill Rich Text Editor
+            const quill = new Quill('#richTextEditor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'image'],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'Write event description here...'
+            });
+
             // Calendar functionality
             let currentDate = new Date();
             let events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
             let eventToDelete = null;
+            let eventToEdit = null;
+            let selectedImages = [];
+            
+            // Philippine Time Clock Functionality
+            function updatePhilippineTime() {
+                const phDateElement = document.getElementById('phDate');
+                const phTimeElement = document.getElementById('phTime');
+                
+                // Philippine Time is UTC+8
+                const now = new Date();
+                const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+                const phTime = new Date(utc + (3600000 * 8)); // UTC+8
+                
+                // Format date (e.g., "January 15, 2024")
+                const optionsDate = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                };
+                const formattedDate = phTime.toLocaleDateString('en-US', optionsDate);
+                
+                // Format time (e.g., "14:30:45")
+                const hours = phTime.getHours().toString().padStart(2, '0');
+                const minutes = phTime.getMinutes().toString().padStart(2, '0');
+                const seconds = phTime.getSeconds().toString().padStart(2, '0');
+                const formattedTime = `${hours}:${minutes}:${seconds}`;
+                
+                phDateElement.textContent = formattedDate;
+                phTimeElement.textContent = formattedTime;
+            }
+
+            // Initialize and update clock every second
+            updatePhilippineTime();
+            setInterval(updatePhilippineTime, 1000);
             
             // Initialize calendar
             renderCalendar(currentDate);
-            renderUpcomingEvents();
+            renderPublishedEvents();
+            updateStatistics();
             
             // Dark Mode Toggle
             const darkModeToggle = document.getElementById('darkModeToggle');
@@ -706,37 +1134,59 @@
                 renderCalendar(currentDate);
             });
             
-            // Save event
-            document.getElementById('saveEvent').addEventListener('click', function() {
-                const title = document.getElementById('eventTitle').value;
-                const date = document.getElementById('eventDate').value;
-                const startTime = document.getElementById('startTime').value;
-                const endTime = document.getElementById('endTime').value;
-                const category = document.getElementById('eventCategory').value;
-                const description = document.getElementById('eventDescription').value;
+            // Handle image upload preview
+            document.getElementById('eventImages').addEventListener('change', function(e) {
+                const files = e.target.files;
+                const previewContainer = document.getElementById('imagePreview');
+                previewContainer.innerHTML = '';
                 
-                if (title && date) {
-                    const event = {
-                        id: Date.now(),
-                        title,
-                        date,
-                        startTime,
-                        endTime,
-                        category,
-                        description
-                    };
-                    
-                    events.push(event);
-                    localStorage.setItem('calendarEvents', JSON.stringify(events));
-                    
-                    // Reset form and close modal
-                    document.getElementById('eventForm').reset();
-                    bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
-                    
-                    // Re-render calendar and upcoming events
-                    renderCalendar(currentDate);
-                    renderUpcomingEvents();
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const imageData = e.target.result;
+                            selectedImages.push(imageData);
+                            
+                            const previewDiv = document.createElement('div');
+                            previewDiv.className = 'image-preview';
+                            previewDiv.innerHTML = `
+                                <img src="${imageData}" alt="Preview ${i + 1}">
+                                <button type="button" class="remove-image" data-index="${selectedImages.length - 1}">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            `;
+                            previewContainer.appendChild(previewDiv);
+                        };
+                        reader.readAsDataURL(file);
+                    }
                 }
+            });
+            
+            // Clear images button
+            document.getElementById('clearImages').addEventListener('click', function() {
+                document.getElementById('eventImages').value = '';
+                document.getElementById('imagePreview').innerHTML = '';
+                selectedImages = [];
+            });
+            
+            // Remove image from preview
+            document.getElementById('imagePreview').addEventListener('click', function(e) {
+                if (e.target.closest('.remove-image')) {
+                    const index = parseInt(e.target.closest('.remove-image').dataset.index);
+                    selectedImages.splice(index, 1);
+                    renderImagePreviews();
+                }
+            });
+            
+            // Save event as draft
+            document.getElementById('saveDraft').addEventListener('click', function() {
+                saveEvent(false);
+            });
+            
+            // Save and publish event
+            document.getElementById('saveEvent').addEventListener('click', function() {
+                saveEvent(true);
             });
             
             // Delete event button
@@ -747,6 +1197,16 @@
                 // Show delete confirmation modal
                 const deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
                 deleteConfirmModal.show();
+            });
+            
+            // Edit event button
+            document.getElementById('editEventBtn').addEventListener('click', function() {
+                const eventDetailsModal = bootstrap.Modal.getInstance(document.getElementById('eventDetailsModal'));
+                eventDetailsModal.hide();
+                
+                if (eventToEdit) {
+                    editEvent(eventToEdit);
+                }
             });
             
             // Confirm delete button
@@ -761,9 +1221,10 @@
                     // Close modal
                     bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
                     
-                    // Re-render calendar and upcoming events
+                    // Re-render calendar and events
                     renderCalendar(currentDate);
-                    renderUpcomingEvents();
+                    renderPublishedEvents();
+                    updateStatistics();
                     
                     // Reset eventToDelete
                     eventToDelete = null;
@@ -847,7 +1308,7 @@
                 const month = currentDate.getMonth() + 1;
                 const dateString = `${year}-${month.toString().padStart(2, '0')}-${dayNumber.toString().padStart(2, '0')}`;
                 
-                const dayEvents = events.filter(event => event.date === dateString);
+                const dayEvents = events.filter(event => event.date === dateString && event.published);
                 
                 if (dayEvents.length > 0) {
                     dayElement.classList.add('has-events');
@@ -869,61 +1330,213 @@
                 return dayElement;
             }
             
-            // Render upcoming events
-            function renderUpcomingEvents() {
-                const upcomingEventsContainer = document.getElementById('upcomingEvents');
-                upcomingEventsContainer.innerHTML = '';
+            // Render published events
+            function renderPublishedEvents() {
+                const publishedEventsContainer = document.getElementById('publishedEvents');
+                publishedEventsContainer.innerHTML = '';
                 
-                // Sort events by date
-                const sortedEvents = events.sort((a, b) => new Date(a.date) - new Date(b.date));
+                // Sort events by date (newest first)
+                const sortedEvents = events.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
-                // Get today's date
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
+                // Filter published events
+                const publishedEvents = sortedEvents.filter(event => event.published);
                 
-                // Filter upcoming events (today and future)
-                const upcomingEvents = sortedEvents.filter(event => {
-                    const eventDate = new Date(event.date);
-                    eventDate.setHours(0, 0, 0, 0);
-                    return eventDate >= today;
-                }).slice(0, 10); // Show only next 10 events
-                
-                if (upcomingEvents.length === 0) {
-                    upcomingEventsContainer.innerHTML = '<p class="text-muted">No upcoming events</p>';
+                if (publishedEvents.length === 0) {
+                    publishedEventsContainer.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-plus fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No published events yet</p>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#eventModal">
+                                <i class="fas fa-plus me-2"></i> Create First Event
+                            </button>
+                        </div>
+                    `;
                     return;
                 }
                 
-                upcomingEvents.forEach(event => {
+                publishedEvents.forEach(event => {
                     const eventElement = document.createElement('div');
-                    eventElement.className = 'd-flex justify-content-between align-items-center p-3 border-bottom';
+                    eventElement.className = 'event-card';
                     
                     const eventDate = new Date(event.date);
                     const formattedDate = eventDate.toLocaleDateString('en-US', { 
-                        weekday: 'short', 
-                        month: 'short', 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
                         day: 'numeric' 
                     });
                     
+                    let timeInfo = '';
+                    if (event.startTime && event.endTime) {
+                        timeInfo = `${event.startTime} - ${event.endTime}`;
+                    } else if (event.startTime) {
+                        timeInfo = `${event.startTime}`;
+                    }
+                    
+                    // Get first image if available
+                    const imageHtml = event.images && event.images.length > 0 ? 
+                        `<img src="${event.images[0]}" class="event-card-image" alt="${event.title}">` : 
+                        `<div class="event-card-image d-flex align-items-center justify-content-center bg-light">
+                            <i class="fas fa-calendar-alt fa-3x text-muted"></i>
+                        </div>`;
+                    
                     eventElement.innerHTML = `
-                        <div>
-                            <h6 class="mb-1">${event.title}</h6>
-                            <small class="text-muted">${formattedDate}${event.startTime ? ' • ' + event.startTime : ''}</small>
+                        ${imageHtml}
+                        <h4 class="event-card-title">${event.title}</h4>
+                        <div class="event-card-meta">
+                            <span class="event-meta-item">
+                                <i class="fas fa-calendar"></i> ${formattedDate}
+                            </span>
+                            ${timeInfo ? `<span class="event-meta-item">
+                                <i class="fas fa-clock"></i> ${timeInfo}
+                            </span>` : ''}
+                            ${event.venue ? `<span class="event-meta-item">
+                                <i class="fas fa-map-marker-alt"></i> ${event.venue}
+                            </span>` : ''}
                         </div>
-                        <span class="badge bg-${getCategoryColor(event.category)}">${event.category}</span>
+                        <div class="event-card-description">
+                            ${event.description ? event.description.substring(0, 200) + '...' : 'No description'}
+                        </div>
+                        <div class="event-card-footer">
+                            <div class="event-status">
+                                <span class="status-published">
+                                    <i class="fas fa-check-circle"></i> Published
+                                </span>
+                                <span class="badge bg-${getCategoryColor(event.category)}">${event.category}</span>
+                            </div>
+                            <div class="event-actions">
+                                <button class="btn btn-sm btn-outline-primary view-event" data-id="${event.id}">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="btn btn-sm btn-outline-warning edit-event" data-id="${event.id}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </div>
+                        </div>
                     `;
                     
-                    eventElement.style.cursor = 'pointer';
-                    eventElement.addEventListener('click', function() {
-                        showEventDetails(event);
-                    });
-                    
-                    upcomingEventsContainer.appendChild(eventElement);
+                    publishedEventsContainer.appendChild(eventElement);
                 });
+                
+                // Add event listeners to view buttons
+                document.querySelectorAll('.view-event').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const eventId = parseInt(this.dataset.id);
+                        const event = events.find(e => e.id === eventId);
+                        if (event) {
+                            showEventDetails(event);
+                        }
+                    });
+                });
+                
+                // Add event listeners to edit buttons
+                document.querySelectorAll('.edit-event').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const eventId = parseInt(this.dataset.id);
+                        const event = events.find(e => e.id === eventId);
+                        if (event) {
+                            editEvent(event);
+                        }
+                    });
+                });
+            }
+            
+            // Save event function
+            function saveEvent(publish) {
+                const title = document.getElementById('eventTitle').value;
+                const date = document.getElementById('eventDate').value;
+                const startTime = document.getElementById('startTime').value;
+                const endTime = document.getElementById('endTime').value;
+                const category = document.getElementById('eventCategory').value;
+                const venue = document.getElementById('eventVenue').value;
+                const description = quill.root.innerHTML;
+                const sendNotification = document.getElementById('sendNotification').checked;
+                
+                if (title && date) {
+                    const event = {
+                        id: eventToEdit ? eventToEdit.id : Date.now(),
+                        title,
+                        date,
+                        startTime,
+                        endTime,
+                        category,
+                        venue,
+                        description,
+                        images: [...selectedImages],
+                        published: publish,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    if (eventToEdit) {
+                        // Update existing event
+                        const index = events.findIndex(e => e.id === eventToEdit.id);
+                        if (index !== -1) {
+                            events[index] = event;
+                        }
+                    } else {
+                        // Add new event
+                        events.push(event);
+                    }
+                    
+                    // Save to localStorage
+                    localStorage.setItem('calendarEvents', JSON.stringify(events));
+                    
+                    // Reset form and close modal
+                    resetForm();
+                    bootstrap.Modal.getInstance(document.getElementById('eventModal')).hide();
+                    
+                    // Show success message
+                    showNotification(`Event "${title}" ${publish ? 'published' : 'saved as draft'} successfully!`, 'success');
+                    
+                    // Send notification if enabled
+                    if (publish && sendNotification) {
+                        simulateNotification(event);
+                    }
+                    
+                    // Re-render calendar and events
+                    renderCalendar(currentDate);
+                    renderPublishedEvents();
+                    updateStatistics();
+                    
+                    // Reset editing state
+                    eventToEdit = null;
+                    selectedImages = [];
+                }
+            }
+            
+            // Edit event function
+            function editEvent(event) {
+                eventToEdit = event;
+                
+                // Populate form fields
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventDate').value = event.date;
+                document.getElementById('startTime').value = event.startTime || '';
+                document.getElementById('endTime').value = event.endTime || '';
+                document.getElementById('eventCategory').value = event.category;
+                document.getElementById('eventVenue').value = event.venue || '';
+                document.getElementById('publishEvent').checked = event.published || false;
+                
+                // Set rich text editor content
+                quill.root.innerHTML = event.description || '';
+                
+                // Show images if any
+                selectedImages = event.images || [];
+                renderImagePreviews();
+                
+                // Change modal title
+                document.getElementById('eventModalLabel').textContent = 'Edit Event';
+                
+                // Show modal
+                const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+                eventModal.show();
             }
             
             // Show event details
             function showEventDetails(event) {
                 eventToDelete = event;
+                eventToEdit = event;
                 
                 const eventDate = new Date(event.date);
                 const formattedDate = eventDate.toLocaleDateString('en-US', { 
@@ -935,17 +1548,48 @@
                 
                 let timeInfo = '';
                 if (event.startTime && event.endTime) {
-                    timeInfo = ` from ${event.startTime} to ${event.endTime}`;
+                    timeInfo = `<p><strong>Time:</strong> ${event.startTime} - ${event.endTime}</p>`;
                 } else if (event.startTime) {
-                    timeInfo = ` at ${event.startTime}`;
+                    timeInfo = `<p><strong>Time:</strong> ${event.startTime}</p>`;
+                }
+                
+                let venueInfo = event.venue ? `<p><strong>Venue:</strong> ${event.venue}</p>` : '';
+                
+                let imagesHtml = '';
+                if (event.images && event.images.length > 0) {
+                    imagesHtml = `
+                        <div class="mb-3">
+                            <strong>Event Images:</strong>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                ${event.images.map((img, index) => `
+                                    <img src="${img}" class="event-details-image" alt="Event Image ${index + 1}" style="max-width: 150px; max-height: 100px; object-fit: cover;">
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
                 }
                 
                 const eventDetailsContent = document.getElementById('eventDetailsContent');
                 eventDetailsContent.innerHTML = `
-                    <h6>${event.title}</h6>
-                    <p><strong>Date:</strong> ${formattedDate}${timeInfo}</p>
-                    <p><strong>Category:</strong> <span class="badge bg-${getCategoryColor(event.category)}">${event.category}</span></p>
-                    <p><strong>Description:</strong> ${event.description || 'No description provided'}</p>
+                    <div class="text-center mb-3">
+                        <span class="badge bg-${getCategoryColor(event.category)} mb-2">${event.category}</span>
+                        <h4>${event.title}</h4>
+                    </div>
+                    ${imagesHtml}
+                    <div class="mb-3">
+                        <p><strong>Date:</strong> ${formattedDate}</p>
+                        ${timeInfo}
+                        ${venueInfo}
+                        ${event.description ? `<div class="mt-3">
+                            <strong>Description:</strong>
+                            <div class="border rounded p-3 mt-2">${event.description}</div>
+                        </div>` : ''}
+                    </div>
+                    <div class="text-muted small">
+                        <p><strong>Status:</strong> ${event.published ? 'Published' : 'Draft'}</p>
+                        <p><strong>Created:</strong> ${new Date(event.createdAt).toLocaleDateString()}</p>
+                        ${event.updatedAt ? `<p><strong>Last Updated:</strong> ${new Date(event.updatedAt).toLocaleDateString()}</p>` : ''}
+                    </div>
                 `;
                 
                 // Show the event details modal
@@ -964,6 +1608,69 @@
                     default: return 'secondary';
                 }
             }
+            
+            // Update statistics
+            function updateStatistics() {
+                const totalEvents = events.length;
+                const publishedCount = events.filter(event => event.published).length;
+                
+                document.getElementById('totalEvents').textContent = totalEvents;
+                document.getElementById('publishedCount').textContent = publishedCount;
+            }
+            
+            // Render image previews
+            function renderImagePreviews() {
+                const previewContainer = document.getElementById('imagePreview');
+                previewContainer.innerHTML = '';
+                
+                selectedImages.forEach((imageData, index) => {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'image-preview';
+                    previewDiv.innerHTML = `
+                        <img src="${imageData}" alt="Preview ${index + 1}">
+                        <button type="button" class="remove-image" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    previewContainer.appendChild(previewDiv);
+                });
+            }
+            
+            // Reset form
+            function resetForm() {
+                document.getElementById('eventForm').reset();
+                quill.root.innerHTML = '';
+                document.getElementById('imagePreview').innerHTML = '';
+                document.getElementById('eventModalLabel').textContent = 'Create New Event';
+                eventToEdit = null;
+            }
+            
+            // Show notification
+            function showNotification(message, type) {
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+                alert.style.cssText = 'top: 20px; right: 20px; z-index: 1060; min-width: 300px;';
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.body.appendChild(alert);
+                
+                setTimeout(() => {
+                    alert.remove();
+                }, 3000);
+            }
+            
+            // Simulate notification
+            function simulateNotification(event) {
+                console.log(`Notification sent for event: ${event.title}`);
+                // In a real application, this would send emails or push notifications
+            }
+            
+            // When modal is hidden, reset form
+            document.getElementById('eventModal').addEventListener('hidden.bs.modal', function() {
+                resetForm();
+            });
         });
     </script>
 </body>

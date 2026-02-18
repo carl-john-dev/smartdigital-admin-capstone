@@ -9,7 +9,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="icon" href="CBOC LOGO.jpg"/>
+    <link rel="icon" type="icon" href="mems.png"/>
 </head>
 <body>
     <!-- Sidebar -->
@@ -20,10 +20,13 @@
         <ul class="sidebar-menu">
             <li><a href="index.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
             <li><a href="members.php" class="active"><i class="fas fa-users"></i> <span>Members</span></a></li>
-            <li><a href="invoice.php"><i class="fas fa-file-invoice"></i> <span>Invoices</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
+            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
+            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
+            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>  
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
             <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
     </div>
@@ -268,22 +271,8 @@
                         <li><strong>New Member</strong> - Sarah Johnson registered</li>
                     </div>
                 </div>
-
-                <!-- Quick Actions Section -->
-                <div class="dashboard-section">
-                    <h3 class="section-title"><i class="fas fa-bolt"></i> Quick Actions</h3>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary">
-                            <i class="fas fa-envelope me-2"></i> Send Bulk Email
-                        </button>
-                        <button class="btn btn-outline-success">
-                            <i class="fas fa-file-export me-2"></i> Generate Report
-                        </button>
-                        <button class="btn btn-outline-info">
-                            <i class="fas fa-sync-alt me-2"></i> Sync Data
-                        </button>
-                    </div>
-                </div>
+                
+                <!-- Quick Actions section removed -->
             </div>
         </div>
     </div>

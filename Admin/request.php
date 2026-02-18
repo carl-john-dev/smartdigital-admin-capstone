@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="icon" href="req.png"/>
     <style>
         :root {
             --primary: #4361ee;
@@ -534,10 +535,13 @@
         <ul class="sidebar-menu">
             <li><a href="index.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
             <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
-            <li><a href="invoice.php"><i class="fas fa-file-invoice"></i> <span>Invoices</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i> <span>Maps</span></a></li>
-            <li><a href="request.php" class="active"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
+            <li><a href="request.php" class=""><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
+            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
+            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
+            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>  
             <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
     </div>
