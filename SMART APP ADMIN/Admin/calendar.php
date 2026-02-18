@@ -186,6 +186,10 @@
             transform: translateX(0);
         }
 
+        .sidebar:hover ~ .main-content {
+            margin-left: var(--sidebar-expanded-width);
+        }
+
         /* Add staggered animation for menu items */
         .sidebar-menu li:nth-child(1) span { transition-delay: 0.05s; }
         .sidebar-menu li:nth-child(2) span { transition-delay: 0.1s; }
@@ -235,10 +239,6 @@
             margin-left: var(--sidebar-width);
             padding: 20px;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-        }
-
-        .sidebar:hover ~ .main-content {
-            margin-left: var(--sidebar-expanded-width);
         }
 
         /* Top Bar */
@@ -779,15 +779,17 @@
             <h3><i class="fas fa-tachometer-alt"></i> Dashboard</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="index.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+            <li><a href="admin_profile.php"><i class="fas fa-id-card"></i> <span>Profile</span></a></li>
+            <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+            <li><a href="signup.php"><i class="fas fa-user-plus"></i> <span>Create Account</span></a></li>
             <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
-            <li><a href="calendar.php" class="active"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
             <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
             <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
             <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
-            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>  
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
             <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
     </div>
@@ -1123,7 +1125,7 @@
     <!-- JavaScript for Calendar -->
     <script type="module">
         import { db, storage } from './Firebase/firebase_conn.js';
-        import { collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
 
         async function testFirestore() {
@@ -1131,14 +1133,13 @@
                 const q = query(collection(db, "events"), where("createdBy", "==", "Admin"));
                 const snapshot = await getDocs(q);
                 console.log("Number of documents in 'events':", snapshot.size);
-                snapshot.forEach(docSnap => {
-                    console.log(docSnap.id, docSnap.data());
-                });
+                // snapshot.forEach(docSnap => {
+                //     console.log(docSnap.id, docSnap.data());
+                // });
             } catch (error) {
                 console.error("Firestore error:", error);
             }
         }
-
         testFirestore();
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1163,6 +1164,7 @@
             let eventToDelete = null;
             let eventToEdit = null;
             let selectedImages = [];
+            let editEventsFlag = false;
             
             // Philippine Time Clock Functionality
             function updatePhilippineTime() {
@@ -1229,13 +1231,8 @@
                     let startHour = null, startMinute = null;
                     let endHour = null, endMinute = null;
 
-                    if (startTime) {
-                    [startHour, startMinute] = startTime.split(":").map(Number);
-                    }
-
-                    if (endTime) {
-                    [endHour, endMinute] = endTime.split(":").map(Number);
-                    }
+                    if (startTime) [startHour, startMinute] = startTime.split(":").map(Number);
+                    if (endTime) [endHour, endMinute] = endTime.split(":").map(Number);
 
                     // Switches
                     const pub_to_cal = document.getElementById("publishEvent").checked;
@@ -1244,11 +1241,10 @@
                     // Images
                     const imageFiles = document.getElementById("eventImages").files;
                     const imageUrl = imageFiles.length
-                    ? await uploadImages(imageFiles)
-                    : [];
+                        ? await uploadImages(imageFiles)
+                        : eventToEdit?.imageUrl || [];
 
-                    // Firestore write
-                    await addDoc(collection(db, "events"), {
+                    const payload = {
                         title,
                         category,
                         date,
@@ -1262,11 +1258,27 @@
                         pub_to_cal,
                         send_notif,
                         createdBy,
-                        createdAt: serverTimestamp()
-                    });
+                        updatedAt: serverTimestamp()
+                    };
 
-                    alert("Event saved successfully!");
+                    if (editEventsFlag && eventToEdit?.id) {
+                        // 🔁 UPDATE
+                        await updateDoc(doc(db, "events", eventToEdit.id), payload);
+                        alert("Event updated successfully!");
+                    } else {
+                        // ➕ CREATE
+                        await addDoc(collection(db, "events"), {
+                            ...payload,
+                            createdAt: serverTimestamp()
+                        });
+                        alert("Event created successfully!");
+                    }
+
+                    // Reset state
+                    editEventsFlag = false;
+                    eventToEdit = null;
                     document.getElementById("eventForm").reset();
+                    quill.root.innerHTML = "";
 
                 } catch (error) {
                     console.error("Error saving event:", error);
@@ -1395,30 +1407,39 @@
                 const eventDetailsModal = bootstrap.Modal.getInstance(document.getElementById('eventDetailsModal'));
                 eventDetailsModal.hide();
                 
-                if (eventToEdit) {
-                    editEvent(eventToEdit);
+                if (eventToEdit?.id) {
+                    editEvent(eventToEdit.id);
                 }
             });
             
             // Confirm delete button
-            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-                if (eventToDelete) {
-                    // Remove event from array
-                    events = events.filter(event => event.id !== eventToDelete.id);
-                    
-                    // Save to localStorage
-                    localStorage.setItem('calendarEvents', JSON.stringify(events));
-                    
-                    // Close modal
-                    bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
-                    
-                    // Re-render calendar and events
-                    renderCalendar(currentDate);
-                    renderPublishedEvents();
-                    updateStatistics();
-                    
-                    // Reset eventToDelete
+            document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+                if (!eventToDelete?.id) {
+                    alert("No event selected for deletion.");
+                    return;
+                }
+
+                try {
+                    // Delete document from Firestore
+                    await deleteDoc(doc(db, "events", eventToDelete.id));
+
+                    // Close confirmation modal
+                    bootstrap.Modal
+                        .getInstance(document.getElementById('deleteConfirmModal'))
+                        .hide();
+
+                    // Reset state
                     eventToDelete = null;
+
+                    // Refresh UI from Firestore (single source of truth)
+                    await renderPublishedEvents();
+                    updateStatistics();
+
+                    alert("Event deleted successfully.");
+
+                } catch (error) {
+                    console.error("Failed to delete event:", error);
+                    alert("Failed to delete event.");
                 }
             });
             
@@ -1639,10 +1660,9 @@
                     });
 
                     document.querySelectorAll('.edit-event').forEach(button => {
-                        button.addEventListener('click', function() {
+                        button.addEventListener('click', function () {
                             const eventId = this.dataset.id;
-                            const event = publishedEvents.find(e => e.id === eventId);
-                            if (event) editEvent(event);
+                            editEvent(eventId);
                         });
                     });
 
@@ -1717,31 +1737,60 @@
             }
             
             // Edit event function
-            function editEvent(event) {
-                eventToEdit = event;
-                
-                // Populate form fields
-                document.getElementById('eventTitle').value = event.title;
-                document.getElementById('eventDate').value = event.date;
-                document.getElementById('startTime').value = event.startTime || '';
-                document.getElementById('endTime').value = event.endTime || '';
-                document.getElementById('eventCategory').value = event.category;
-                document.getElementById('eventVenue').value = event.venue || '';
-                document.getElementById('publishEvent').checked = event.published || false;
-                
-                // Set rich text editor content
-                quill.root.innerHTML = event.description || '';
-                
-                // Show images if any
-                selectedImages = event.images || [];
-                renderImagePreviews();
-                
-                // Change modal title
-                document.getElementById('eventModalLabel').textContent = 'Edit Event';
-                
-                // Show modal
-                const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
-                eventModal.show();
+            async function editEvent(eventId) {
+                if (typeof eventId !== "string") {
+                    console.error("Invalid eventId:", eventId);
+                    return;
+                }
+
+                try {
+                    // Fetch event directly from Firestore
+                    const eventRef = doc(db, "events", eventId);
+                    const eventSnap = await getDoc(eventRef);
+
+                    if (!eventSnap.exists()) {
+                        alert("Event not found.");
+                        return;
+                    }
+
+                    const event = {
+                        id: eventSnap.id,
+                        ...eventSnap.data()
+                    };
+
+                    eventToEdit = event; // keep reference for update/save later
+
+                    // Populate form fields
+                    document.getElementById('eventTitle').value = event.title || '';
+                    document.getElementById('eventDate').value = event.date || '';
+                    document.getElementById('startTime').value = event.startTime || '';
+                    document.getElementById('endTime').value = event.endTime || '';
+                    document.getElementById('eventCategory').value = event.category || '';
+                    document.getElementById('eventVenue').value = event.venue || '';
+                    document.getElementById('publishEvent').checked = event.published === true;
+
+                    // Set rich text editor content
+                    quill.root.innerHTML = event.description || '';
+
+                    // Images (Firestore-safe)
+                    selectedImages = event.images || [];
+                    renderImagePreviews();
+
+                    // Update modal title
+                    document.getElementById('eventModalLabel').textContent = 'Edit Event';
+
+                    // Show modal
+                    const eventModal = new bootstrap.Modal(
+                        document.getElementById('eventModal')
+                    );
+                    eventModal.show();
+                    
+                    editEventsFlag = true;
+
+                } catch (error) {
+                    console.error("Failed to load event from Firestore:", error);
+                    alert("Failed to load event data.");
+                }
             }
             
             // Show event details

@@ -347,10 +347,6 @@
                 </div>
 
                 <button type="submit" class="btn">Login</button>
-
-                <div class="form-footer">
-                    Don't have an account? <a href="signup.php">Sign Up</a>
-                </div>
             </form>
         </div>
     </div>
@@ -373,7 +369,23 @@
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                window.location.href = "admin_profile.php";
+
+                // Get ID Token
+                const user = auth.currentUser;
+                const idToken = await user.getIdToken();
+
+                // Send to PHP
+                const response = await fetch("verify_token.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "same-origin",
+                    body: JSON.stringify({ token: idToken })
+                });
+
+                const result = await response.text();
+                console.log(result);
+
+                window.location.href = "dashboard.php";
 
             } catch (error) {
                 alert("Login failed: " + error.message);

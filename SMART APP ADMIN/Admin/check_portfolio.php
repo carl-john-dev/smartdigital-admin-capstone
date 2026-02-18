@@ -941,6 +941,21 @@
             color: white;
             transform: translateY(-2px);
         }
+
+        .pdf-export {
+            transform: none !important;
+            position: static !important;
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+            box-shadow: none !important;
+        }
+        
+        @media print {
+            .control-panel {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1150,5 +1165,38 @@
 
         loadPortfolio();
     </script>
+
+    <script>
+        function downloadCard() {
+            const card = document.getElementById("nfcCard");
+            const userName = document.getElementById("userName");
+
+            // FORCE browser paint
+            userName.style.display = "none";
+            userName.offsetHeight; // <-- forces reflow
+            userName.style.display = "";
+
+            card.classList.add("pdf-export");
+
+            const options = {
+                margin:       0,
+                filename:     `${document.getElementById('userName').innerText}'s Portfolio.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  {
+                    scale: 2,          // Higher = sharper text
+                    scrollX: 0,
+                    scrollY: 0
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+            };
+
+            html2pdf().set(options).from(card).save().then(() => {card.classList.remove("pdf-export");});;
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>

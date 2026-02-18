@@ -481,10 +481,6 @@
                 </div>
 
                 <button type="submit" class="btn">Create Account</button>
-
-                <div class="form-footer">
-                    Already have an account? <a href="login.php">Login Here</a>
-                </div>
             </form>
         </div>
     </div>
@@ -522,7 +518,7 @@
                         email: email,
 
                         address: "",
-                        approved: false,
+                        approved: true,
                         businessName: null,
                         businessNature: null,
                         businesses: [],
