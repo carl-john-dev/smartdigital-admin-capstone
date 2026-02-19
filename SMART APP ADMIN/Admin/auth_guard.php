@@ -10,7 +10,7 @@ function requireAdmin() {
 
 function requireGuest() {
     if (isset($_SESSION['logged_in']) && $_SESSION['is_admin'] === true) {
-        header("Location: admin_profile.php");
+        header("Location: dashboard.php");
         exit;
     }
 }

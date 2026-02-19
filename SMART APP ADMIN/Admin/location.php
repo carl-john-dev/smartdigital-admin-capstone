@@ -919,7 +919,7 @@
             <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
             <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
             <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
-            <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
     </div>
 
@@ -1263,10 +1263,39 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <!-- JavaScript for Map and Interactive Elements -->
-    <script>
+    <script type="module">
+        import { db } from "./Firebase/firebase_conn.js";
+        import { doc, collection, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+        async function fetchUsersFromFirebase() {
+            try {
+                const usersSnapshot = await getDocs(collection(db, "businesses"));
+                const usersList = usersSnapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        id: doc.id,
+                        name: data.name,
+                        address: data.address || "",
+                        role: data.role || "Member",
+                        status: data.status || "offline",
+                        profilePic: data.profilePic || "", // should be a URL from Storage
+                        lastSeen: data.lastSeen ? new Date(data.lastSeen.seconds * 1000).toLocaleString() : "Never",
+                        avatar: data.avatar || null
+                    };
+                });
+                return usersList;
+            } catch (err) {
+                console.error("Error fetching users:", err);
+                return [];
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize the map
             const map = L.map('map').setView([14.4160, 120.8541], 14);
+            let users = [];
+            loadBusinessFromFirebase();
+            createUserLocationCards();
             
             // Add tile layer (OpenStreetMap)
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1274,80 +1303,114 @@
             }).addTo(map);
             
             // Define users with their locations and PROFILE PICTURES
-            let users = JSON.parse(localStorage.getItem('mapUsers')) || [
-                {
-                    id: 1,
-                    name: "Carl John D. Anthony",
-                    email: "tc.carljohn.anthony@cvsu.edu.ph",
-                    role: "Admin",
-                    status: "Active",
-                    coords: [14.4170, 120.8551],
-                    avatar: "CJ",
-                    profilePic: "mee.jfif",
-                    lastSeen: "2024-01-20 14:30",
-                    address: "Poblacion, Rosario, Cavite"
-                },
-                {
-                    id: 2,
-                    name: "Sabrina Tan",
-                    email: "sabrina.tan@realtyvale.com",
-                    role: "User",
-                    status: "Active",
-                    coords: [14.4190, 120.8532],
-                    avatar: "ST",
-                    profilePic: "https://randomuser.me/api/portraits/women/44.jpg",
-                    lastSeen: "2024-01-20 10:15",
-                    address: "Tejeros, Rosario, Cavite"
-                },
-                {
-                    id: 3,
-                    name: "Andy Sewer",
-                    email: "andy.sewer@fawcettor.com",
-                    role: "Moderator",
-                    status: "Inactive",
-                    coords: [14.4135, 120.8560],
-                    avatar: "AS",
-                    profilePic: "https://randomuser.me/api/portraits/men/32.jpg",
-                    lastSeen: "2024-01-19 16:45",
-                    address: "Wawa II, Rosario, Cavite"
-                },
-                {
-                    id: 4,
-                    name: "Shanon Matilda",
-                    email: "shanon.matilda@goldenfruit.com",
-                    role: "User",
-                    status: "Pending",
-                    coords: [14.4155, 120.8580],
-                    avatar: "SM",
-                    profilePic: "https://randomuser.me/api/portraits/women/68.jpg",
-                    lastSeen: "2024-01-20 09:20",
-                    address: "Sapa I, Rosario, Cavite"
-                },
-                {
-                    id: 5,
-                    name: "Ethan Cravejal",
-                    email: "ethan.cravejal@newcastle.com",
-                    role: "User",
-                    status: "Active",
-                    coords: [14.4210, 120.8520],
-                    avatar: "EC",
-                    profilePic: "https://randomuser.me/api/portraits/men/67.jpg",
-                    lastSeen: "2024-01-20 11:45",
-                    address: "Wawa I, Rosario, Cavite"
-                },
-                {
-                    id: 6,
-                    name: "John Doe",
-                    email: "john.doe@example.com",
-                    role: "User",
-                    status: "Active",
-                    coords: [14.4165, 120.8515],
-                    avatar: "JD",
-                    profilePic: "https://randomuser.me/api/portraits/men/75.jpg",
-                    lastSeen: "2024-01-20 13:30",
-                    address: "Kanluran, Rosario, Cavite"
-                }
-            ];
+            // let users = JSON.parse(localStorage.getItem('mapUsers')) || [
+            //     {
+            //         id: 1,
+            //         name: "Carl John D. Anthony",
+            //         email: "tc.carljohn.anthony@cvsu.edu.ph",
+            //         role: "Admin",
+            //         status: "Active",
+            //         coords: [14.4170, 120.8551],
+            //         avatar: "CJ",
+            //         profilePic: "mee.jfif",
+            //         lastSeen: "2024-01-20 14:30",
+            //         address: "Poblacion, Rosario, Cavite"
+            //     },
+            //     {
+            //         id: 2,
+            //         name: "Sabrina Tan",
+            //         email: "sabrina.tan@realtyvale.com",
+            //         role: "User",
+            //         status: "Active",
+            //         coords: [14.4190, 120.8532],
+            //         avatar: "ST",
+            //         profilePic: "https://randomuser.me/api/portraits/women/44.jpg",
+            //         lastSeen: "2024-01-20 10:15",
+            //         address: "Tejeros, Rosario, Cavite"
+            //     },
+            //     {
+            //         id: 3,
+            //         name: "Andy Sewer",
+            //         email: "andy.sewer@fawcettor.com",
+            //         role: "Moderator",
+            //         status: "Inactive",
+            //         coords: [14.4135, 120.8560],
+            //         avatar: "AS",
+            //         profilePic: "https://randomuser.me/api/portraits/men/32.jpg",
+            //         lastSeen: "2024-01-19 16:45",
+            //         address: "Wawa II, Rosario, Cavite"
+            //     },
+            //     {
+            //         id: 4,
+            //         name: "Shanon Matilda",
+            //         email: "shanon.matilda@goldenfruit.com",
+            //         role: "User",
+            //         status: "Pending",
+            //         coords: [14.4155, 120.8580],
+            //         avatar: "SM",
+            //         profilePic: "https://randomuser.me/api/portraits/women/68.jpg",
+            //         lastSeen: "2024-01-20 09:20",
+            //         address: "Sapa I, Rosario, Cavite"
+            //     },
+            //     {
+            //         id: 5,
+            //         name: "Ethan Cravejal",
+            //         email: "ethan.cravejal@newcastle.com",
+            //         role: "User",
+            //         status: "Active",
+            //         coords: [14.4210, 120.8520],
+            //         avatar: "EC",
+            //         profilePic: "https://randomuser.me/api/portraits/men/67.jpg",
+            //         lastSeen: "2024-01-20 11:45",
+            //         address: "Wawa I, Rosario, Cavite"
+            //     },
+            //     {
+            //         id: 6,
+            //         name: "John Doe",
+            //         email: "john.doe@example.com",
+            //         role: "User",
+            //         status: "Active",
+            //         coords: [14.4165, 120.8515],
+            //         avatar: "JD",
+            //         profilePic: "https://randomuser.me/api/portraits/men/75.jpg",
+            //         lastSeen: "2024-01-20 13:30",
+            //         address: "Kanluran, Rosario, Cavite"
+            //     }
+            // ];
+
+            // Loads businesses from Firebase DB
+            function loadBusinessFromFirebase() {
+                onSnapshot(collection(db, "businesses"), (snapshot) => {
+                    try {
+                        users.length = 0; // clear array
+
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+
+                            if (!Array.isArray(data.coords) || data.coords.length !== 2) return;
+
+                            users.push({
+                                id: doc.id,
+                                name: data.name,
+                                email: data.email,
+                                role: data.role,
+                                status: data.status,
+                                address: data.address,
+                                coords: data.coords,
+                                avatar: data.avatar,
+                                profilePic: data.profilePic,
+                                lastSeen: data.lastSeen,
+                                address: data.address
+                            });
+                        });
+                        createUserMarkers();
+                        // console.log("Loaded users:", users);
+
+                    } catch (error) {
+                        console.error("Error loading users:", error);
+                    }
+                });
+            }
 
             // Save users to localStorage
             function saveUsers() {
@@ -1429,22 +1492,21 @@
 
             // Create user markers with PROFILE PICTURES
             function createUserMarkers() {
-                // Clear existing markers
-                userMarkers.forEach(userMarker => {
-                    if (userMarker.marker) {
-                        map.removeLayer(userMarker.marker);
-                    }
+                // Remove old markers
+                userMarkers.forEach(({ marker }) => {
+                    if (marker) map.removeLayer(marker);
                 });
                 userMarkers = [];
-                
+
                 users.forEach(user => {
+                    if (!user.coords || user.coords.length !== 2) return;
+
                     const marker = L.marker(user.coords, {
                         icon: profilePicMarkerIcons[user.status](user.profilePic)
-                    })
-                    .bindPopup(`
+                    }).bindPopup(`
                         <div class="user-popup">
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <div class="user-profile-pic" style="background-image: url('${user.profilePic}')"></div>
+                                <div class="user-profile-pic" style="background-image:url('${user.profilePic}')"></div>
                                 <div>
                                     <h5 class="mb-0">${user.name}</h5>
                                     <small>${user.role}</small>
@@ -1452,54 +1514,53 @@
                             </div>
                             <hr class="my-2">
                             <p class="mb-1"><strong>Email:</strong> ${user.email}</p>
-                            <p class="mb-1"><strong>Status:</strong> <span class="user-status status-${user.status.toLowerCase()}">${user.status}</span></p>
+                            <p class="mb-1"><strong>Status:</strong>
+                                <span class="user-status status-${user.status.toLowerCase()}">${user.status}</span>
+                            </p>
                             <p class="mb-1"><strong>Last Seen:</strong> ${user.lastSeen}</p>
                             <p class="mb-1"><strong>Address:</strong> ${user.address}</p>
                             <div class="d-flex gap-2 mt-2">
-                                <button class="btn btn-sm btn-primary w-100" onclick="focusUserOnMap(${user.id})">
+                                <button class="btn btn-sm btn-primary w-100"
+                                    onclick="focusUserOnMap('${user.id}')">
                                     <i class="fas fa-map-marker-alt"></i> View
                                 </button>
-                                <button class="btn btn-sm btn-warning w-100" onclick="editUserProfile(${user.id})">
+                                <button class="btn btn-sm btn-warning w-100"
+                                    onclick="editUserProfile('${user.id}')">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
-                                <button class="btn btn-sm btn-danger w-100" onclick="showDeleteConfirmation(${user.id})">
+                                <button class="btn btn-sm btn-danger w-100"
+                                    onclick="showDeleteConfirmation('${user.id}')">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </div>
                         </div>
                     `);
-                    
-                    if (userMarkersVisible) {
-                        marker.addTo(map);
-                    }
-                    
-                    userMarkers.push({
-                        id: user.id,
-                        marker: marker,
-                        user: user
-                    });
+
+                    if (userMarkersVisible) marker.addTo(map);
+
+                    userMarkers.push({ id: user.id, marker, user });
                 });
             }
 
             // Function to create user location cards with PROFILE PICTURES
-            function createUserLocationCards() {
+            async function createUserLocationCards() {
+                const users = await fetchUsersFromFirebase();
                 const userListContainer = document.getElementById('userLocationsList');
                 userListContainer.innerHTML = '';
-                
+
                 users.forEach(user => {
                     const card = document.createElement('div');
                     card.className = 'user-card';
                     card.setAttribute('data-user-id', user.id);
-                    
-                    // Generate avatar initials
+
                     const avatar = user.avatar || getInitials(user.name);
-                    
+
                     card.innerHTML = `
                         <div class="user-card-actions">
-                            <button class="user-action-btn edit-user-btn" onclick="editUserProfile(${user.id})">
+                            <button class="user-action-btn edit-user-btn" onclick="editUserProfile('${user.id}')">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="user-action-btn delete-user-btn" onclick="showDeleteConfirmation(${user.id})">
+                            <button class="user-action-btn delete-user-btn" onclick="showDeleteConfirmation('${user.id}')">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -1518,40 +1579,43 @@
                             <small class="text-muted">
                                 <i class="fas fa-clock"></i> Last seen: ${user.lastSeen}
                             </small>
-                            <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="focusUserOnMap(${user.id})">
+                            <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="focusUserOnMap('${user.id}')">
                                 <i class="fas fa-map-marker-alt"></i> View on Map
                             </button>
                         </div>
                     `;
-                    
+
                     card.addEventListener('click', function(e) {
                         if (!e.target.closest('button')) {
                             focusUserOnMap(user.id);
                         }
                     });
-                    
+
                     userListContainer.appendChild(card);
                 });
             }
 
             // Function to focus on a specific user on the map
-            window.focusUserOnMap = function(userId) {
+            window.focusUserOnMap = function (userId) {
                 const user = users.find(u => u.id === userId);
-                if (user) {
-                    map.flyTo(user.coords, 16);
-                    
-                    // Find and open the user's marker popup
-                    const userMarker = userMarkers.find(m => m.id === userId);
-                    if (userMarker) {
-                        userMarker.marker.openPopup();
-                    }
-                    
-                    // Highlight the user card
-                    document.querySelectorAll('.user-card').forEach(card => {
-                        card.classList.remove('active');
-                    });
-                    document.querySelector(`[data-user-id="${userId}"]`).classList.add('active');
+                if (!user || !user.coords || user.coords.length !== 2) return;
+
+                // Move map
+                map.flyTo(user.coords, 16, { animate: true });
+
+                // Open marker popup
+                const userMarker = userMarkers.find(m => m.id === userId);
+                if (userMarker?.marker) {
+                    userMarker.marker.openPopup();
                 }
+
+                // Highlight user card (if exists)
+                document.querySelectorAll('.user-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+
+                const card = document.querySelector(`[data-user-id="${userId}"]`);
+                if (card) card.classList.add('active');
             };
 
             // Function to edit user profile
@@ -2043,151 +2107,152 @@
             });
             
             // Save new user
-            document.getElementById('saveNewUser').addEventListener('click', function() {
-                const name = document.getElementById('newUserName').value;
-                const email = document.getElementById('newUserEmail').value;
+            document.getElementById('saveNewUser').addEventListener('click', async function () {
+                const name = document.getElementById('newUserName').value.trim();
+                const email = document.getElementById('newUserEmail').value.trim();
                 const role = document.getElementById('newUserRole').value;
                 const status = document.getElementById('newUserStatus').value;
-                const address = document.getElementById('newUserAddress').value;
+                const address = document.getElementById('newUserAddress').value.trim();
                 const lat = parseFloat(document.getElementById('newUserLat').value);
                 const lng = parseFloat(document.getElementById('newUserLng').value);
                 const avatar = document.getElementById('newUserAvatar').value;
                 const url = document.getElementById('newUserProfilePicUrl').value;
-                
-                // Get uploaded image if exists
-                const tempKeys = Object.keys(uploadedImages).filter(key => key.startsWith('temp-'));
-                const uploadedImage = tempKeys.length > 0 ? uploadedImages[tempKeys[0]] : null;
-                
-                if (name && email && role && status && address && !isNaN(lat) && !isNaN(lng)) {
-                    const userId = Date.now();
-                    const newUser = {
-                        id: userId,
-                        name,
-                        email,
-                        role,
-                        status,
-                        coords: [lat, lng],
-                        avatar: avatar || getInitials(name),
-                        profilePic: uploadedImage || url || getDefaultProfilePic(),
-                        lastSeen: new Date().toLocaleDateString('en-US') + ' ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-                        address
+
+                const tempKeys = Object.keys(uploadedImages).filter(k => k.startsWith('temp-'));
+                const uploadedImage = tempKeys.length ? uploadedImages[tempKeys[0]] : null;
+
+                if (!name || !email || !role || !status || !address || isNaN(lat) || isNaN(lng)) {
+                    showNotification('Please fill all required fields correctly.', 'error');
+                    return;
+                }
+
+                try {
+                    const businessData = {
+                    name,
+                    email,
+                    role,
+                    status,
+                    address,
+
+                    coords: [lat, lng],                     // or GeoPoint if preferred
+                    avatar: avatar || getInitials(name),
+                    profilePic: uploadedImage || url || getDefaultProfilePic(),
+
+                    lastSeen: new Date().toISOString(),
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
                     };
-                    
-                    // Move uploaded image to permanent storage
-                    if (uploadedImage) {
-                        uploadedImages[userId] = uploadedImage;
-                        // Remove temp key
-                        delete uploadedImages[tempKeys[0]];
-                    }
-                    
-                    users.push(newUser);
-                    saveUsers();
+
+                    // 🔥 SAVE TO FIRESTORE (businesses collection)
+                    const docRef = await addDoc(collection(db, "businesses"), businessData);
+
+                    // Optional: reflect immediately in UI
+                    users.push({ id: docRef.id, ...businessData });
                     createUserMarkers();
                     createUserLocationCards();
-                    
-                    // Close modal and reset form
+
+                    // Cleanup temp image
+                    if (uploadedImage) delete uploadedImages[tempKeys[0]];
+
                     bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
                     document.getElementById('addUserForm').reset();
-                    
-                    // Reset preview
-                    updateNewProfilePreview();
-                    
-                    // Clear upload preview
                     document.getElementById('newUploadPreview').innerHTML = '';
-                    
-                    // Show success notification
-                    showNotification(`User "${name}" added successfully!`, 'success');
-                } else {
-                    showNotification('Please fill all required fields correctly.', 'error');
+                    updateNewProfilePreview();
+
+                    showNotification(`Business "${name}" saved successfully!`, 'success');
+
+                } catch (error) {
+                    console.error("Firestore save error:", error);
+                    showNotification('Failed to save business. Check console.', 'error');
                 }
             });
+
             
             // Save edited user
-            document.getElementById('saveEditUser').addEventListener('click', function() {
-                const userId = parseInt(document.getElementById('editUserId').value);
-                const name = document.getElementById('editUserName').value;
-                const email = document.getElementById('editUserEmail').value;
-                const role = document.getElementById('editUserRole').value;
-                const status = document.getElementById('editUserStatus').value;
-                const address = document.getElementById('editUserAddress').value;
-                const lat = parseFloat(document.getElementById('editUserLat').value);
-                const lng = parseFloat(document.getElementById('editUserLng').value);
-                const avatar = document.getElementById('editUserAvatar').value;
-                const url = document.getElementById('editUserProfilePicUrl').value;
-                
-                if (name && email && role && status && address && !isNaN(lat) && !isNaN(lng)) {
-                    // Update user in array
-                    const userIndex = users.findIndex(u => u.id === userId);
-                    if (userIndex !== -1) {
-                        // Get uploaded image or URL
-                        let profilePic;
-                        if (uploadedImages[userId]) {
-                            profilePic = uploadedImages[userId];
-                        } else if (url) {
-                            profilePic = url;
-                        } else {
-                            profilePic = users[userIndex].profilePic || getDefaultProfilePic();
-                        }
-                        
-                        users[userIndex] = {
-                            ...users[userIndex],
-                            name,
-                            email,
-                            role,
-                            status,
-                            address,
-                            coords: [lat, lng],
-                            avatar: avatar || getInitials(name),
-                            profilePic: profilePic
-                        };
-                        
-                        saveUsers();
-                        createUserMarkers();
-                        createUserLocationCards();
-                        
-                        // Close modal
-                        bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
-                        
-                        // Clear upload preview
-                        document.getElementById('editUploadPreview').innerHTML = '';
-                        
-                        // Remove preview marker
-                        if (previewMarker) {
-                            map.removeLayer(previewMarker);
-                            previewMarker = null;
-                        }
-                        
-                        // Show success notification
-                        showNotification(`User "${name}" updated successfully!`, 'success');
+            document.getElementById('saveEditUser').addEventListener('click', async () => {
+                const userId = document.getElementById('editUserId').value;
+                if (!userId) return;
+
+                try {
+                    const updatedData = {
+                        name: document.getElementById('editUserName').value.trim(),
+                        email: document.getElementById('editUserEmail').value.trim(),
+                        role: document.getElementById('editUserRole').value,
+                        status: document.getElementById('editUserStatus').value,
+                        address: document.getElementById('editUserAddress').value.trim(),
+                        coords: [
+                            parseFloat(document.getElementById('editUserLat').value),
+                            parseFloat(document.getElementById('editUserLng').value)
+                        ],
+                        avatar: document.getElementById('editUserAvatar').value.toUpperCase(),
+                        profilePic: getEditedProfilePicUrl(userId), // explained below
+                        updatedAt: serverTimestamp()
+                    };
+
+                    // 🔥 Update Firestore
+                    await updateDoc(doc(db, "businesses", userId), updatedData);
+
+                    console.log("User updated in Firebase:", userId);
+
+                    // Close modal
+                    bootstrap.Modal.getInstance(
+                        document.getElementById('editUserModal')
+                    ).hide();
+
+                    // Cleanup preview marker
+                    if (previewMarker) {
+                        map.removeLayer(previewMarker);
+                        previewMarker = null;
                     }
-                } else {
-                    showNotification('Please fill all required fields correctly.', 'error');
+
+                } catch (error) {
+                    console.error("Error updating user:", error);
+                    alert("Failed to save changes.");
                 }
             });
+
+            // Upload new Profile Pic to DB
+            function getEditedProfilePicUrl(userId) {
+                if (uploadedImages[userId]) {
+                    return uploadedImages[userId]; // already uploaded URL
+                }
+                return document.getElementById('editUserProfilePicUrl').value.trim() || null;
+            }
             
             // Confirm delete button
-            document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-                if (userToDelete) {
-                    // Remove user from array
-                    users = users.filter(user => user.id !== userToDelete.id);
-                    
-                    // Remove uploaded image if exists
-                    if (uploadedImages[userToDelete.id]) {
-                        delete uploadedImages[userToDelete.id];
+            document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
+                if (!userToDelete) return;
+
+                try {
+                    // 1. Delete businesses
+                    // await deleteUserBusinesses(userToDelete.id);
+
+                    // 2. Delete user document
+                    await deleteDoc(doc(db, "businesses", userToDelete.id));
+
+                    // 3. Optional: delete profile picture from Firebase Storage
+                    if (userToDelete.profilePicPath) {
+                    await deleteObject(ref(storage, userToDelete.profilePicPath));
                     }
-                    
+
+                    // 4. Update UI
+                    users = users.filter(user => user.id !== userToDelete.id);
+
                     saveUsers();
                     createUserMarkers();
                     createUserLocationCards();
-                    
-                    // Close modal
-                    bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
-                    
-                    // Show success notification
+
+                    bootstrap.Modal
+                    .getInstance(document.getElementById('deleteConfirmModal'))
+                    .hide();
+
                     showNotification(`User "${userToDelete.name}" deleted successfully!`, 'success');
-                    
-                    // Reset userToDelete
+
                     userToDelete = null;
+
+                } catch (err) {
+                    console.error("Delete failed:", err);
+                    showNotification("Failed to delete user. Check console.", "danger");
                 }
             });
             
