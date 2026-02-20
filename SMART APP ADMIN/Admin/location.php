@@ -927,7 +927,7 @@
     <div class="main-content">
         <!-- Top Bar -->
         <div class="top-bar">
-            <h1>User Locations Map</h1>
+            <h1>Business Locations Map</h1>
             <div class="user-info">
                 <div class="user-avatar">AD</div>
                 <div>
@@ -937,7 +937,7 @@
             </div>
         </div>
 
-        <!-- Stats Section -->
+        <!-- Stats Section
         <div class="stats-container">
             <div class="stat-card">
                 <div class="stat-number" id="totalUsers">6</div>
@@ -955,14 +955,14 @@
                 <div class="stat-number" id="pendingUsers">1</div>
                 <div class="stat-label">Pending Users</div>
             </div>
-        </div>
+        </div> -->
 
         <div class="row">
             <!-- Left Column - Map (Now bigger - 9 columns) -->
             <div class="col-lg-9">
                 <div class="map-container">
                     <div class="map-header">
-                        <h2 class="map-title"><i class="fas fa-map-marker-alt"></i> Rosario, Cavite - User Locations</h2>
+                        <h2 class="map-title"><i class="fas fa-map-marker-alt"></i> Rosario, Cavite - Business Locations</h2>
                         <div class="map-controls">
                             <button class="map-control-btn" id="locateMe">
                                 <i class="fas fa-location-arrow"></i> Locate Me
@@ -971,7 +971,7 @@
                                 <i class="fas fa-sync-alt"></i> Reset View
                             </button>
                             <button class="map-control-btn" id="toggleUsers">
-                                <i class="fas fa-users"></i> Show Users
+                                <i class="fas fa-users"></i> Show Businesses
                             </button>
                         </div>
                     </div>
@@ -982,11 +982,11 @@
             <!-- Right Column - User Locations Only (Now smaller - 3 columns) -->
             <div class="col-lg-3">
                 <div class="map-container">
-                    <h3 class="section-title"><i class="fas fa-users"></i> Users</h3>
+                    <h3 class="section-title"><i class="fas fa-users"></i> Businesses</h3>
                     
                     <div class="mb-3">
                         <div class="input-group">
-                            <input type="text" id="searchUsers" class="form-control" placeholder="Search users...">
+                            <input type="text" id="searchUsers" class="form-control" placeholder="Search businesses...">
                             <button class="btn btn-outline-primary" type="button" id="searchButton">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -1002,12 +1002,12 @@
     </div>
 
     <!-- Add User Floating Button -->
-    <button class="add-user-btn" id="addUserBtn" data-bs-toggle="modal" data-bs-target="#addUserModal">
+    <!-- <button class="add-user-btn" id="addUserBtn" data-bs-toggle="modal" data-bs-target="#addUserModal">
         <i class="fas fa-plus"></i>
-    </button>
+    </button> -->
 
     <!-- Add User Modal -->
-    <div class="modal fade user-modal" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade user-modal" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1077,7 +1077,7 @@
                             <input type="text" class="form-control" id="newUserAvatar" maxlength="2" placeholder="e.g., JD">
                         </div>
                         
-                        <!-- Image Upload Section -->
+                        Image Upload Section
                         <div class="mb-3">
                             <label class="form-label">Profile Picture</label>
                             <div class="image-source-options" id="newImageSourceOptions">
@@ -1089,7 +1089,7 @@
                                 </button>
                             </div>
                             
-                            <!-- Upload Section -->
+                            Upload Section
                             <div class="file-upload-container" id="newUploadSection">
                                 <label for="newUserProfilePicUpload" class="file-upload-label">
                                     <i class="fas fa-cloud-upload-alt"></i>
@@ -1100,7 +1100,7 @@
                                 <div class="upload-preview" id="newUploadPreview"></div>
                             </div>
                             
-                            <!-- URL Section -->
+                            URL Section
                             <div class="url-input-container d-none" id="newUrlSection">
                                 <input type="text" class="form-control" id="newUserProfilePicUrl" placeholder="https://example.com/image.jpg">
                                 <small class="text-muted">Enter image URL</small>
@@ -1114,10 +1114,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Edit User Modal -->
-    <div class="modal fade user-modal" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade user-modal" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1188,7 +1188,7 @@
                             <input type="text" class="form-control" id="editUserAvatar" maxlength="2" placeholder="e.g., JD">
                         </div>
                         
-                        <!-- Image Upload Section -->
+                        Image Upload Section
                         <div class="mb-3">
                             <label class="form-label">Profile Picture</label>
                             <div class="image-source-options" id="editImageSourceOptions">
@@ -1200,7 +1200,7 @@
                                 </button>
                             </div>
                             
-                            <!-- Upload Section -->
+                            Upload Section
                             <div class="file-upload-container" id="editUploadSection">
                                 <label for="editUserProfilePicUpload" class="file-upload-label">
                                     <i class="fas fa-cloud-upload-alt"></i>
@@ -1211,7 +1211,7 @@
                                 <div class="upload-preview" id="editUploadPreview"></div>
                             </div>
                             
-                            <!-- URL Section -->
+                            URL Section
                             <div class="url-input-container d-none" id="editUrlSection">
                                 <input type="text" class="form-control" id="editUserProfilePicUrl" placeholder="https://example.com/image.jpg">
                                 <small class="text-muted">Enter image URL</small>
@@ -1230,7 +1230,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Delete Confirmation Modal -->
     <div class="modal fade user-modal" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
@@ -1242,11 +1242,11 @@
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to delete <strong id="deleteUserName"></strong>?</p>
-                    <p class="text-danger"><small>This action cannot be undone. The user will be removed from the map and user list.</small></p>
+                    <p class="text-danger"><small>This action cannot be undone. The business will be removed from the map and business list.</small></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete User</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Business</button>
                 </div>
             </div>
         </div>
@@ -1267,7 +1267,7 @@
         import { db } from "./Firebase/firebase_conn.js";
         import { doc, collection, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-        async function fetchUsersFromFirebase() {
+        /* async function fetchUsersFromFirebase() {
             try {
                 const usersSnapshot = await getDocs(collection(db, "businesses"));
                 const usersList = usersSnapshot.docs.map(doc => {
@@ -1288,12 +1288,13 @@
                 console.error("Error fetching users:", err);
                 return [];
             }
-        }
+        } */
 
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize the map
             const map = L.map('map').setView([14.4160, 120.8541], 14);
             let users = [];
+            const defPFP = getDefaultProfilePic();
             loadBusinessFromFirebase();
             createUserLocationCards();
             
@@ -1301,122 +1302,53 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
-            
-            // Define users with their locations and PROFILE PICTURES
-            // let users = JSON.parse(localStorage.getItem('mapUsers')) || [
-            //     {
-            //         id: 1,
-            //         name: "Carl John D. Anthony",
-            //         email: "tc.carljohn.anthony@cvsu.edu.ph",
-            //         role: "Admin",
-            //         status: "Active",
-            //         coords: [14.4170, 120.8551],
-            //         avatar: "CJ",
-            //         profilePic: "mee.jfif",
-            //         lastSeen: "2024-01-20 14:30",
-            //         address: "Poblacion, Rosario, Cavite"
-            //     },
-            //     {
-            //         id: 2,
-            //         name: "Sabrina Tan",
-            //         email: "sabrina.tan@realtyvale.com",
-            //         role: "User",
-            //         status: "Active",
-            //         coords: [14.4190, 120.8532],
-            //         avatar: "ST",
-            //         profilePic: "https://randomuser.me/api/portraits/women/44.jpg",
-            //         lastSeen: "2024-01-20 10:15",
-            //         address: "Tejeros, Rosario, Cavite"
-            //     },
-            //     {
-            //         id: 3,
-            //         name: "Andy Sewer",
-            //         email: "andy.sewer@fawcettor.com",
-            //         role: "Moderator",
-            //         status: "Inactive",
-            //         coords: [14.4135, 120.8560],
-            //         avatar: "AS",
-            //         profilePic: "https://randomuser.me/api/portraits/men/32.jpg",
-            //         lastSeen: "2024-01-19 16:45",
-            //         address: "Wawa II, Rosario, Cavite"
-            //     },
-            //     {
-            //         id: 4,
-            //         name: "Shanon Matilda",
-            //         email: "shanon.matilda@goldenfruit.com",
-            //         role: "User",
-            //         status: "Pending",
-            //         coords: [14.4155, 120.8580],
-            //         avatar: "SM",
-            //         profilePic: "https://randomuser.me/api/portraits/women/68.jpg",
-            //         lastSeen: "2024-01-20 09:20",
-            //         address: "Sapa I, Rosario, Cavite"
-            //     },
-            //     {
-            //         id: 5,
-            //         name: "Ethan Cravejal",
-            //         email: "ethan.cravejal@newcastle.com",
-            //         role: "User",
-            //         status: "Active",
-            //         coords: [14.4210, 120.8520],
-            //         avatar: "EC",
-            //         profilePic: "https://randomuser.me/api/portraits/men/67.jpg",
-            //         lastSeen: "2024-01-20 11:45",
-            //         address: "Wawa I, Rosario, Cavite"
-            //     },
-            //     {
-            //         id: 6,
-            //         name: "John Doe",
-            //         email: "john.doe@example.com",
-            //         role: "User",
-            //         status: "Active",
-            //         coords: [14.4165, 120.8515],
-            //         avatar: "JD",
-            //         profilePic: "https://randomuser.me/api/portraits/men/75.jpg",
-            //         lastSeen: "2024-01-20 13:30",
-            //         address: "Kanluran, Rosario, Cavite"
-            //     }
-            // ];
 
             // Loads businesses from Firebase DB
             function loadBusinessFromFirebase() {
-                onSnapshot(collection(db, "businesses"), (snapshot) => {
+                onSnapshot(collection(db, "users"), (snapshot) => {
                     try {
-                        users.length = 0; // clear array
+                        users.length = 0; // clear markers array
 
-                        snapshot.forEach((doc) => {
-                            const data = doc.data();
+                        snapshot.forEach((userDoc) => {
+                            const userData = userDoc.data();
+                            const userId = userDoc.id;
 
-                            if (!Array.isArray(data.coords) || data.coords.length !== 2) return;
+                            if (!Array.isArray(userData.businesses)) return;
 
-                            users.push({
-                                id: doc.id,
-                                name: data.name,
-                                email: data.email,
-                                role: data.role,
-                                status: data.status,
-                                address: data.address,
-                                coords: data.coords,
-                                avatar: data.avatar,
-                                profilePic: data.profilePic,
-                                lastSeen: data.lastSeen,
-                                address: data.address
+                            userData.businesses.forEach((business, index) => {
+                                if (
+                                    typeof business.lat !== "number" ||
+                                    typeof business.lng !== "number"
+                                ) return;
+
+                                users.push({
+                                    id: `${userId}_${index}`,
+                                    ownerId: userId,
+                                    name: business.name || "Unnamed Business",
+                                    address: business.address || "",
+                                    description: business.desc || "",
+                                    phone: business.phone || "",
+                                    logoUrl: business.logoUrl || "",
+                                    coords: [business.lat, business.lng]
+                                });
                             });
                         });
+
                         createUserMarkers();
-                        // console.log("Loaded users:", users);
+                        createUserLocationCards();
+                        console.log("Loaded businesses:", users);
 
                     } catch (error) {
-                        console.error("Error loading users:", error);
+                        console.error("Error loading businesses:", error);
                     }
                 });
             }
 
             // Save users to localStorage
-            function saveUsers() {
+            /* function saveUsers() {
                 localStorage.setItem('mapUsers', JSON.stringify(users));
                 updateStatistics();
-            }
+            } */
 
             // Profile Picture Marker Icons
             const profilePicMarkerIcons = {
@@ -1498,38 +1430,39 @@
                 });
                 userMarkers = [];
 
-                users.forEach(user => {
-                    if (!user.coords || user.coords.length !== 2) return;
+                users.forEach(business => {
+                    if (!business.coords || business.coords.length !== 2) return;
 
-                    const marker = L.marker(user.coords, {
-                        icon: profilePicMarkerIcons[user.status](user.profilePic)
-                    }).bindPopup(`
+                    const marker = L.marker(business.coords, {icon: profilePicMarkerIcons['Active'](business.logoUrl || defPFP)}).bindPopup(`
                         <div class="user-popup">
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <div class="user-profile-pic" style="background-image:url('${user.profilePic}')"></div>
+                                <div class="user-profile-pic"
+                                    style="background-image:url('${business.logoUrl || defPFP}')">
+                                </div>
                                 <div>
-                                    <h5 class="mb-0">${user.name}</h5>
-                                    <small>${user.role}</small>
+                                    <h5 class="mb-0">${business.name}</h5>
+                                    <small>${business.phone || "No phone available"}</small>
                                 </div>
                             </div>
+
                             <hr class="my-2">
-                            <p class="mb-1"><strong>Email:</strong> ${user.email}</p>
-                            <p class="mb-1"><strong>Status:</strong>
-                                <span class="user-status status-${user.status.toLowerCase()}">${user.status}</span>
+
+                            <p class="mb-1">
+                                <strong>Address:</strong> ${business.address || "No address provided"}
                             </p>
-                            <p class="mb-1"><strong>Last Seen:</strong> ${user.lastSeen}</p>
-                            <p class="mb-1"><strong>Address:</strong> ${user.address}</p>
+
+                            <p class="mb-1">
+                                <strong>Description:</strong><br>
+                                ${business.description || "No description available"}
+                            </p>
+
                             <div class="d-flex gap-2 mt-2">
                                 <button class="btn btn-sm btn-primary w-100"
-                                    onclick="focusUserOnMap('${user.id}')">
+                                    onclick="focusUserOnMap('${business.id}')">
                                     <i class="fas fa-map-marker-alt"></i> View
                                 </button>
-                                <button class="btn btn-sm btn-warning w-100"
-                                    onclick="editUserProfile('${user.id}')">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
                                 <button class="btn btn-sm btn-danger w-100"
-                                    onclick="showDeleteConfirmation('${user.id}')">
+                                    onclick="showDeleteConfirmation('${business.id}', '${business.ownerId}')">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </div>
@@ -1538,48 +1471,52 @@
 
                     if (userMarkersVisible) marker.addTo(map);
 
-                    userMarkers.push({ id: user.id, marker, user });
+                    userMarkers.push({ id: business.id, marker, user: business });
                 });
             }
 
             // Function to create user location cards with PROFILE PICTURES
-            async function createUserLocationCards() {
-                const users = await fetchUsersFromFirebase();
+            function createUserLocationCards() {
                 const userListContainer = document.getElementById('userLocationsList');
                 userListContainer.innerHTML = '';
 
-                users.forEach(user => {
+                users.forEach(business => {
                     const card = document.createElement('div');
                     card.className = 'user-card';
-                    card.setAttribute('data-user-id', user.id);
-
-                    const avatar = user.avatar || getInitials(user.name);
+                    card.setAttribute('data-user-id', business.id);
 
                     card.innerHTML = `
                         <div class="user-card-actions">
-                            <button class="user-action-btn edit-user-btn" onclick="editUserProfile('${user.id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="user-action-btn delete-user-btn" onclick="showDeleteConfirmation('${user.id}')">
+                            <button class="user-action-btn delete-user-btn"
+                                onclick="deleteBusiness('${business.id}', '${business.ownerId}')">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
+
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <div class="user-card-title">${user.name}</div>
-                                <div class="user-card-address">${user.address}</div>
+                                <div class="user-card-title">${business.name}</div>
+                                <div class="user-card-address">${business.address || "No address provided"}</div>
+
                                 <div class="d-flex align-items-center gap-2 mt-1">
-                                    <span class="role-badge role-${user.role.toLowerCase()}">${user.role}</span>
-                                    <span class="user-status status-${user.status.toLowerCase()}">${user.status}</span>
+                                    <span class="role-badge">
+                                        ${business.phone || "No phone"}
+                                    </span>
                                 </div>
                             </div>
-                            <div class="user-profile-pic" style="background-image: url('${user.profilePic}')"></div>
+
+                            <div class="user-profile-pic"
+                                style="background-image: url('${business.logoUrl || defPFP}')">
+                            </div>
                         </div>
+
                         <div class="mt-2">
                             <small class="text-muted">
-                                <i class="fas fa-clock"></i> Last seen: ${user.lastSeen}
+                                ${business.description || "No description available"}
                             </small>
-                            <button class="btn btn-sm btn-outline-primary mt-2 w-100" onclick="focusUserOnMap('${user.id}')">
+
+                            <button class="btn btn-sm btn-outline-primary mt-2 w-100"
+                                onclick="focusUserOnMap('${business.id}')">
                                 <i class="fas fa-map-marker-alt"></i> View on Map
                             </button>
                         </div>
@@ -1587,7 +1524,7 @@
 
                     card.addEventListener('click', function(e) {
                         if (!e.target.closest('button')) {
-                            focusUserOnMap(user.id);
+                            focusUserOnMap(business.id);
                         }
                     });
 
@@ -1619,7 +1556,7 @@
             };
 
             // Function to edit user profile
-            window.editUserProfile = function(userId) {
+            /* window.editUserProfile = function(userId) {
                 event.stopPropagation();
                 const user = users.find(u => u.id === userId);
                 if (user) {
@@ -1701,7 +1638,7 @@
                         }, 800); // Wait 800ms after typing stops
                     });
                 }
-            };
+            }; */
 
             // Function to show image preview
             function showImagePreview(userId, type = 'new') {
@@ -1740,7 +1677,7 @@
             }
 
             // Function to update edit profile preview
-            function updateEditProfilePreview() {
+            /* function updateEditProfilePreview() {
                 const name = document.getElementById('editUserName').value;
                 const role = document.getElementById('editUserRole').value;
                 const status = document.getElementById('editUserStatus').value;
@@ -1773,10 +1710,10 @@
                     profilePicText.textContent = avatar;
                     profilePicText.style.display = 'flex';
                 }
-            }
+            } */
 
             // Function to update new user profile preview
-            function updateNewProfilePreview() {
+            /* function updateNewProfilePreview() {
                 const name = document.getElementById('newUserName').value || 'John Doe';
                 const role = document.getElementById('newUserRole').value || 'User';
                 const status = document.getElementById('newUserStatus').value || 'Active';
@@ -1805,7 +1742,7 @@
                     profilePicText.textContent = avatar;
                     profilePicText.style.display = 'flex';
                 }
-            }
+            } */
 
             // Function to update profile preview
             function updateProfilePreview(type = 'new') {
@@ -1817,14 +1754,17 @@
             }
 
             // Show delete confirmation
-            window.showDeleteConfirmation = function(userId) {
+            window.showDeleteConfirmation = function(businessId) {
                 event.stopPropagation();
-                const user = users.find(u => u.id === userId);
-                if (user) {
-                    userToDelete = user;
-                    document.getElementById('deleteUserName').textContent = user.name;
-                    
-                    const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+
+                const business = users.find(u => u.id === businessId);
+                if (business) {
+                    userToDelete = business;
+                    document.getElementById('deleteUserName').textContent = business.name;
+
+                    const deleteModal = new bootstrap.Modal(
+                        document.getElementById('deleteConfirmModal')
+                    );
                     deleteModal.show();
                 }
             };
@@ -1855,10 +1795,10 @@
                 const inactiveUsers = users.filter(u => u.status === 'Inactive').length;
                 const pendingUsers = users.filter(u => u.status === 'Pending').length;
                 
-                document.getElementById('totalUsers').textContent = totalUsers;
+                /* document.getElementById('totalUsers').textContent = totalUsers;
                 document.getElementById('activeUsers').textContent = activeUsers;
                 document.getElementById('inactiveUsers').textContent = inactiveUsers;
-                document.getElementById('pendingUsers').textContent = pendingUsers;
+                document.getElementById('pendingUsers').textContent = pendingUsers; */
             }
 
             // Initialize markers and cards
@@ -1912,7 +1852,7 @@
             }
             
             // Initialize file upload handlers
-            function initFileUploadHandlers() {
+            /* function initFileUploadHandlers() {
                 // New user file upload
                 const newFileUpload = document.getElementById('newUserProfilePicUpload');
                 const newUploadPreview = document.getElementById('newUploadPreview');
@@ -2008,10 +1948,10 @@
                         reader.readAsDataURL(file);
                     }
                 });
-            }
+            } */
             
             // Initialize URL input handlers
-            function initUrlInputHandlers() {
+            /* function initUrlInputHandlers() {
                 // New user URL input
                 const newUrlInput = document.getElementById('newUserProfilePicUrl');
                 newUrlInput.addEventListener('input', function() {
@@ -2023,7 +1963,7 @@
                 editUrlInput.addEventListener('input', function() {
                     updateEditProfilePreview();
                 });
-            }
+            } */
             
             // Search users functionality
             document.getElementById('searchUsers').addEventListener('input', function(e) {
@@ -2107,7 +2047,7 @@
             });
             
             // Save new user
-            document.getElementById('saveNewUser').addEventListener('click', async function () {
+            /* document.getElementById('saveNewUser').addEventListener('click', async function () {
                 const name = document.getElementById('newUserName').value.trim();
                 const email = document.getElementById('newUserEmail').value.trim();
                 const role = document.getElementById('newUserRole').value;
@@ -2165,11 +2105,10 @@
                     console.error("Firestore save error:", error);
                     showNotification('Failed to save business. Check console.', 'error');
                 }
-            });
-
+            }); */
             
             // Save edited user
-            document.getElementById('saveEditUser').addEventListener('click', async () => {
+            /* document.getElementById('saveEditUser').addEventListener('click', async () => {
                 const userId = document.getElementById('editUserId').value;
                 if (!userId) return;
 
@@ -2209,7 +2148,7 @@
                     console.error("Error updating user:", error);
                     alert("Failed to save changes.");
                 }
-            });
+            }); */
 
             // Upload new Profile Pic to DB
             function getEditedProfilePicUrl(userId) {
@@ -2224,35 +2163,47 @@
                 if (!userToDelete) return;
 
                 try {
-                    // 1. Delete businesses
-                    // await deleteUserBusinesses(userToDelete.id);
+                    const ownerId = userToDelete.ownerId;
 
-                    // 2. Delete user document
-                    await deleteDoc(doc(db, "businesses", userToDelete.id));
+                    // 1️⃣ Get user document
+                    const userRef = doc(db, "users", ownerId);
+                    const userSnap = await getDoc(userRef);
 
-                    // 3. Optional: delete profile picture from Firebase Storage
-                    if (userToDelete.profilePicPath) {
-                    await deleteObject(ref(storage, userToDelete.profilePicPath));
-                    }
+                    if (!userSnap.exists()) throw new Error("User not found");
 
-                    // 4. Update UI
-                    users = users.filter(user => user.id !== userToDelete.id);
+                    const userData = userSnap.data();
+                    let businesses = userData.businesses || [];
 
-                    saveUsers();
+                    // 2️⃣ Remove correct business
+                    businesses = businesses.filter((b, index) =>
+                        `${ownerId}_${index}` !== userToDelete.id
+                    );
+
+                    // 3️⃣ Update document
+                    await updateDoc(userRef, {
+                        businesses: businesses
+                    });
+
+                    // 4️⃣ Remove from local array
+                    users = users.filter(b => b.id !== userToDelete.id);
+
                     createUserMarkers();
                     createUserLocationCards();
 
                     bootstrap.Modal
-                    .getInstance(document.getElementById('deleteConfirmModal'))
-                    .hide();
+                        .getInstance(document.getElementById('deleteConfirmModal'))
+                        .hide();
 
-                    showNotification(`User "${userToDelete.name}" deleted successfully!`, 'success');
+                    showNotification(
+                        `Business "${userToDelete.name}" deleted successfully!`,
+                        'success'
+                    );
 
                     userToDelete = null;
 
                 } catch (err) {
                     console.error("Delete failed:", err);
-                    showNotification("Failed to delete user. Check console.", "danger");
+                    showNotification("Failed to delete business.", "danger");
                 }
             });
             
@@ -2311,20 +2262,20 @@
 
             // Initialize everything
             initImageSourceOptions();
-            initFileUploadHandlers();
-            initUrlInputHandlers();
+            // initFileUploadHandlers();
+            // initUrlInputHandlers();
             
             // Add real-time preview for new user form
-            const newUserFormFields = ['newUserName', 'newUserRole', 'newUserStatus', 'newUserAvatar'];
+            /* const newUserFormFields = ['newUserName', 'newUserRole', 'newUserStatus', 'newUserAvatar'];
             newUserFormFields.forEach(field => {
                 document.getElementById(field).addEventListener('input', updateNewProfilePreview);
-            });
+            }); */
 
             // Add real-time preview for edit user form
-            const editUserFormFields = ['editUserName', 'editUserRole', 'editUserStatus', 'editUserAvatar'];
+            /* const editUserFormFields = ['editUserName', 'editUserRole', 'editUserStatus', 'editUserAvatar'];
             editUserFormFields.forEach(field => {
                 document.getElementById(field).addEventListener('input', updateEditProfilePreview);
-            });
+            }); */
 
             // When clicking on map, update lat/lng in add user form
             map.on('click', function(e) {
@@ -2350,23 +2301,23 @@
             });
 
             // Reset modals when closed
-            document.getElementById('addUserModal').addEventListener('hidden.bs.modal', function() {
+            /* document.getElementById('addUserModal').addEventListener('hidden.bs.modal', function() {
                 document.getElementById('addUserForm').reset();
                 document.getElementById('newUploadPreview').innerHTML = '';
                 updateNewProfilePreview();
-            });
+            }); */
             
-            document.getElementById('editUserModal').addEventListener('hidden.bs.modal', function() {
+            /* document.getElementById('editUserModal').addEventListener('hidden.bs.modal', function() {
                 document.getElementById('editUploadPreview').innerHTML = '';
                 // Remove preview marker
                 if (previewMarker) {
                     map.removeLayer(previewMarker);
                     previewMarker = null;
                 }
-            });
+            }); */
 
             // Initialize new user form preview
-            updateNewProfilePreview();
+            // updateNewProfilePreview();
         });
     </script>
 </body>
