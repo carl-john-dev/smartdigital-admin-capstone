@@ -1233,7 +1233,7 @@
     </div> -->
 
     <!-- Delete Confirmation Modal -->
-    <div class="modal fade user-modal" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade user-modal" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1250,7 +1250,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Dark Mode Toggle Button -->
     <button class="dark-mode-toggle" id="darkModeToggle">
@@ -1461,10 +1461,6 @@
                                     onclick="focusUserOnMap('${business.id}')">
                                     <i class="fas fa-map-marker-alt"></i> View
                                 </button>
-                                <button class="btn btn-sm btn-danger w-100"
-                                    onclick="showDeleteConfirmation('${business.id}', '${business.ownerId}')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
                             </div>
                         </div>
                     `);
@@ -1487,10 +1483,6 @@
 
                     card.innerHTML = `
                         <div class="user-card-actions">
-                            <button class="user-action-btn delete-user-btn"
-                                onclick="deleteBusiness('${business.id}', '${business.ownerId}')">
-                                <i class="fas fa-times"></i>
-                            </button>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-start">
@@ -1754,7 +1746,7 @@
             }
 
             // Show delete confirmation
-            window.showDeleteConfirmation = function(businessId) {
+            /* window.showDeleteConfirmation = function(businessId) {
                 event.stopPropagation();
 
                 const business = users.find(u => u.id === businessId);
@@ -1767,7 +1759,7 @@
                     );
                     deleteModal.show();
                 }
-            };
+            }; */
 
             // Function to toggle user markers visibility
             function toggleUserMarkers() {
@@ -2159,7 +2151,7 @@
             }
             
             // Confirm delete button
-            document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
+            /* document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
                 if (!userToDelete) return;
 
                 try {
@@ -2205,7 +2197,7 @@
                     console.error("Delete failed:", err);
                     showNotification("Failed to delete business.", "danger");
                 }
-            });
+            }); */
             
             // Show notification
             function showNotification(message, type) {
