@@ -533,16 +533,18 @@
             <h3><i class="fas fa-tachometer-alt"></i> CBOC</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="index.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+            <li><a href="admin_profile.php"><i class="fas fa-id-card"></i> <span>Profile</span></a></li>
+            <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+            <li><a href="signup.php"><i class="fas fa-user-plus"></i> <span>Create Account</span></a></li>
             <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
-            <li><a href="location.php"><i class="fas fa-map-marked-alt"></i> <span>Maps</span></a></li>
-            <li><a href="request.php" class=""><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
+            <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
             <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
             <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
             <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
-            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>  
-            <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
     </div>
 
@@ -691,99 +693,162 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript for Request Management -->
-    <script>
+    <script type="module">
+        import { db } from "./Firebase/firebase_conn.js";
+        import {
+            collection,
+            query,
+            where,
+            getDocs,
+            updateDoc,
+            deleteDoc,
+            doc,
+            onSnapshot
+        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+        async function testFirestore() {
+            try {
+                const snapshot = await getDocs(collection(db, "users"));
+                console.log("Number of documents in 'users':", snapshot.size);
+                snapshot.forEach(docSnap => {
+                    console.log(docSnap.id, docSnap.data());
+                });
+            } catch (error) {
+                console.error("Firestore error:", error);
+            }
+        }
+
+        testFirestore();
+
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize requests data
-            let requests = JSON.parse(localStorage.getItem('cbocRequests')) || [
-                {
-                    id: 1,
-                    name: 'Lucia Merry',
-                    type: 'Membership Application',
-                    email: 'mistprod@gmail.com',
-                    operation: 'Create',
-                    status: 'Pending',
-                    description: 'New membership application for THE MIST COP.'
-                },
-                {
-                    id: 2,
-                    name: 'Sabrina Tan',
-                    type: 'Event Registration',
-                    email: 'sabrina@realtyvale.com',
-                    operation: 'Process',
-                    status: 'Approved',
-                    description: 'Registration for annual business conference.'
-                },
-                {
-                    id: 3,
-                    name: 'Andy Sewer',
-                    type: 'Payment Issue',
-                    email: 'andy@fawcettor.com',
-                    operation: 'Review',
-                    status: 'Pending',
-                    description: 'Invoice payment discrepancy inquiry.'
-                },
-                {
-                    id: 4,
-                    name: 'Shanon Matilda',
-                    type: 'Account Update',
-                    email: 'shanon@goldenfruit.com',
-                    operation: 'Update',
-                    status: 'Completed',
-                    description: 'Update company information and contact details.'
-                },
-                {
-                    id: 5,
-                    name: 'Ethan Cravejal',
-                    type: 'Technical Support',
-                    email: 'ethan@newcastle.com',
-                    operation: 'Review',
-                    status: 'Rejected',
-                    description: 'Website access issues and password reset.'
-                }
-            ];
+            // let requests = JSON.parse(localStorage.getItem('cbocRequests')) || [
+            //     {
+            //         id: 1,
+            //         name: 'Lucia Merry',
+            //         type: 'Membership Application',
+            //         email: 'mistprod@gmail.com',
+            //         operation: 'Create',
+            //         status: 'Pending',
+            //         description: 'New membership application for THE MIST COP.'
+            //     },
+            //     {
+            //         id: 2,
+            //         name: 'Sabrina Tan',
+            //         type: 'Event Registration',
+            //         email: 'sabrina@realtyvale.com',
+            //         operation: 'Process',
+            //         status: 'Approved',
+            //         description: 'Registration for annual business conference.'
+            //     },
+            //     {
+            //         id: 3,
+            //         name: 'Andy Sewer',
+            //         type: 'Payment Issue',
+            //         email: 'andy@fawcettor.com',
+            //         operation: 'Review',
+            //         status: 'Pending',
+            //         description: 'Invoice payment discrepancy inquiry.'
+            //     },
+            //     {
+            //         id: 4,
+            //         name: 'Shanon Matilda',
+            //         type: 'Account Update',
+            //         email: 'shanon@goldenfruit.com',
+            //         operation: 'Update',
+            //         status: 'Completed',
+            //         description: 'Update company information and contact details.'
+            //     },
+            //     {
+            //         id: 5,
+            //         name: 'Ethan Cravejal',
+            //         type: 'Technical Support',
+            //         email: 'ethan@newcastle.com',
+            //         operation: 'Review',
+            //         status: 'Rejected',
+            //         description: 'Website access issues and password reset.'
+            //     }
+            // ];
 
             // Render requests table
             function renderRequests() {
                 const tableBody = document.getElementById('requestsTableBody');
                 tableBody.innerHTML = '';
 
-                requests.forEach(request => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${request.name}</td>
-                        <td>${request.type}</td>
-                        <td>${request.email}</td>
-                        <td>${request.operation}</td>
-                        <td><span class="request-status status-${request.status.toLowerCase()}">${request.status}</span></td>
-                        <td>
-                            <button class="request-action-btn edit" data-id="${request.id}" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="request-action-btn delete" data-id="${request.id}" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
+                const q = query(
+                    collection(db, "users"),
+                    where("approved", "==", false)
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    tableBody.innerHTML = '';
+
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+                        const id = docSnap.id;
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${data.username ?? '-'}</td>
+                            <td>Membership Application</td>
+                            <td>${data.email ?? '-'}</td>
+                            <td>Create</td>
+                            <td><span class="request-status status-pending">Pending</span></td>
+                            <td>
+                                <button class="request-action-btn edit" data-id="${id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="request-action-btn accept" data-id="${id}">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="request-action-btn delete" data-id="${id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        `;
+
+                        tableBody.appendChild(row);
+                    });
+
+                    attachRequestHandlers();
+                    updateStats();
+                });
+            }
+
+            function attachRequestHandlers() {
+                document.querySelectorAll('.request-action-btn.edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.dataset.id;
+                        editRequest(id); // keep your existing logic
+                    });
                 });
 
-                // Add event listeners to action buttons
-                document.querySelectorAll('.request-action-btn.edit').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const requestId = parseInt(this.getAttribute('data-id'));
-                        editRequest(requestId);
+                document.querySelectorAll('.request-action-btn.accept').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+
+                        await updateDoc(
+                            doc(db, "users", id),
+                            { approved: true }
+                        );
+
+                        renderRequests(); // refresh table
                     });
                 });
 
                 document.querySelectorAll('.request-action-btn.delete').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const requestId = parseInt(this.getAttribute('data-id'));
-                        deleteRequest(requestId);
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+
+                        if (!confirm("Delete this request?")) return;
+
+                        await deleteDoc(
+                            doc(db, "users", id)
+                        );
+
+                        renderRequests(); // refresh table
                     });
                 });
-
-                // Update stats
-                updateStats();
             }
 
             // Update statistics
@@ -799,7 +864,7 @@
                 document.querySelectorAll('.stat-number')[3].textContent = rejected;
             }
 
-            // Edit request
+            // // Edit request
             function editRequest(id) {
                 const request = requests.find(r => r.id === id);
                 if (request) {
@@ -816,14 +881,14 @@
                 }
             }
 
-            // Delete request
-            function deleteRequest(id) {
-                if (confirm('Are you sure you want to delete this request?')) {
-                    requests = requests.filter(r => r.id !== id);
-                    localStorage.setItem('cbocRequests', JSON.stringify(requests));
-                    renderRequests();
-                }
-            }
+            // // Delete request
+            // function deleteRequest(id) {
+            //     if (confirm('Are you sure you want to delete this request?')) {
+            //         requests = requests.filter(r => r.id !== id);
+            //         localStorage.setItem('cbocRequests', JSON.stringify(requests));
+            //         renderRequests();
+            //     }
+            // }
 
             // Save request (Create/Update)
             document.getElementById('saveRequest').addEventListener('click', function() {

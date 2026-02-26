@@ -8,14 +8,17 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="icon" type="icon" href="rsvp.png">
     <!-- Link to your existing dashboard CSS - VERY IMPORTANT -->
     <link rel="stylesheet" href="style.css">
     <!-- RSVP Tracker Custom CSS (minimal) -->
     <style>
         /* Use the same CSS variables from your dashboard */
         :root {
-            --sidebar-width: 250px;
+            --sidebar-width: 80px;
+            --sidebar-expanded-width: 250px;
+            --sidebar-bg: #1a1f36;
+            --sidebar-color: #a0a7c2;
+            --sidebar-hover-bg: rgba(255,255,255,0.1);
             --primary-color: #667eea;
             --secondary-color: #764ba2;
             --success-color: #28a745;
@@ -312,17 +315,18 @@
             <h3><i class="fas fa-tachometer-alt"></i> CBOC</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="index.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+            <li><a href="admin_profile.php"><i class="fas fa-id-card"></i> <span>Profile</span></a></li>
+            <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+            <li><a href="signup.php"><i class="fas fa-user-plus"></i> <span>Create Account</span></a></li>
             <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="archive.php"><i class="fas fa-archive"></i> <span>Archive</span></a></li>
+            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
             <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
             <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
-            <!-- Active RSVP Tracker Link -->
-            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
-            <li><a href="login.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
     </div>
 

@@ -1,0 +1,14 @@
+# Node dependencies
+node_modules/
+
+# Firebase Admin secret
+serviceAccountKey.json
+firebase_credentials.json
+
+# Environment files
+.env
+
+# Logs
+npm-debug.log*
+
+setAdmin.js

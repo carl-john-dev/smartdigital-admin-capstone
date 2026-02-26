@@ -1,3 +1,11 @@
+<?php
+    $uid = $_GET['uid'] ?? null;
+
+    if (!$uid) {
+        http_response_code(400);
+        die("Invalid portfolio link.");
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -933,44 +941,26 @@
             color: white;
             transform: translateY(-2px);
         }
+
+        .pdf-export {
+            transform: none !important;
+            position: static !important;
+            overflow: visible !important;
+            height: auto !important;
+            max-height: none !important;
+            box-shadow: none !important;
+        }
+        
+        @media print {
+            .control-panel {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h3><i class="fas fa-tachometer-alt"></i> Dashboard</h3>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="admin_profile.php"><i class="fas fa-id-card"></i> <span>Profile</span></a></li>
-            <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="signup.php"><i class="fas fa-user-plus"></i> <span>Create Account</span></a></li>
-            <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
-            <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
-            <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
-            <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
-            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
-            <li><a href="#" class="active"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
-            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
-            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
-        </ul>
-    </div>
-
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <h1>Digital Business Card & E-Portfolio</h1>
-            <div class="user-info">
-                <div class="user-avatar">AD</div>
-                <div>
-                    <div class="fw-bold">Admin User</div>
-                    <small class="text-muted">Administrator</small>
-                </div>
-            </div>
-        </div>
-
         <!-- NFC Tap Animation -->
         <div class="nfc-tap" id="nfcTap">
             <div class="nfc-tap-inner"></div>
@@ -979,37 +969,13 @@
         <div class="nfc-card-container">
             <!-- NFC Smart Card -->
             <div class="nfc-card" id="nfcCard">
-                <!-- NFC Waves Animation -->
-                <div class="nfc-waves"></div>
-                
-                <!-- NFC Chip -->
-                <div class="nfc-chip">
-                    <i class="fas fa-microchip"></i>
-                </div>
-                
-                <!-- NFC Status -->
-                <div class="nfc-status">
-                    <div class="status-dot"></div>
-                    <span>NFC Ready</span>
-                </div>
-                
-                <!-- QR Code -->
-                <div class="qr-code" id="qrCode">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://yourportfolio.com&format=svg" alt="QR Code">
-                </div>
-
                 <!-- Profile Header -->
                 <div class="profile-header">
-                    <div class="profile-avatar" id="userAvatar">
-                        CJ
-                    </div>
+                    <div class="profile-avatar" id="userAvatar"></div>
                     <div class="profile-info">
-                        <h1 id="userName">Carl John D. Anthony</h1>
-                        <div class="title" id="userTitle">Front-end Developer</div>
-                        <div class="company" id="userCompany">
-                            <i class="fas fa-building"></i>
-                            TechVision Inc.
-                        </div>
+                        <h1 id="userName"></h1>
+                        <div class="title" id="userTitle"></div>
+                        <div class="company" id="userCompany"></div>
                     </div>
                 </div>
 
@@ -1036,31 +1002,26 @@
                 <!-- Contact Information -->
                 <div class="contact-info">
                     <h4><i class="fas fa-id-card me-2"></i>Contact Information</h4>
-                    <div class="contact-item" id="contactEmail">
-                        <div class="contact-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
                         <div>
                             <div class="fw-bold">Email</div>
-                            <div class="text-muted">tc.carljohn.anthony@cvsu.edu.ph</div>
+                            <div class="text-muted" id="emailText"></div>
                         </div>
                     </div>
-                    <div class="contact-item" id="contactPhone">
-                        <div class="contact-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-phone"></i></div>
                         <div>
                             <div class="fw-bold">Phone</div>
-                            <div class="text-muted">09485808806</div>
+                            <div class="text-muted" id="phoneText"></div>
                         </div>
                     </div>
-                    <div class="contact-item" id="contactLocation">
-                        <div class="contact-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
                         <div>
                             <div class="fw-bold">Location</div>
-                            <div class="text-muted">Kawit, Cavite</div>
+                            <div class="text-muted" id="locationText"></div>
+                            <div class="text-muted small" id="addressText"></div>
                         </div>
                     </div>
                 </div>
@@ -1133,125 +1094,11 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Social Links -->
-                <div class="social-links">
-                    <a href="#" class="social-link" id="socialLinkedin">
-                        <i class="fab fa-linkedin"></i>
-                    </a>
-                    <a href="#" class="social-link" id="socialGithub">
-                        <i class="fab fa-github"></i>
-                    </a>
-                    <a href="#" class="social-link" id="socialTwitter">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" class="social-link" id="socialDribbble">
-                        <i class="fab fa-dribbble"></i>
-                    </a>
-                    <a href="#" class="social-link" id="socialBehance">
-                        <i class="fab fa-behance"></i>
-                    </a>
-                </div>
             </div>
 
             <!-- Control Panel -->
-            <div class="control-panel">
-                <h4><i class="fas fa-cog me-2"></i>E-Portfolio Controls</h4>
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="editName" value="Alex Morgan">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Job Title</label>
-                            <input type="text" class="form-control" id="editTitle" value="Senior Full Stack Developer">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Company</label>
-                            <input type="text" class="form-control" id="editCompany" value="TechVision Inc.">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="editEmail" value="alex.morgan@techvision.com">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="editPhone" value="+1 (555) 123-4567">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Avatar Initials</label>
-                            <input type="text" class="form-control" id="editAvatar" value="AM" maxlength="2">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Card Color Theme</label>
-                        <div class="color-options-container">
-                            <div class="card-color-option theme-default active" data-theme="default" data-color1="#1a1f36" data-color2="#2d3748">
-                                <span class="color-label">Default</span>
-                            </div>
-                            <div class="card-color-option theme-dark" data-theme="dark" data-color1="#0f172a" data-color2="#1e293b">
-                                <span class="color-label">Dark</span>
-                            </div>
-                            <div class="card-color-option theme-blue" data-theme="blue" data-color1="#1e3a8a" data-color2="#3b82f6">
-                                <span class="color-label">Blue</span>
-                            </div>
-                            <div class="card-color-option theme-green" data-theme="green" data-color1="#064e3b" data-color2="#10b981">
-                                <span class="color-label">Green</span>
-                            </div>
-                            <div class="card-color-option theme-orange" data-theme="orange" data-color1="#7c2d12" data-color2="#ea580c">
-                                <span class="color-label">Orange</span>
-                            </div>
-                            <div class="card-color-option theme-purple" data-theme="purple" data-color1="#4c1d95" data-color2="#8b5cf6">
-                                <span class="color-label">Purple</span>
-                            </div>
-                            <div class="card-color-option theme-red" data-theme="red" data-color1="#7f1d1d" data-color2="#ef4444">
-                                <span class="color-label">Red</span>
-                            </div>
-                            <div class="card-color-option theme-teal" data-theme="teal" data-color1="#134e4a" data-color2="#14b8a6">
-                                <span class="color-label">Teal</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">QR Code Data</label>
-                        <input type="text" class="form-control" id="editQRCode" value="https://yourportfolio.com" placeholder="URL for QR Code">
-                    </div>
-                </div>
-
-                <!-- Custom Color Picker -->
-                <div class="custom-color-picker">
-                    <label class="form-label">Custom Color Theme</label>
-                    <div class="custom-color-inputs">
-                        <div class="color-input-group">
-                            <input type="color" class="form-control" id="customColor1" value="#1a1f36">
-                            <small>Top Color</small>
-                        </div>
-                        <div class="color-input-group">
-                            <input type="color" class="form-control" id="customColor2" value="#2d3748">
-                            <small>Bottom Color</small>
-                        </div>
-                    </div>
-                    <div class="color-preview" id="customColorPreview">
-                        Custom Preview
-                    </div>
-                    <button class="btn btn-sm btn-primary mt-2" onclick="applyCustomColor()">
-                        <i class="fas fa-palette me-1"></i> Apply Custom Color
-                    </button>
-                </div>
-                
+            <div class="control-panel">                
                 <div class="d-grid gap-2 mt-3">
-                    <button class="btn btn-custom" onclick="updatePortfolio()">
-                        <i class="fas fa-sync me-2"></i>Update Portfolio
-                    </button>
-                    <button class="btn btn-outline-custom" onclick="simulateNFCTap()">
-                        <i class="fas fa-tap me-2"></i>Simulate NFC Tap
-                    </button>
                     <button class="btn btn-outline-custom" onclick="downloadCard()">
                         <i class="fas fa-download me-2"></i>Download as PDF
                     </button>
@@ -1268,341 +1115,88 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize animations
-            const elements = document.querySelectorAll('.profile-header, .stats-grid, .contact-info, .portfolio-gallery, .skills-section, .social-links');
-            elements.forEach((el, index) => {
-                el.style.animationDelay = `${index * 0.1}s`;
-                el.classList.add('animate-fade-in-up');
-            });
+    <script type="module">
+        import { db } from "./Firebase/firebase_conn.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-            // Initialize custom color picker
-            const customColor1 = document.getElementById('customColor1');
-            const customColor2 = document.getElementById('customColor2');
-            const customColorPreview = document.getElementById('customColorPreview');
+        const uid = "<?php echo htmlspecialchars($uid); ?>";
 
-            function updateCustomColorPreview() {
-                customColorPreview.style.setProperty('--preview-color-1', customColor1.value);
-                customColorPreview.style.setProperty('--preview-color-2', customColor2.value);
-                customColorPreview.style.background = `linear-gradient(135deg, ${customColor1.value}, ${customColor2.value})`;
+        async function loadPortfolio() {
+            const ref = doc(db, "users", uid);
+            const snap = await getDoc(ref);
+
+            if (!snap.exists()) {
+                document.body.innerHTML = "<h2>User not found</h2>";
+                return;
             }
 
-            customColor1.addEventListener('input', updateCustomColorPreview);
-            customColor2.addEventListener('input', updateCustomColorPreview);
-            updateCustomColorPreview();
+            const data = snap.data();
 
-            // Apply custom color function
-            window.applyCustomColor = function() {
-                const color1 = customColor1.value;
-                const color2 = customColor2.value;
-                
-                // Remove active class from all theme options
-                document.querySelectorAll('.card-color-option').forEach(option => {
-                    option.classList.remove('active');
-                });
-                
-                // Apply custom color to NFC card
-                const nfcCard = document.getElementById('nfcCard');
-                nfcCard.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
-                
-                showNotification('Custom color applied successfully!', 'success');
-            };
-
-            // Simulate NFC functionality
-            window.simulateNFCTap = function() {
-                const nfcTap = document.getElementById('nfcTap');
-                const nfcCard = document.getElementById('nfcCard');
-                
-                // Show tap animation
-                nfcTap.classList.add('active');
-                nfcCard.style.transform = 'scale(0.98)';
-                
-                // Add glow effect
-                nfcCard.style.boxShadow = '0 0 30px rgba(67, 97, 238, 0.5)';
-                
-                // Simulate data transfer
-                setTimeout(() => {
-                    // Add a subtle shake effect
-                    nfcCard.style.animation = 'shake 0.5s';
-                    
-                    // Show success message
-                    showNotification('Portfolio data transferred successfully!', 'success');
-                    
-                    // Reset animations
-                    setTimeout(() => {
-                        nfcCard.style.animation = '';
-                        nfcCard.style.transform = '';
-                        nfcCard.style.boxShadow = '';
-                    }, 500);
-                }, 1000);
-                
-                // Hide tap animation
-                setTimeout(() => {
-                    nfcTap.classList.remove('active');
-                }, 1500);
-            };
-
-            // Update portfolio information
-            window.updatePortfolio = function() {
-                // Get values from form
-                const name = document.getElementById('editName').value;
-                const title = document.getElementById('editTitle').value;
-                const company = document.getElementById('editCompany').value;
-                const email = document.getElementById('editEmail').value;
-                const phone = document.getElementById('editPhone').value;
-                const avatar = document.getElementById('editAvatar').value;
-                const qrData = document.getElementById('editQRCode').value;
-                
-                // Update card
-                document.getElementById('userName').textContent = name;
-                document.getElementById('userTitle').textContent = title;
-                document.getElementById('userCompany').innerHTML = `
-                    <i class="fas fa-building"></i>
-                    ${company}
-                `;
-                document.getElementById('userAvatar').textContent = avatar;
-                
-                // Update contact info
-                document.querySelector('#contactEmail .text-muted').textContent = email;
-                document.querySelector('#contactPhone .text-muted').textContent = phone;
-                
-                // Update QR code
-                if (qrData) {
-                    document.getElementById('qrCode').innerHTML = `
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}&format=svg" alt="QR Code">
-                    `;
-                }
-                
-                // Show success message
-                showNotification('Portfolio updated successfully!', 'success');
-                
-                // Simulate NFC update
-                setTimeout(() => {
-                    showNotification('NFC card data synchronized', 'info');
-                }, 500);
-            };
-
-            // Download card as PDF (simulated)
-            window.downloadCard = function() {
-                showNotification('Preparing PDF download...', 'info');
-                setTimeout(() => {
-                    showNotification('Portfolio downloaded as PDF!', 'success');
-                }, 1500);
-            };
-
-            // Card color theme selection
-            document.querySelectorAll('.card-color-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    // Remove active class from all options
-                    document.querySelectorAll('.card-color-option').forEach(opt => {
-                        opt.classList.remove('active');
-                    });
-                    
-                    // Add active class to clicked option
-                    this.classList.add('active');
-                    
-                    // Apply theme
-                    const theme = this.dataset.theme;
-                    const color1 = this.dataset.color1;
-                    const color2 = this.dataset.color2;
-                    const nfcCard = document.getElementById('nfcCard');
-                    
-                    // Update custom color inputs to match selected theme
-                    if (color1 && color2) {
-                        document.getElementById('customColor1').value = color1;
-                        document.getElementById('customColor2').value = color2;
-                        updateCustomColorPreview();
-                    }
-                    
-                    // Apply the gradient
-                    nfcCard.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
-                    
-                    showNotification(`Card theme changed to ${theme}`, 'info');
-                });
-            });
-
-            // QR code click handler
-            document.getElementById('qrCode').addEventListener('click', function() {
-                const qrData = document.getElementById('editQRCode').value;
-                showNotification('QR Code scanned! Opening portfolio...', 'info');
-                setTimeout(() => {
-                    if (qrData && qrData.startsWith('http')) {
-                        window.open(qrData, '_blank');
-                    }
-                }, 1000);
-            });
-            
-            // Social link handlers
-            document.querySelectorAll('.social-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const platform = this.id.replace('social', '').toLowerCase();
-                    const platforms = {
-                        'linkedin': 'LinkedIn',
-                        'github': 'GitHub',
-                        'twitter': 'Twitter',
-                        'dribbble': 'Dribbble',
-                        'behance': 'Behance'
-                    };
-                    showNotification(`Opening ${platforms[platform] || platform} profile...`, 'info');
-                });
-            });
-
-            // Add shake animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes shake {
-                    0%, 100% { transform: translateX(0); }
-                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                    20%, 40%, 60%, 80% { transform: translateX(5px); }
-                }
-            `;
-            document.head.appendChild(style);
-
-            // Show notification
-            function showNotification(message, type) {
-                // Create notification element
-                const notification = document.createElement('div');
-                notification.className = `alert alert-${type} position-fixed`;
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 1000;
-                    min-width: 300px;
-                    animation: slideIn 0.3s ease;
-                    background: ${type === 'success' ? '#10b981' : type === 'info' ? '#3b82f6' : '#ef4444'};
-                    color: white;
-                    border: none;
-                `;
-                notification.innerHTML = `
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
-                    ${message}
-                `;
-                
-                // Add to body
-                document.body.appendChild(notification);
-                
-                // Remove after 3 seconds
-                setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => {
-                        document.body.removeChild(notification);
-                    }, 300);
-                }, 3000);
+            if (!data.approved) {
+                document.body.innerHTML = "<h2>Portfolio not approved</h2>";
+                return;
             }
 
-            // Add CSS animations for notifications
-            const notificationStyle = document.createElement('style');
-            notificationStyle.textContent = `
-                @keyframes slideIn {
-                    from {
-                        transform: translateX(100%);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                }
-                
-                @keyframes slideOut {
-                    from {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                    to {
-                        transform: translateX(100%);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(notificationStyle);
+            // Populate UI
+            document.getElementById("userName").textContent = data.name;
+            document.getElementById("userTitle").textContent = data.professionalTitle;
+            document.getElementById("userCompany").innerHTML =
+                `<i class="fas fa-building"></i> ${data.businessName}`;
 
-            // NFC simulation for mobile devices
-            if ('NDEFReader' in window) {
-                // Web NFC API is available
-                document.querySelector('.nfc-status').innerHTML = `
-                    <div class="status-dot" style="background: #10b981;"></div>
-                    <span>Web NFC Ready</span>
-                `;
-                
-                async function startNFCScan() {
-                    try {
-                        const ndef = new NDEFReader();
-                        await ndef.scan();
-                        
-                        ndef.addEventListener("readingerror", () => {
-                            showNotification("NFC read error", "danger");
-                        });
-                        
-                        ndef.addEventListener("reading", ({ message, serialNumber }) => {
-                            simulateNFCTap();
-                            showNotification(`Read NFC tag: ${serialNumber}`, "success");
-                        });
-                    } catch (error) {
-                        console.error("NFC error:", error);
-                    }
-                }
-                
-                // Start NFC scanning if supported
-                startNFCScan();
-            }
+            document.getElementById("emailText").textContent = data.email;
+            document.getElementById("phoneText").textContent = data.phone;
+            document.getElementById("locationText").textContent = data.location;
+            document.getElementById("addressText").textContent = data.address;
 
-            // Dark Mode Toggle
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const darkModeIcon = document.getElementById('darkModeIcon');
-            const body = document.body;
-            
-            // Check for saved dark mode preference
-            const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
-            
-            // Apply dark mode if previously enabled
-            if (isDarkMode) {
-                body.classList.add('dark-mode');
-                darkModeIcon.classList.remove('fa-moon');
-                darkModeIcon.classList.add('fa-sun');
-            }
-            
-            // Toggle dark mode
-            darkModeToggle.addEventListener('click', function() {
-                body.classList.toggle('dark-mode');
-                
-                // Update icon
-                if (body.classList.contains('dark-mode')) {
-                    darkModeIcon.classList.remove('fa-moon');
-                    darkModeIcon.classList.add('fa-sun');
-                    localStorage.setItem('darkMode', 'enabled');
-                } else {
-                    darkModeIcon.classList.remove('fa-sun');
-                    darkModeIcon.classList.add('fa-moon');
-                    localStorage.setItem('darkMode', 'disabled');
-                }
-            });
+            // Avatar initials
+            const initials = data.name
+                .split(" ")
+                .map(n => n[0])
+                .join("")
+                .substring(0, 2)
+                .toUpperCase();
 
-            // Add hover effect to card
-            const nfcCard = document.getElementById('nfcCard');
-            nfcCard.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) rotateX(2deg)';
-            });
-            
-            nfcCard.addEventListener('mouseleave', function() {
-                this.style.transform = '';
-            });
+            document.getElementById("userAvatar").textContent = initials;
 
-            // Initialize skill bars animation
-            setTimeout(() => {
-                const skillBars = document.querySelectorAll('.skill-progress');
-                skillBars.forEach(bar => {
-                    const width = bar.style.width;
-                    bar.style.width = '0';
-                    setTimeout(() => {
-                        bar.style.width = width;
-                    }, 500);
-                });
-            }, 1000);
-        });
+            // QR code auto-update
+            document.getElementById("qrCode").innerHTML =
+                `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}">`;
+        }
+
+        loadPortfolio();
     </script>
+
+    <script>
+        function downloadCard() {
+            const card = document.getElementById("nfcCard");
+            const userName = document.getElementById("userName");
+
+            // FORCE browser paint
+            userName.style.display = "none";
+            userName.offsetHeight; // <-- forces reflow
+            userName.style.display = "";
+
+            card.classList.add("pdf-export");
+
+            const options = {
+                margin:       0,
+                filename:     `${document.getElementById('userName').innerText}'s Portfolio.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  {
+                    scale: 2,          // Higher = sharper text
+                    scrollX: 0,
+                    scrollY: 0
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+            };
+
+            html2pdf().set(options).from(card).save().then(() => {card.classList.remove("pdf-export");});;
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>

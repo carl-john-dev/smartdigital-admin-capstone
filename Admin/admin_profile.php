@@ -8,6 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="icon" type="icon" href="calendar.png"/>
     <style>
         :root {
             --primary: #4361ee;
@@ -70,7 +73,7 @@
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        .sidebar.expanded {
+        .sidebar:hover {
             width: var(--sidebar-expanded-width);
         }
 
@@ -82,12 +85,9 @@
             opacity: 0;
             transform: translateX(-20px);
             transition: all 0.4s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
-        .sidebar.expanded .sidebar-header {
+        .sidebar:hover .sidebar-header {
             opacity: 1;
             transform: translateX(0);
             transition-delay: 0.1s;
@@ -96,29 +96,6 @@
         .sidebar-header h3 {
             color: white;
             font-size: 1.5rem;
-            margin: 0;
-        }
-
-        /* Sidebar Toggle Button */
-        .sidebar-toggle-btn {
-            background: none;
-            border: none;
-            color: var(--sidebar-color);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            opacity: 0;
-        }
-
-        .sidebar.expanded .sidebar-toggle-btn {
-            opacity: 1;
-        }
-
-        .sidebar-toggle-btn:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
         }
 
         .sidebar-menu {
@@ -168,21 +145,29 @@
             transition: all 0.4s ease;
         }
 
-        .sidebar.expanded .sidebar-menu span {
+        .sidebar:hover .sidebar-menu span {
             opacity: 1;
             transform: translateX(0);
         }
+
+        .sidebar:hover ~ .main-content {
+            margin-left: var(--sidebar-expanded-width);
+        }
+
+        /* Add staggered animation for menu items */
+        .sidebar-menu li:nth-child(1) span { transition-delay: 0.05s; }
+        .sidebar-menu li:nth-child(2) span { transition-delay: 0.1s; }
+        .sidebar-menu li:nth-child(3) span { transition-delay: 0.15s; }
+        .sidebar-menu li:nth-child(4) span { transition-delay: 0.2s; }
+        .sidebar-menu li:nth-child(5) span { transition-delay: 0.25s; }
+        .sidebar-menu li:nth-child(6) span { transition-delay: 0.3s; }
+        .sidebar-menu li:nth-child(7) span { transition-delay: 0.35s; }
 
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-width);
             padding: 20px;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            min-height: 100vh;
-        }
-
-        .sidebar.expanded ~ .main-content {
-            margin-left: var(--sidebar-expanded-width);
         }
 
         /* Top Bar */
@@ -572,6 +557,56 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar:hover {
+                width: 70px;
+            }
+            
+            .sidebar:hover ~ .main-content {
+                margin-left: 70px;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .sidebar-header, .sidebar-menu span {
+                display: none;
+            }
+            
+            .sidebar-menu i {
+                margin-right: 0;
+            }
+            
+            .calendar-day {
+                min-height: 80px;
+            }
+            
+            .event-item {
+                font-size: 0.7rem;
+                padding: 1px 3px;
+            }
+            
+            .event-card-meta {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .ph-time-clock {
+                font-size: 0.85rem;
+                padding: 4px 8px;
+            }
+            
+            #phTime {
+                font-size: 1rem;
+                margin: 0 5px;
+            }
+        }
+
+        @media (max-width: 768px) {
             .mobile-menu-toggle {
                 display: flex;
                 align-items: center;
@@ -639,21 +674,23 @@
     </button>
 
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar">
         <div class="sidebar-header">
-            <h3><i class="fas fa-tachometer-alt"></i> CBOC</h3>
-            <button class="sidebar-toggle-btn" id="sidebarToggleBtn">
-                <i class="fas fa-chevron-left"></i>
-            </button>
+            <h3><i class="fas fa-tachometer-alt"></i> Dashboard</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="index.php" id="dashboardLink"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="members.php" id="membersLink"><i class="fas fa-users"></i> <span>Members</span></a></li>
-            <li><a href="invoice.php" id="invoiceLink"><i class="fas fa-file-invoice"></i> <span>Invoices</span></a></li>
-            <li><a href="calendar.php" id="calendarLink"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
-            <li><a href="maps.php" id="mapsLink"><i class="fas fa-map-marked-alt"></i> <span>Maps</span></a></li>
-            <li><a href="request.php" id="requestLink"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="login.php" id="logoutLink"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-id-card"></i> <span>Profile</span></a></li>
+            <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+            <li><a href="signup.php"><i class="fas fa-user-plus"></i> <span>Create Account</span></a></li>
+            <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
+            <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
+            <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
+            <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
+            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
+            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
+            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
     </div>
 
@@ -934,22 +971,6 @@
                     sidebar.classList.toggle('mobile-open');
                 });
             }
-            
-            // Close mobile sidebar when clicking on a link
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('mobile-open');
-                    }
-                    
-                    // Simulate navigation (in real app, this would be actual navigation)
-                    const pageName = this.getAttribute('href').replace('.php', '');
-                    if (pageName !== 'login') {
-                        alert(`Navigating to ${pageName} page...\n\nIn a real application, this would load the corresponding page.`);
-                        setActiveLink();
-                    }
-                });
-            });
             
             // Close mobile sidebar when clicking outside
             document.addEventListener('click', function(e) {
