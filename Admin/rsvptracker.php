@@ -11,6 +11,7 @@
     <!-- Link to your existing dashboard CSS - VERY IMPORTANT -->
     <link rel="stylesheet" href="style.css">
     <!-- RSVP Tracker Custom CSS (minimal) -->
+    <link rel="icon" type="icon" href="rsvp.png">
     <style>
         /* Use the same CSS variables from your dashboard */
         :root {
@@ -315,9 +316,7 @@
             <h3><i class="fas fa-tachometer-alt"></i> CBOC</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="admin_profile.php"><i class="fas fa-id-card"></i> <span>Profile</span></a></li>
             <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="signup.php"><i class="fas fa-user-plus"></i> <span>Create Account</span></a></li>
             <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>

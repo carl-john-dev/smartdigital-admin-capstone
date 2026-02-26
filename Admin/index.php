@@ -337,9 +337,9 @@
             height: 300px;
         }
 
-        /* Features Section */
+        /* Features Section Title */
         .features {
-            padding: 5rem 5%;
+            padding: 5rem 5% 2rem 5%;
             background: white;
             position: relative;
         }
@@ -356,310 +356,179 @@
         }
 
         .section-title p {
-            color: white;
+            color: #666;
             max-width: 600px;
             margin: 0 auto;
             font-size: 1.1rem;
         }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
+        /* ----- Slideshow Carousel ----- */
+        .carousel-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 5%;
             position: relative;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 450px;
             overflow: hidden;
-            border: 1px solid transparent;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .carousel-inner {
+            position: relative;
+            width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-card.announcements:hover {
-            border-color: var(--announcements);
-            box-shadow: 0 20px 40px rgba(155, 89, 182, 0.2);
-        }
-
-        .feature-card.messages:hover {
-            border-color: var(--messages);
-            box-shadow: 0 20px 40px rgba(26, 188, 156, 0.2);
-        }
-
-        .feature-card.aboutus:hover {
-            border-color: var(--aboutus);
-            box-shadow: 0 20px 40px rgba(230, 126, 34, 0.2);
-        }
-
-        .feature-card.portfolio:hover {
-            border-color: var(--portfolio);
-            box-shadow: 0 20px 40px rgba(142, 68, 173, 0.2);
-        }
-
-        .feature-card.qrcode:hover {
-            border-color: var(--qrcode);
-            box-shadow: 0 20px 40px rgba(22, 160, 133, 0.2);
-        }
-
-        .feature-card.analytics:hover {
-            border-color: var(--analytics);
-            box-shadow: 0 20px 40px rgba(211, 84, 0, 0.2);
-        }
-
-        .feature-card.settings:hover {
-            border-color: var(--settings);
-            box-shadow: 0 20px 40px rgba(127, 140, 141, 0.2);
-        }
-
-        .feature-card::before {
-            content: '';
+        .carousel-slide {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 5px;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            padding: 20px;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* card style matching original feature cards */
+        .carousel-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #eee;
+            transition: var(--transition);
+            overflow-y: auto;
+        }
+        .carousel-card::-webkit-scrollbar {
+            width: 4px;
+        }
+        .carousel-card::-webkit-scrollbar-thumb {
             background: var(--secondary);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
+            border-radius: 10px;
         }
 
-        .feature-card.announcements::before {
-            background: var(--announcements);
-        }
-
-        .feature-card.messages::before {
-            background: var(--messages);
-        }
-
-        .feature-card.aboutus::before {
-            background: var(--aboutus);
-        }
-
-        .feature-card.portfolio::before {
-            background: var(--portfolio);
-        }
-
-        .feature-card.qrcode::before {
-            background: var(--qrcode);
-        }
-
-        .feature-card.analytics::before {
-            background: var(--analytics);
-        }
-
-        .feature-card.settings::before {
-            background: var(--settings);
-        }
-
-        .feature-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .feature-icon {
+        .carousel-card .feature-icon {
             width: 70px;
             height: 70px;
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1.5rem;
             color: white;
-            font-size: 1.5rem;
-            transition: var(--transition);
-            overflow: hidden;
+            font-size: 2rem;
             flex-shrink: 0;
         }
 
-        .feature-icon.announcements {
-            background: linear-gradient(135deg, var(--announcements), #8e44ad);
-        }
-
-        .feature-icon.messages {
-            background: linear-gradient(135deg, var(--messages), #16a085);
-        }
-
-        .feature-icon.aboutus {
-            background: linear-gradient(135deg, var(--aboutus), #d35400);
-        }
-
-        .feature-icon.portfolio {
-            background: linear-gradient(135deg, var(--portfolio), #8e44ad);
-        }
-
-        .feature-icon.qrcode {
-            background: linear-gradient(135deg, var(--qrcode), #1abc9c);
-        }
-
-        .feature-icon.analytics {
-            background: linear-gradient(135deg, var(--analytics), #e67e22);
-        }
-
-        .feature-icon.settings {
-            background: linear-gradient(135deg, var(--settings), #95a5a6);
-        }
-
-        .feature-icon img {
-            width: 35px;
-            height: 35px;
-            filter: brightness(0) invert(1);
-            transition: var(--transition);
-        }
-
-        .feature-card:hover .feature-icon {
-            transform: rotateY(180deg) scale(1.1);
-        }
-
-        .feature-card:hover .feature-icon img {
-            transform: scale(1.2);
-        }
-
-        .feature-card h4 {
-            font-size: 1.5rem;
+        .carousel-card h4 {
+            font-size: 1.8rem;
             margin-bottom: 1rem;
-            color: var(--primary);
         }
 
-        .feature-card.announcements h4 {
-            color: var(--announcements);
-        }
-
-        .feature-card.messages h4 {
-            color: var(--messages);
-        }
-
-        .feature-card.aboutus h4 {
-            color: var(--aboutus);
-        }
-
-        .feature-card.portfolio h4 {
-            color: var(--portfolio);
-        }
-
-        .feature-card.qrcode h4 {
-            color: var(--qrcode);
-        }
-
-        .feature-card.analytics h4 {
-            color: var(--analytics);
-        }
-
-        .feature-card.settings h4 {
-            color: var(--settings);
-        }
-
-        .feature-card p {
+        .carousel-card p {
+            font-size: 1rem;
             color: #666;
-            margin-bottom: 1rem;
-            flex-grow: 1;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
         }
 
-        .feature-list {
+        .carousel-card .feature-list {
             list-style: none;
-            padding-left: 1.5rem;
-            margin-top: auto;
+            padding-left: 0;
+            margin-top: 0;
+            font-size: 1rem;
         }
 
-        .feature-list li {
-            margin-bottom: 0.5rem;
+        .carousel-card .feature-list li {
+            margin-bottom: 0.6rem;
             position: relative;
+            padding-left: 1.8rem;
             color: #555;
         }
 
-        .feature-list li:before {
+        .carousel-card .feature-list li:before {
             content: '✓';
             position: absolute;
-            left: -1.5rem;
+            left: 0;
             color: var(--secondary);
             font-weight: bold;
+            font-size: 1.1rem;
         }
 
-        .feature-card.announcements .feature-list li:before {
-            color: var(--announcements);
+        /* Carousel navigation */
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
-        .feature-card.messages .feature-list li:before {
-            color: var(--messages);
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ccc;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
         }
 
-        .feature-card.aboutus .feature-list li:before {
-            color: var(--aboutus);
+        .carousel-dot.active {
+            background: var(--secondary);
+            transform: scale(1.3);
         }
 
-        .feature-card.portfolio .feature-list li:before {
-            color: var(--portfolio);
+        .carousel-dot:hover {
+            background: var(--primary);
         }
 
-        .feature-card.qrcode .feature-list li:before {
-            color: var(--qrcode);
-        }
-
-        .feature-card.analytics .feature-list li:before {
-            color: var(--analytics);
-        }
-
-        .feature-card.settings .feature-list li:before {
-            color: var(--settings);
-        }
-
-        /* Stats Section */
-        .stats {
-            padding: 5rem 5%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            text-align: center;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .stat-item {
-            padding: 2rem;
-            position: relative;
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .stat-label {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .stat-item::after {
-            content: '';
+        .carousel-btn {
             position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 3px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             background: white;
-            transform: translateX(-50%);
-            transition: width 0.5s ease;
+            border: none;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--primary);
+            transition: var(--transition);
+            z-index: 10;
         }
 
-        .stat-item:hover::after {
-            width: 80%;
+        .carousel-btn:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .carousel-btn.prev {
+            left: 20px;
+        }
+
+        .carousel-btn.next {
+            right: 20px;
         }
 
         /* Footer */
@@ -732,6 +601,27 @@
             transform: rotate(15deg) scale(1.1);
         }
 
+        /* Hidden login link in footer - subtle */
+        .footer-login {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        .footer-login:hover {
+            opacity: 1;
+        }
+        .footer-login a {
+            color: #aaa;
+            text-decoration: none;
+            border-bottom: 1px dotted #555;
+        }
+        .footer-login a:hover {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+
         .copyright {
             text-align: center;
             padding-top: 2rem;
@@ -739,58 +629,39 @@
             color: #ccc;
         }
 
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
                 gap: 1rem;
                 padding: 1rem;
             }
-
             .nav-links {
                 flex-wrap: wrap;
                 justify-content: center;
                 gap: 1rem;
             }
-
             .hero h2 {
                 font-size: 2.5rem;
             }
-
             .cta-buttons {
                 flex-direction: column;
                 align-items: flex-start;
             }
-
             .btn {
                 width: 100%;
                 justify-content: center;
             }
-
-            .features-grid {
-                grid-template-columns: 1fr;
+            .carousel {
+                height: 500px;
             }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero h2 {
-                font-size: 2rem;
-            }
-            
-            .section-title h3 {
-                font-size: 2rem;
-            }
-            
-            .feature-card {
-                padding: 1.5rem;
+            .carousel-btn {
+                width: 40px;
+                height: 40px;
             }
         }
 
-        /* Loading Animation */
+        /* Loading animation */
         .loader {
             position: fixed;
             top: 0;
@@ -828,69 +699,39 @@
             to { opacity: 0; visibility: hidden; }
         }
 
-        /* Hover Effects */
-        .hover-effect {
-            transition: var(--transition);
-        }
-
-        .hover-effect:hover {
-            transform: translateY(-5px);
-        }
-
-        /* Pulse Animation for CTA */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .btn-pulse {
-            animation: pulse 2s infinite;
-        }
-
-        /* Scroll Indicator */
-        .scroll-indicator {
+        /* Scroll indicator */
+        #scrollTop {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 50px;
-            height: 50px;
-            background: var(--secondary);
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
             color: white;
+            border-radius: 50%;
             cursor: pointer;
             opacity: 0;
             visibility: hidden;
-            transition: var(--transition);
+            transition: all 0.3s ease;
             z-index: 1000;
+            text-decoration: none;
         }
-
-        .scroll-indicator.show {
+        
+        #scrollTop:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+        
+        #scrollTop.show {
             opacity: 1;
             visibility: visible;
         }
 
-        /* Feature Highlights */
-        .feature-highlight {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-highlight::after {
-            content: 'POPULAR';
-            position: absolute;
-            top: 10px;
-            right: -35px;
-            background: var(--portfolio);
-            color: white;
-            padding: 5px 40px;
-            transform: rotate(45deg);
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 1px;
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 </head>
@@ -914,15 +755,15 @@
         </div>
     </div>
 
-    <!-- Navigation -->
+    <!-- Navigation (Login button removed from here) -->
     <nav class="navbar">
         <div class="logo">
             <div class="logo-icon">
                 <img src="CBOC LOGO.jpg" alt="CBOC Logo">
             </div>
             <div class="logo-text">
-                <h1>Cavite Business Owners Club <span></span></h1>
-                <small>Trusted by business communities in Cavite and beyond</small>
+                <h1>CBOC <span></span></h1>
+                <small>Cavite Business Owners Club</small>
             </div>
         </div>
         <div class="nav-links">
@@ -930,7 +771,6 @@
             <a href="#features">Features</a>
             <a href="#about">About</a>
             <a href="#contact">Contact</a>
-            <a href="login.php" class="btn-secondary">Login</a>
         </div>
     </nav>
 
@@ -970,165 +810,228 @@
         </div>
     </section>
 
-    <!-- Features Section -->
+    <!-- Features Section Title -->
     <section class="features" id="features">
         <div class="section-title">
             <h3>Complete System Features</h3>
             <p>Discover all the powerful features that make our system the ultimate solution for business community management</p>
         </div>
-
-        <div class="features-grid">
-            <!-- Announcements Feature Card -->
-            <div class="feature-card hover-effect announcements">
-                <div class="feature-icon announcements">
-                    <i class="fas fa-bullhorn"></i>
-                </div>
-                <h4>Announcements</h4>
-                <p>Broadcast important updates, events, and news to all members instantly with our announcement system.</p>
-                <ul class="feature-list">
-                    <li>Real-time notifications</li>
-                    <li>Scheduled announcements</li>
-                    <li>Targeted messaging</li>
-                    <li>Push notifications</li>
-                </ul>
-            </div>
-
-            <!-- Messages Feature Card -->
-            <div class="feature-card hover-effect messages">
-                <div class="feature-icon messages">
-                    <i class="fas fa-comments"></i>
-                </div>
-                <h4>Messaging</h4>
-                <p>Connect with members through our secure messaging platform for seamless communication.</p>
-                <ul class="feature-list">
-                    <li>One-on-one chats</li>
-                    <li>Group conversations</li>
-                    <li>File sharing</li>
-                    <li>Message history</li>
-                </ul>
-            </div>
-
-            <!-- About Us Feature Card -->
-            <div class="feature-card hover-effect aboutus">
-                <div class="feature-icon aboutus">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <h4>About Us</h4>
-                <p>Learn about CBOC's mission, vision, and history through our comprehensive about section.</p>
-                <ul class="feature-list">
-                    <li>Club history</li>
-                    <li>Mission & vision</li>
-                    <li>Team members</li>
-                    <li>Achievements</li>
-                </ul>
-            </div>
-
-            <!-- E-Portfolio Feature Card - KEPT AS REQUESTED -->
-            <div class="feature-card hover-effect portfolio feature-highlight">
-                <div class="feature-icon portfolio">
-                    <i class="fas fa-id-card"></i>
-                </div>
-                <h4>E-Portfolio </h4>
-                <p>Showcase business profiles with our advanced digital portfolio system featuring NFC technology and QR codes.</p>
-                <ul class="feature-list">
-                    <li>Digital business cards</li>
-                    <li>NFC technology support</li>
-                    <li>QR code generation</li>
-                    <li>Portfolio customization</li>
-                </ul>
-            </div>
-
-            <!-- QR Code Generator Feature Card -->
-            <div class="feature-card hover-effect qrcode">
-                <div class="feature-icon qrcode">
-                    <i class="fas fa-qrcode"></i>
-                </div>
-                <h4>QR Code</h4>
-                <p>Generate and manage QR codes for events, profiles, payments, and digital assets.</p>
-                <ul class="feature-list">
-                    <li>Dynamic QR generation</li>
-                    <li>Scan analytics</li>
-                    <li>Custom designs</li>
-                    <li>Bulk creation</li>
-                </ul>
-            </div>
-
-            <!-- Analytics Feature Card -->
-            <div class="feature-card hover-effect analytics">
-                <div class="feature-icon analytics">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-                <h4>Analytics Dashboard</h4>
-                <p>Gain valuable insights with comprehensive analytics and reporting tools.</p>
-                <ul class="feature-list">
-                    <li>Member engagement</li>
-                    <li>Event analytics</li>
-                    <li>Performance metrics</li>
-                    <li>Custom reports</li>
-                </ul>
-            </div>
-
-            <!-- Settings Feature Card -->
-            <div class="feature-card hover-effect settings">
-                <div class="feature-icon settings">
-                    <i class="fas fa-cog"></i>
-                </div>
-                <h4>System Settings</h4>
-                <p>Customize your experience with comprehensive system configuration options.</p>
-                <ul class="feature-list">
-                    <li>Profile management</li>
-                    <li>Notification settings</li>
-                    <li>Privacy controls</li>
-                    <li>Security options</li>
-                </ul>
-            </div>
-
-            <!-- Admin Dashboard Feature Card -->
-            <div class="feature-card hover-effect">
-                <div class="feature-icon">
-                    <i class="fas fa-tachometer-alt"></i>
-                </div>
-                <h4>Admin Dashboard</h4>
-                <p>Complete control panel for system administrators to manage all aspects of the platform.</p>
-                <ul class="feature-list">
-                    <li>User management</li>
-                    <li>Content moderation</li>
-                    <li>System monitoring</li>
-                    <li>Backup management</li>
-                </ul>
-            </div>
-        </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="stats">
-        <div class="section-title">
-            <h3>System Statistics</h3>
-            <p>Trusted by business communities in Cavite and beyond</p>
+    <!-- Slideshow Carousel -->
+    <div class="carousel-container">
+        <div class="carousel">
+            <button class="carousel-btn prev" onclick="prevSlide()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-btn next" onclick="nextSlide()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <div class="carousel-inner" id="carouselInner">
+                <!-- Slide 1: Announcements -->
+                <div class="carousel-slide active">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--announcements), #8e44ad);">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h4 style="color: var(--announcements);">Announcements</h4>
+                        <p>Broadcast important updates, events, and news instantly to all members.</p>
+                        <ul class="feature-list">
+                            <li>Real-time notifications</li>
+                            <li>Scheduled announcements</li>
+                            <li>Targeted messaging</li>
+                            <li>Push notifications</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 2: Messages -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--messages), #16a085);">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h4 style="color: var(--messages);">Messaging</h4>
+                        <p>Secure messaging for seamless communication between members.</p>
+                        <ul class="feature-list">
+                            <li>One-on-one chats</li>
+                            <li>Group conversations</li>
+                            <li>File sharing</li>
+                            <li>Message history</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 3: About Us -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--aboutus), #d35400);">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h4 style="color: var(--aboutus);">About Us</h4>
+                        <p>Learn about CBOC's mission, vision, and rich history.</p>
+                        <ul class="feature-list">
+                            <li>Club history</li>
+                            <li>Mission & vision</li>
+                            <li>Team members</li>
+                            <li>Achievements</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 4: E-Portfolio -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--portfolio), #8e44ad);">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h4 style="color: var(--portfolio);">E-Portfolio</h4>
+                        <p>Digital portfolio with NFC & QR codes for modern networking.</p>
+                        <ul class="feature-list">
+                            <li>Digital business cards</li>
+                            <li>NFC technology support</li>
+                            <li>QR code generation</li>
+                            <li>Portfolio customization</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 5: QR Code -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--qrcode), #1abc9c);">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <h4 style="color: var(--qrcode);">QR Code</h4>
+                        <p>Generate and manage QR codes for various assets and portfolios.</p>
+                        <ul class="feature-list">
+                            <li>Dynamic QR generation</li>
+                            <li>Scan analytics</li>
+                            <li>Custom designs</li>
+                            <li>Bulk creation</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 6: Analytics -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--analytics), #e67e22);">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h4 style="color: var(--analytics);">Analytics</h4>
+                        <p>Comprehensive insights and reports for data-driven decisions.</p>
+                        <ul class="feature-list">
+                            <li>Member engagement</li>
+                            <li>Event analytics</li>
+                            <li>Performance metrics</li>
+                            <li>Custom reports</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 7: Settings -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--settings), #95a5a6);">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h4 style="color: var(--settings);">Settings</h4>
+                        <p>Comprehensive system configuration and personalization options.</p>
+                        <ul class="feature-list">
+                            <li>Profile management</li>
+                            <li>Notification settings</li>
+                            <li>Privacy controls</li>
+                            <li>Security options</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 8: Admin Dashboard -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--secondary), var(--primary));">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h4>Admin Dashboard</h4>
+                        <p>Complete control panel for system administrators.</p>
+                        <ul class="feature-list">
+                            <li>User management</li>
+                            <li>Content moderation</li>
+                            <li>System monitoring</li>
+                            <li>Backup management</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 9: Event Management -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--portfolio), #2980b9);">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h4>Event Management</h4>
+                        <p>Efficiently plan and track club events and activities.</p>
+                        <ul class="feature-list">
+                            <li>Calendar view</li>
+                            <li>RSVP tracking</li>
+                            <li>Reminders</li>
+                            <li>Post-event reports</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 10: Digital Invoicing -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--accent), #c0392b);">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <h4>Digital Invoicing</h4>
+                        <p>Generate and manage invoices for club transactions.</p>
+                        <ul class="feature-list">
+                            <li>Custom templates</li>
+                            <li>Payment tracking</li>
+                            <li>PDF export</li>
+                            <li>Due date alerts</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 11: Member Directory -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--success), #27ae60);">
+                            <i class="fas fa-address-book"></i>
+                        </div>
+                        <h4>Member Directory</h4>
+                        <p>Browse and connect with fellow club members easily.</p>
+                        <ul class="feature-list">
+                            <li>Search & filter</li>
+                            <li>Business categories</li>
+                            <li>Contact info</li>
+                            <li>Privacy controls</li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Slide 12: Custom Reports -->
+                <div class="carousel-slide">
+                    <div class="carousel-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--warning), #f39c12);">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h4>Custom Reports</h4>
+                        <p>Generate detailed reports for various club activities.</p>
+                        <ul class="feature-list">
+                            <li>Activity logs</li>
+                            <li>Financial summaries</li>
+                            <li>Export options</li>
+                            <li>Scheduled reports</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="stats-grid">
-            <div class="stat-item">
-                <span class="stat-number">500+</span>
-                <span class="stat-label">Active Businesses</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">10K+</span>
-                <span class="stat-label">Monthly Messages</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">99.9%</span>
-                <span class="stat-label">System Uptime</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-number">1K+</span>
-                <span class="stat-label">QR Codes Generated</span>
-            </div>
+        
+        <!-- Carousel Navigation Dots -->
+        <div class="carousel-nav" id="carouselNav">
+            <!-- Dots will be generated by JavaScript -->
         </div>
-    </section>
+    </div>
 
     <!-- E-Portfolio Spotlight Section -->
-    <section class="features" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);">
+    <section class="features" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);" id="about">
         <div class="section-title">
             <h3 style="color: var(--portfolio);">E-Portfolio Spotlight</h3>
             <p>Revolutionary digital business card system with cutting-edge features</p>
@@ -1169,7 +1072,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Footer (with subtle login link) -->
     <footer id="contact">
         <div class="footer-content">
             <div class="footer-section">
@@ -1178,7 +1081,6 @@
                 <div class="social-links">
                     <a href="https://www.facebook.com/groups/caviteonlinebusiness" class="social-link" target="_blank"><i class="fab fa-facebook-f"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
@@ -1190,7 +1092,7 @@
                     <li><i class="fas fa-comments"></i><a href="#features">Messages</a></li>
                     <li><i class="fas fa-info-circle"></i><a href="#features">About Us</a></li>
                     <li><i class="fas fa-id-card"></i><a href="#features">E-Portfolio</a></li>
-                    <li><i class="fas fa-qrcode"></i><a href="#features">QR Code System</a></li>
+                    <li><i class="fas fa-qrcode"></i><a href="#features">QR Code</a></li>
                     <li><i class="fas fa-chart-bar"></i><a href="#features">Analytics</a></li>
                     <li><i class="fas fa-cog"></i><a href="#features">Settings</a></li>
                 </ul>
@@ -1208,6 +1110,11 @@
             </div>
         </div>
 
+        <!-- Subtle login link in footer -->
+        <div class="footer-login">
+            <a href="login.php">← access →</a>
+        </div>
+
         <div class="copyright">
             <p>&copy; 2026 Cavite Business Owners Club. All rights reserved.</p>
             <p style="margin-top: 10px; font-size: 0.9rem; color: #aaa;">Featuring Advanced E-Portfolio System with NFC Technology</p>
@@ -1215,62 +1122,89 @@
     </footer>
 
     <!-- Scroll to Top Button -->
-    <div class="scroll-indicator" id="scrollTop">
-        <i class="fas fa-arrow-up"></i>
-    </div>
-
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- Pure CSS Scroll Behavior -->
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        #scrollTop {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            background: var(--secondary);
-            color: white;
-            border-radius: 50%;
-            cursor: pointer;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            text-decoration: none;
-        }
-        
-        #scrollTop:hover {
-            background: var(--primary);
-            transform: scale(1.1);
-        }
-        
-        body:not(:target) #scrollTop {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        #home:target ~ #scrollTop {
-            opacity: 0;
-            visibility: hidden;
-        }
-    </style>
-
-    <!-- CSS-only scroll to top functionality -->
     <a href="#home" id="scrollTop" style="display: flex; align-items: center; justify-content: center;">
         <i class="fas fa-arrow-up"></i>
     </a>
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <script>
-        // Simple scroll to top button
+        // Carousel functionality
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const totalSlides = slides.length;
+        let autoPlayInterval;
+
+        // Create navigation dots
+        const navContainer = document.getElementById('carouselNav');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.className = `carousel-dot ${i === 0 ? 'active' : ''}`;
+            dot.setAttribute('onclick', `goToSlide(${i})`);
+            navContainer.appendChild(dot);
+        }
+
+        const dots = document.querySelectorAll('.carousel-dot');
+
+        function updateSlides(index) {
+            // Remove active class from all slides and dots
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            
+            // Add active class to current slide and dot
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+            
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            let next = currentSlide + 1;
+            if (next >= totalSlides) {
+                next = 0;
+            }
+            updateSlides(next);
+        }
+
+        function prevSlide() {
+            let prev = currentSlide - 1;
+            if (prev < 0) {
+                prev = totalSlides - 1;
+            }
+            updateSlides(prev);
+        }
+
+        function goToSlide(index) {
+            updateSlides(index);
+        }
+
+        // Auto play functionality - every 3.5 seconds
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(nextSlide, 3500);
+        }
+
+        function stopAutoPlay() {
+            clearInterval(autoPlayInterval);
+        }
+
+        // Start autoplay when page loads
+        window.addEventListener('load', function() {
+            startAutoPlay();
+            
+            // Hide loader
+            const loader = document.querySelector('.loader');
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 2000);
+        });
+
+        // Pause autoplay when hovering over carousel
+        const carousel = document.querySelector('.carousel');
+        carousel.addEventListener('mouseenter', stopAutoPlay);
+        carousel.addEventListener('mouseleave', startAutoPlay);
+
+        // Scroll to top button functionality
         window.addEventListener('scroll', function() {
             const scrollTop = document.getElementById('scrollTop');
             if (window.scrollY > 300) {
@@ -1278,33 +1212,6 @@
             } else {
                 scrollTop.classList.remove('show');
             }
-        });
-
-        // Loading screen
-        window.addEventListener('load', function() {
-            const loader = document.querySelector('.loader');
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 2000);
-        });
-
-        // Add animation to feature cards on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animation = 'slideIn 0.6s ease forwards';
-                }
-            });
-        }, observerOptions);
-
-        // Observe all feature cards
-        document.querySelectorAll('.feature-card').forEach(card => {
-            observer.observe(card);
         });
     </script>
 </body>

@@ -1,9 +1,16 @@
+<?php
+    session_start();
+    $error = "";
+    
+    // Check if user was redirected from registration
+    $registered = isset($_GET['registered']) ? true : false;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBOC ADMIN</title>
+    <title>CBOC ADMIN - Login</title>
     <link rel="icon" type="icon" href="CBOC LOGO.jpg"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -15,20 +22,29 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            /* Replace gradient with business meeting background image */
+            background: url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
+            position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Dark overlay para hindi masyadong bright at readable ang form */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+            z-index: 1;
         }
 
         .container {
@@ -40,6 +56,8 @@
             min-height: 550px;
             perspective: 1000px;
             margin: 20px;
+            position: relative;
+            z-index: 2; /* Above the overlay */
         }
 
         .form-container {
@@ -53,6 +71,7 @@
             animation: formEntrance 1s ease-out;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(5px); /* Optional: blur effect sa background ng form */
         }
 
         .form-container::before {
@@ -233,6 +252,22 @@
             75% { transform: translateX(5px); }
         }
 
+        .success-message {
+            color: #27ae60;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: rgba(39, 174, 96, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .form-footer {
             text-align: center;
             margin-top: 25px;
@@ -268,13 +303,15 @@
             width: 100%;
         }
 
+        /* Remove floating objects or keep them */
         .floating-objects {
             position: absolute;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
-            z-index: 0;
+            z-index: 1;
+            pointer-events: none; /* Para hindi maka-interfere sa clicks */
         }
 
         .float {
@@ -311,7 +348,6 @@
     <div class="container">
         <div class="form-container">
             <div class="logo-container">
-                <!-- I've created a stylized version of your logo using CSS -->
                 <div class="logo">
                     <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
                         <rect x="10" y="10" width="40" height="40" rx="5" fill="#1a2a6c" />
@@ -323,7 +359,11 @@
                 <div class="logo-subtext">OWNERS CLUB</div>
             </div>
             
-            <div class="form-title">Member Login</div>
+            <div class="form-title">Login</div>
+
+            <?php if ($registered): ?>
+                <div class="success-message">Registration successful! Please login with your credentials.</div>
+            <?php endif; ?>
 
             <?php if (!empty($error)): ?>
                 <div class="error-message"><?= htmlspecialchars($error) ?></div>
@@ -331,10 +371,10 @@
 
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="login-username">Username</label>
+                    <label for="login-username">Email or Username</label>
                     <div class="input-with-icon">
                         <div class="input-icon"><i class="fas fa-user"></i></div>
-                        <input type="text" id="login-username" name="username" placeholder="Enter your username" required>
+                        <input type="text" id="login-username" name="username" placeholder="Enter your email or username" required>
                     </div>
                 </div>
 
@@ -347,6 +387,7 @@
                 </div>
 
                 <button type="submit" class="btn">Login</button>
+
             </form>
         </div>
     </div>
@@ -360,12 +401,11 @@
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            const TEST_DOMAIN = "@cboc.test";
             const username = document.getElementById("login-username").value.trim();
             const password = document.getElementById("login-password").value;
 
             // Map username → email (temporary testing logic)
-            const email = username.includes("@") ? username : username + TEST_DOMAIN;
+            const email = username.includes("@") ? username : username + "@cboc.test";
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);

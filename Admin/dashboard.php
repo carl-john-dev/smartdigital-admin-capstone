@@ -23,9 +23,7 @@
             <h3><i class="fas fa-tachometer-alt"></i> CBOC</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="admin_profile.php"><i class="fas fa-id-card"></i> <span>Profile</span></a></li>
             <li><a href="#" class="active"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="signup.php"><i class="fas fa-user-plus"></i> <span>Create Account</span></a></li>
             <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
@@ -57,10 +55,6 @@
             <div class="stat-card">
                 <div class="stat-number">800+</div>
                 <div class="stat-label">Members</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">12</div>
-                <div class="stat-label">Invoices</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">5</div>
