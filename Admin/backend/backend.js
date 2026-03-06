@@ -6,10 +6,11 @@
  *
  * Usage from any page inside Admin/:
  *   import { fetchUsers, addUser, updateUser, deleteUser } from "./backend/backend.js";
- *
- * NOTE: This file MUST be saved as .js (not .php) so the browser
- *       can load it as an ES module. Rename backend.php -> backend.js
- *       in your project if you have not done so already.
+ * 
+ * ======================================================
+ * WAG NA TAYO MAG INTERNAL DAHIL MASAKIT NA SA ULO GUYS 
+ * ======================================================
+ * 
  */
 
 import { db } from "../Firebase/firebase_conn.js";
