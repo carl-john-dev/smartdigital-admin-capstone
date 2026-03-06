@@ -1432,7 +1432,7 @@
                 <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
                     <i class="fas fa-info-circle" style="font-size: 1.5rem;"></i>
                 </div>
-                <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">📌 ABOUT US</h4>
+                <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">ABOUT US</h4>
             </div>
             <p style="font-size: 1.1rem; line-height: 1.6; color: #333; margin-bottom: 1rem; font-weight: 400;">The Cavite Business Owners Club (CBOC) is a professional community of entrepreneurs, innovators, and business leaders. It is dedicated to fostering collaboration, growth, and mutual support among Cavite-based business owners.</p>
             <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">Through shared learning, networking opportunities, and meaningful partnerships, CBOC aims to strengthen local businesses and build a sustainable entrepreneurial ecosystem.</p>
@@ -1446,7 +1446,7 @@
                     <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
                         <i class="fas fa-bullseye" style="font-size: 1.5rem;"></i>
                     </div>
-                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">🎯 MISSION</h4>
+                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">MISSION</h4>
                 </div>
                 <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">To empower business owners through mentorship, collaboration, and networking opportunities, creating value-driven engagement that benefits both businesses and communities.</p>
             </div>
@@ -1457,7 +1457,7 @@
                     <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
                         <i class="fas fa-eye" style="font-size: 1.5rem;"></i>
                     </div>
-                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">👁️ VISION</h4>
+                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">VISION</h4>
                 </div>
                 <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">To become the leading platform for Cavite entrepreneurs to connect, collaborate, and grow their businesses while uplifting the community and fostering sustainable economic development.</p>
             </div>
@@ -1471,7 +1471,7 @@
                     <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
                         <i class="fas fa-star" style="font-size: 1.5rem;"></i>
                     </div>
-                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">💡 COMPANY VALUES</h4>
+                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">COMPANY VALUES</h4>
                 </div>
                 <p style="font-size: 1.1rem; line-height: 1.6; color: #2c3e50; font-weight: 500;">Be an example of a profitable Cavite Business that utilizes the mix of digital and traditional.</p>
             </div>
