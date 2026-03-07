@@ -509,6 +509,7 @@
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
+            <li><a href="ordercard.php"><i class="fas fa-shopping-cart"></i> <span>Order</span></a></li>
             <li><a href="#" class="active"><i class="fas fa-archive"></i> <span>Archive</span></a></li>
             <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
             <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
