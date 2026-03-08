@@ -1418,76 +1418,96 @@
         </div>
     </div>
 
-<!-- About CBOC Section (formerly E-Portfolio Spotlight) -->
-<section class="features" id="about" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80'); background-size: cover; background-position: center; background-attachment: fixed;">
-    <div class="section-title">
-        <h3 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">About Cavite Business Owners Club</h3>
-        <p style="color: #f0f0f0; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Empowering Cavite entrepreneurs through collaboration, innovation, and sustainable growth</p>
-    </div>
-
-    <div style="max-width: 1200px; margin: 0 auto;">
-        <!-- ABOUT US -->
-        <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.2);">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
-                    <i class="fas fa-info-circle" style="font-size: 1.5rem;"></i>
-                </div>
-                <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">ABOUT US</h4>
-            </div>
-            <p style="font-size: 1.1rem; line-height: 1.6; color: #333; margin-bottom: 1rem; font-weight: 400;">The Cavite Business Owners Club (CBOC) is a professional community of entrepreneurs, innovators, and business leaders. It is dedicated to fostering collaboration, growth, and mutual support among Cavite-based business owners.</p>
-            <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">Through shared learning, networking opportunities, and meaningful partnerships, CBOC aims to strengthen local businesses and build a sustainable entrepreneurial ecosystem.</p>
+    <!-- About CBOC Section (formerly E-Portfolio Spotlight) -->
+    <section class="features" id="about" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80'); background-size: cover; background-position: center; background-attachment: fixed;">
+        <div class="section-title">
+            <h3 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">About Cavite Business Owners Club</h3>
+            <p style="color: #f0f0f0; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Empowering Cavite entrepreneurs through collaboration, innovation, and sustainable growth</p>
         </div>
 
-        <!-- MISSION & VISION GRID -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 2rem; margin-bottom: 2rem;">
-            <!-- MISSION -->
-            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.2);">
+        <div style="max-width: 1200px; margin: 0 auto;">
+
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <div style="max-width: 1000px; margin: 0 auto 3rem auto; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); padding: 2rem 2.5rem; border-radius: 15px; text-align: center; box-shadow: var(--shadow);">
+                <p style="font-size: 1.2rem; line-height: 1.6; color: #333;">
+                    Welcome to the CBOC Community! Our community provides a platform for Cavite-based entrepreneurs to network, collaborate, and access resources that will help them streamline their operations, lead their industries, and succeed in their ventures.
+                </p>
+                <p style="font-size: 1.2rem; line-height: 1.6; color: #333; margin-top: 1rem;">
+                    To learn more about our programs and membership, please DM Pres. Rlyn Icnad and VP Jennicel Asuncion Foronda.
+                </p>
+            </div>
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+
+            <!-- ABOUT US -->
+            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.2);">
                 <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
                     <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
-                        <i class="fas fa-bullseye" style="font-size: 1.5rem;"></i>
+                        <i class="fas fa-info-circle" style="font-size: 1.5rem;"></i>
                     </div>
-                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">MISSION</h4>
+                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">ABOUT US</h4>
                 </div>
-                <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">To empower business owners through mentorship, collaboration, and networking opportunities, creating value-driven engagement that benefits both businesses and communities.</p>
+                <p style="font-size: 1.1rem; line-height: 1.6; color: #333; margin-bottom: 1rem; font-weight: 400;">The Cavite Business Owners Club (CBOC) is a professional community of entrepreneurs, innovators, and business leaders. It is dedicated to fostering collaboration, growth, and mutual support among Cavite-based business owners.</p>
+                <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">Through shared learning, networking opportunities, and meaningful partnerships, CBOC aims to strengthen local businesses and build a sustainable entrepreneurial ecosystem.</p>
             </div>
 
-            <!-- VISION -->
-            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.2);">
-                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                    <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
-                        <i class="fas fa-eye" style="font-size: 1.5rem;"></i>
+            <!-- MISSION & VISION GRID -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                <!-- MISSION -->
+                <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
+                            <i class="fas fa-bullseye" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">MISSION</h4>
                     </div>
-                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">VISION</h4>
+                    <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">To empower business owners through mentorship, collaboration, and networking opportunities, creating value-driven engagement that benefits both businesses and communities.</p>
                 </div>
-                <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">To become the leading platform for Cavite entrepreneurs to connect, collaborate, and grow their businesses while uplifting the community and fostering sustainable economic development.</p>
+
+                <!-- VISION -->
+                <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
+                            <i class="fas fa-eye" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">VISION</h4>
+                    </div>
+                    <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">To become the leading platform for Cavite entrepreneurs to connect, collaborate, and grow their businesses while uplifting the community and fostering sustainable economic development.</p>
+                </div>
+            </div>
+
+            <!-- COMPANY VALUES & FOUNDED -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 2rem;">
+                <!-- COMPANY VALUES -->
+                <div style="background: linear-gradient(135deg, rgba(255, 243, 224, 0.95), rgba(255, 224, 178, 0.95)); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); border-left: 4px solid var(--aboutus);">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
+                            <i class="fas fa-star" style="font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">COMPANY VALUES</h4>
+                    </div>
+                    <p style="font-size: 1.1rem; line-height: 1.6; color: #2c3e50; font-weight: 500;">Be an example of a profitable Cavite Business that utilizes the mix of digital and traditional.</p>
+                </div>
+
+                <!-- FOUNDED -->
+                <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="width: 80px; height: 80px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 1rem; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
+                        <i class="fas fa-calendar" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4 style="color: #e67e22; font-size: 2rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">2025</h4>
+                    <p style="font-size: 1.2rem; color: #333; font-weight: 400;">Founded</p>
+                    <span style="display: inline-block; background: var(--aboutus); color: white; padding: 0.5rem 1.5rem; border-radius: 50px; font-size: 1rem; margin-top: 1rem; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">Established 2025</span>
+                </div>
             </div>
         </div>
-
-        <!-- COMPANY VALUES & FOUNDED -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 2rem;">
-            <!-- COMPANY VALUES -->
-            <div style="background: linear-gradient(135deg, rgba(255, 243, 224, 0.95), rgba(255, 224, 178, 0.95)); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); border-left: 4px solid var(--aboutus);">
-                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                    <div style="width: 60px; height: 60px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
-                        <i class="fas fa-star" style="font-size: 1.5rem;"></i>
-                    </div>
-                    <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">COMPANY VALUES</h4>
-                </div>
-                <p style="font-size: 1.1rem; line-height: 1.6; color: #2c3e50; font-weight: 500;">Be an example of a profitable Cavite Business that utilizes the mix of digital and traditional.</p>
-            </div>
-
-            <!-- FOUNDED -->
-            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
-                <div style="width: 80px; height: 80px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 1rem; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
-                    <i class="fas fa-calendar" style="font-size: 2rem;"></i>
-                </div>
-                <h4 style="color: #e67e22; font-size: 2rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">2025</h4>
-                <p style="font-size: 1.2rem; color: #333; font-weight: 400;">Founded</p>
-                <span style="display: inline-block; background: var(--aboutus); color: white; padding: 0.5rem 1.5rem; border-radius: 50px; font-size: 1rem; margin-top: 1rem; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">Established 2025</span>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
     <!-- Footer -->
     <footer id="contact">

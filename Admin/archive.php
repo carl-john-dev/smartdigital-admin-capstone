@@ -504,17 +504,30 @@
             <h3><i class="fas fa-tachometer-alt"></i> CBOC</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
-            <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
+
+            <div class="menu-category">Overview</div>
+            <li><a href="dashboard.php"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+
+            <div class="menu-category">Members</div>
+            <li><a href="members.php"><i class="fas fa-users"></i><span>Members</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
-            <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="ordercard.php"><i class="fas fa-shopping-cart"></i> <span>Order</span></a></li>
-            <li><a href="#" class="active"><i class="fas fa-archive"></i> <span>Archive</span></a></li>
-            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
-            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
-            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
-            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i><span>E-Portfolio</span></a></li>
+
+            <div class="menu-category">Events</div>
+            <li><a href="calendar.php"><i class="fas fa-calendar"></i><span>Calendar</span></a></li>
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i><span>RSVP Tracker</span></a></li>
+
+            <div class="menu-category">Operations</div>
+            <li><a href="request.php"><i class="fas fa-clipboard-list"></i><span>Requests</span></a></li>
+            <li><a href="ordercard.php"><i class="fas fa-shopping-cart"></i><span>Order</span></a></li>
+
+            <div class="menu-category">System</div>
+            <li><a href="#" class="active"><i class="fas fa-archive"></i><span>Archive</span></a></li>
+            <li><a href="logs.php"><i class="fas fa-history"></i><span>Activity Logs</span></a></li>
+
+            <div class="menu-category">Account</div>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+
         </ul>
     </div>
 

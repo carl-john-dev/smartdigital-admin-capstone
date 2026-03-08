@@ -220,17 +220,30 @@
             <h3><i class="fas fa-tachometer-alt"></i> CBOC NFC Cards</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
-            <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
+
+            <div class="menu-category">Overview</div>
+            <li><a href="dashboard.php"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+
+            <div class="menu-category">Members</div>
+            <li><a href="members.php"><i class="fas fa-users"></i><span>Members</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
-            <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="#" class="active"><i class="fas fa-shopping-cart"></i> <span>Order</span></a></li>
-            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
-            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
-            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
-            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
-            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i><span>E-Portfolio</span></a></li>
+
+            <div class="menu-category">Events</div>
+            <li><a href="calendar.php"><i class="fas fa-calendar"></i><span>Calendar</span></a></li>
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i><span>RSVP Tracker</span></a></li>
+
+            <div class="menu-category">Operations</div>
+            <li><a href="request.php"><i class="fas fa-clipboard-list"></i><span>Requests</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-shopping-cart"></i><span>Order</span></a></li>
+
+            <div class="menu-category">System</div>
+            <li><a href="archive.php"><i class="fas fa-archive"></i><span>Archive</span></a></li>
+            <li><a href="logs.php"><i class="fas fa-history"></i><span>Activity Logs</span></a></li>
+
+            <div class="menu-category">Account</div>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+
         </ul>
     </div>
 
@@ -255,7 +268,7 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="stat-content">
-                    <div class="stat-number">156</div>
+                    <div class="stat-number processedCards">???</div>
                     <div class="stat-label">Cards Processed</div>
                 </div>
             </div>
@@ -265,7 +278,7 @@
                     <i class="fas fa-sync-alt fa-spin"></i>
                 </div>
                 <div class="stat-content">
-                    <div class="stat-number">23</div>
+                    <div class="stat-number activeCards">???</div>
                     <div class="stat-label">Cards in Process</div>
                 </div>
             </div>
@@ -275,7 +288,7 @@
                     <i class="fas fa-box-open"></i>
                 </div>
                 <div class="stat-content">
-                    <div class="stat-number">42</div>
+                    <div class="stat-number readyCards">???</div>
                     <div class="stat-label">Cards Ready for Pick Up</div>
                 </div>
             </div>
@@ -288,8 +301,8 @@
                     <h3 class="section-title">
                         <i class="fas fa-box-open text-warning"></i> NFC Cards Ready for Pick Up
                     </h3>
-                    <div class="pickup-items-container">
-                        <div class="pickup-item">
+                    <div class="pickup-items-container" id="pickupItemsContainer">
+                        <!-- <div class="pickup-item">
                             <div class="pickup-item-icon">
                                 <i class="fas fa-id-card"></i>
                             </div>
@@ -331,7 +344,7 @@
                                 <p><i class="fas fa-hashtag"></i> Card ID: NFC-2024-156 | <i class="fas fa-clock"></i> Ready since: Mar 4, 2024</p>
                                 <span class="badge pickup-badge">Ready for Pickup</span>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="see-all">
                         <a href="nfc-orders.php?filter=ready">View All Ready NFC Cards <i class="fas fa-arrow-right"></i></a>
@@ -355,8 +368,8 @@
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="processedCardsTable">
+                            <!-- <tr>
                                 <td>Jonatan</td>
                                 <td><code>NFC-2024-234</code></td>
                                 <td>Mar 6, 2024</td>
@@ -385,7 +398,7 @@
                                 <td><code>NFC-2024-238</code></td>
                                 <td>Mar 4, 2024</td>
                                 <td><span class="status status-resolve">Processed</span></td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -402,8 +415,8 @@
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="activeCardsTable">
+                            <!-- <tr>
                                 <td>Austin</td>
                                 <td><code>NFC-2024-239</code></td>
                                 <td>Mar 6, 2024</td>
@@ -432,7 +445,7 @@
                                 <td><code>NFC-2024-243</code></td>
                                 <td>Mar 3, 2024</td>
                                 <td><span class="status status-pending">Printing</span></td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -489,19 +502,19 @@
                     <div class="mt-3 p-3 bg-light rounded">
                         <div class="d-flex justify-content-between">
                             <span>Total Cards Ordered:</span>
-                            <span class="fw-bold">166</span>
+                            <span class="fw-bold totalCards">???</span>
                         </div>
                         <div class="d-flex justify-content-between mt-2">
                             <span>Ready for Pickup:</span>
-                            <span class="fw-bold text-warning">42</span>
+                            <span class="fw-bold text-warning readyCards">???</span>
                         </div>
                         <div class="d-flex justify-content-between mt-2">
                             <span>In Process:</span>
-                            <span class="fw-bold text-primary">23</span>
+                            <span class="fw-bold text-primary activeCards">???</span>
                         </div>
                         <div class="d-flex justify-content-between mt-2">
                             <span>Processed:</span>
-                            <span class="fw-bold text-success">101</span>
+                            <span class="fw-bold text-success processedCards">???</span>
                         </div>
                     </div>
                 </div>
@@ -518,7 +531,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript for Interactive Elements -->
-    <script>
+    <script type="module">
+        import { db } from './Firebase/firebase_conn.js';
+        import { collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
         document.addEventListener('DOMContentLoaded', function() {
             // Dark Mode Toggle
             const darkModeToggle = document.getElementById('darkModeToggle');
@@ -570,6 +586,215 @@
                     this.style.transform = 'translateX(0)';
                 });
             });
+
+            // Pulls data from DB about NFC Card Ready to pick up section
+            function loadReadyPickupCards() {
+                const container = document.getElementById("pickupItemsContainer");
+                const q = query(
+                    collection(db, "nfc_cards"),
+                    where("status", "==", "Ready for Pickup"),
+                    orderBy("date_ready_pickup", "desc")
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    container.innerHTML = "";
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const name = data.member_name || "Unknown Member";
+                        const cardId = data.card_id || "N/A";
+                        const readyDate = data.date_ready_pickup;
+                        let formattedDate = "Unknown";
+
+                        if (readyDate) {
+                            const date = readyDate.toDate();
+                            formattedDate = date.toLocaleString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit"
+                            });
+
+                        }
+
+                        const cardHTML = `
+                            <div class="pickup-item">
+                                <div class="pickup-item-icon">
+                                    <i class="fas fa-id-card"></i>
+                                </div>
+                                <div class="pickup-item-details">
+                                    <h5>${name} - NFC Card</h5>
+                                    <p>
+                                        <i class="fas fa-hashtag"></i> Card ID: ${cardId} |
+                                        <i class="fas fa-clock"></i> Ready since: ${formattedDate}
+                                    </p>
+                                    <span class="badge pickup-badge">Ready for Pickup</span>
+                                </div>
+                            </div>
+                        `;
+
+                        container.innerHTML += cardHTML;
+                    });
+                });
+            }
+            loadReadyPickupCards();
+
+            // Pulls data from DB about NFC Card Processed section
+            function loadProcessedCards() {
+                const tableBody = document.getElementById("processedCardsTable");
+
+                if (!tableBody) return;
+
+                const q = query(
+                    collection(db, "nfc_cards"),
+                    where("status", "==", "Processed"),
+                    orderBy("date_processed", "desc")
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    tableBody.innerHTML = "";
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const name = data.member_name || "Unknown";
+                        const cardId = data.card_id || "N/A";
+                        const status = data.status || "Processed";
+
+                        let processedDate = "Unknown";
+
+                        if (data.date_processed) {
+                            const date = data.date_processed.toDate();
+                            processedDate = date.toLocaleString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit"
+                            });
+
+                        }
+
+                        const row = `
+                            <tr>
+                                <td>${name}</td>
+                                <td><code>${cardId}</code></td>
+                                <td>${processedDate}</td>
+                                <td><span class="status status-resolve">${status}</span></td>
+                            </tr>
+                        `;
+
+                        tableBody.innerHTML += row;
+                    });
+                });
+            }
+            loadProcessedCards();
+
+            // Pulls data from DB about NFC Card In Process section
+            function loadActiveCards() {
+                const tableBody = document.getElementById("activeCardsTable");
+
+                if (!tableBody) return;
+
+                const q = query(
+                    collection(db, "nfc_cards"),
+                    where("status", "!=", "Processed"),
+                    orderBy("status")
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    tableBody.innerHTML = "";
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+
+                        // Skip cards ready for pickup
+                        if (data.status === "Ready for Pickup") return;
+
+                        const name = data.member_name || "Unknown";
+                        const cardId = data.card_id || "N/A";
+                        const status = data.status || "Pending";
+
+                        let startedDate = "Unknown";
+
+                        if (data.date_started) {
+                            const date = data.date_started.toDate();
+                            startedDate = date.toLocaleString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit"
+                            });
+
+                        }
+
+                        const row = `
+                            <tr>
+                                <td>${name}</td>
+                                <td><code>${cardId}</code></td>
+                                <td>${startedDate}</td>
+                                <td><span class="status status-pending">${status}</span></td>
+                            </tr>
+                        `;
+
+                        tableBody.innerHTML += row;
+                    });
+
+                    if (tableBody.innerHTML === "") {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">
+                                    No active NFC card processes
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+            }
+            loadActiveCards();
+
+            // Update Card Counts based on Firebase DB
+            function loadNFCCardCounts() {
+                const cardsRef = collection(db, "nfc_cards");
+
+                onSnapshot(cardsRef, (snapshot) => {
+                    let total = 0;
+                    let ready = 0;
+                    let processed = 0;
+                    let active = 0;
+
+                    snapshot.forEach(doc => {
+                        total++;
+                        const data = doc.data();
+                        const status = data.status;
+
+                        if (status === "Ready for Pickup") {
+                            ready++;
+                        }
+                        else if (status === "Processed") {
+                            processed++;
+                        }
+                        else {
+                            active++;
+                        }
+                    });
+
+                    // Update dashboard UI
+                    document.querySelectorAll(".totalCards").forEach(el => {
+                        el.textContent = total;
+                    });
+                    document.querySelectorAll(".readyCards").forEach(el => {
+                        el.textContent = ready;
+                    });
+                    document.querySelectorAll(".processedCards").forEach(el => {
+                        el.textContent = processed;
+                    });
+                    document.querySelectorAll(".activeCards").forEach(el => {
+                        el.textContent = active;
+                    });
+                });
+            }
+            loadNFCCardCounts();
         });
     </script>
 </body>
