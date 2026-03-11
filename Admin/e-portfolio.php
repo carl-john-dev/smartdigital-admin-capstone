@@ -43,6 +43,85 @@
             --nfc-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
+        /* Three Dots Menu Styles */
+        .three-dots-menu {
+            position: relative;
+            display: inline-block;
+            margin-right: 15px;
+        }
+
+        .dots-button {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .dots-button:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .dropdown-menu-custom.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 5px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -782,6 +861,38 @@
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
 
+        /* Notification helper */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+            border-radius: 8px;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification.success { background: linear-gradient(135deg, #10b981, #059669); }
+        .notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .notification.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .notification.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
         /* Responsive Design */
         @media (max-width: 992px) {
             .profile-header {
@@ -943,14 +1054,12 @@
         </div>
         <ul class="sidebar-menu">
             <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
+            <li><a href="members.php"><i class="fas fa-users"></i> <span>Users</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="ordercard.php"><i class="fas fa-shopping-cart"></i> <span>Order</span></a></li>
-            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
-            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
-            <li><a href="#" class="active"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
+            <li><a href="ordercard.php"><i class="fas fa-credit-card"></i> <span>NFC Card</span></a></li>
+            <li><a href="e-portfolio.php" class="active"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
             <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
             <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
@@ -958,14 +1067,44 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Bar -->
+        <!-- Top Bar with Three Dots Menu -->
         <div class="top-bar">
             <h1>Digital Business Card & E-Portfolio</h1>
-            <div class="user-info">
-                <div class="user-avatar">AD</div>
-                <div>
-                    <div class="fw-bold">Admin User</div>
-                    <small class="text-muted">Administrator</small>
+            <div class="d-flex align-items-center">
+                <!-- Three Dots Menu -->
+                <div class="three-dots-menu">
+                    <button class="dots-button" id="dotsMenuBtn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div class="dropdown-menu-custom" id="dotsDropdown">
+                        <a href="archive.php" class="dropdown-item">
+                            <i class="fas fa-archive"></i> Archive
+                        </a>
+                        <a href="logs.php" class="dropdown-item">
+                            <i class="fas fa-history"></i> Activity Logs
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="exportPortfolio()">
+                            <i class="fas fa-download"></i> Export Portfolio
+                        </button>
+                        <button class="dropdown-item" onclick="printPortfolio()">
+                            <i class="fas fa-print"></i> Print Card
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="refreshPortfolio()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="dropdown-item" onclick="showPortfolioHelp()">
+                            <i class="fas fa-question-circle"></i> Help
+                        </button>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">AD</div>
+                    <div>
+                        <div class="fw-bold">Admin User</div>
+                        <small class="text-muted">Administrator</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1121,6 +1260,9 @@
                             <span>UI/UX Design</span>
                             <span>85%</span>
                         </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 85%;"></div>
+                        </div>
                     </div>
                     <div class="skill-item">
                         <div class="skill-info">
@@ -1269,6 +1411,68 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Three Dots Menu Functions
+            window.exportPortfolio = function() {
+                const portfolioData = {
+                    name: document.getElementById('userName').textContent,
+                    title: document.getElementById('userTitle').textContent,
+                    company: document.getElementById('userCompany').textContent.replace('TechVision Inc.', '').trim(),
+                    email: document.querySelector('#contactEmail .text-muted').textContent,
+                    phone: document.querySelector('#contactPhone .text-muted').textContent,
+                    location: document.querySelector('#contactLocation .text-muted').textContent,
+                    stats: {
+                        projects: document.getElementById('statProjects').textContent,
+                        clients: document.getElementById('statClients').textContent,
+                        experience: document.getElementById('statExperience').textContent,
+                        rating: document.getElementById('statRating').textContent
+                    }
+                };
+                
+                const dataStr = JSON.stringify(portfolioData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                const exportFileDefaultName = 'cboc-portfolio-export.json';
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                showNotification('Portfolio exported successfully!', 'success');
+            };
+
+            window.printPortfolio = function() {
+                window.print();
+            };
+
+            window.refreshPortfolio = function() {
+                location.reload();
+            };
+
+            window.showPortfolioHelp = function() {
+                alert(`
+E-Portfolio Help:
+- Digital business card with NFC capability
+- Click QR code to open portfolio URL
+- Use color themes to customize card appearance
+- Update info using the control panel
+- Simulate NFC tap to test data transfer
+- Download as PDF to save your card
+                `);
+            };
+
+            // Three Dots Menu Toggle
+            const dotsMenuBtn = document.getElementById('dotsMenuBtn');
+            const dotsDropdown = document.getElementById('dotsDropdown');
+
+            dotsMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dotsDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', function() {
+                dotsDropdown.classList.remove('show');
+            });
+
             // Initialize animations
             const elements = document.querySelectorAll('.profile-header, .stats-grid, .contact-info, .portfolio-gallery, .skills-section, .social-links');
             elements.forEach((el, index) => {
@@ -1461,63 +1665,62 @@
 
             // Show notification
             function showNotification(message, type) {
-                // Create notification element
-                const notification = document.createElement('div');
-                notification.className = `alert alert-${type} position-fixed`;
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 1000;
-                    min-width: 300px;
-                    animation: slideIn 0.3s ease;
-                    background: ${type === 'success' ? '#10b981' : type === 'info' ? '#3b82f6' : '#ef4444'};
-                    color: white;
-                    border: none;
-                `;
-                notification.innerHTML = `
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
-                    ${message}
-                `;
+                const icons = { 
+                    success: 'fa-check-circle', 
+                    error: 'fa-exclamation-circle', 
+                    warning: 'fa-exclamation-triangle', 
+                    info: 'fa-info-circle' 
+                };
                 
-                // Add to body
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `<i class="fas ${icons[type]}"></i><span>${message}</span>`;
+                
                 document.body.appendChild(notification);
                 
-                // Remove after 3 seconds
                 setTimeout(() => {
                     notification.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => {
-                        document.body.removeChild(notification);
-                    }, 300);
+                    setTimeout(() => notification.remove(), 300);
                 }, 3000);
             }
 
-            // Add CSS animations for notifications
-            const notificationStyle = document.createElement('style');
-            notificationStyle.textContent = `
-                @keyframes slideIn {
-                    from {
-                        transform: translateX(100%);
-                        opacity: 0;
+            // Add notification styles if not already present
+            if (!document.querySelector('#notification-styles')) {
+                const notificationStyle = document.createElement('style');
+                notificationStyle.id = 'notification-styles';
+                notificationStyle.textContent = `
+                    .notification {
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        z-index: 9999;
+                        min-width: 300px;
+                        animation: slideIn 0.3s ease;
+                        border-radius: 8px;
+                        padding: 15px 20px;
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
                     }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
+                    .notification.success { background: linear-gradient(135deg, #10b981, #059669); }
+                    .notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+                    .notification.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+                    .notification.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+                    
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
                     }
-                }
-                
-                @keyframes slideOut {
-                    from {
-                        transform: translateX(0);
-                        opacity: 1;
+                    
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
                     }
-                    to {
-                        transform: translateX(100%);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(notificationStyle);
+                `;
+                document.head.appendChild(notificationStyle);
+            }
 
             // NFC simulation for mobile devices
             if ('NDEFReader' in window) {

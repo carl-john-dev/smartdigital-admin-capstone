@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archive - CBOC </title>
+    <title>Archive & Logs - CBOC</title>
     <link rel="icon" type="icon" href="CBOC LOGO.jpg"/>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -55,7 +55,7 @@
             overflow-x: hidden;
         }
 
-        /* Sidebar Styles (Same as your design) */
+        /* Sidebar Styles */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--sidebar-bg);
@@ -192,8 +192,96 @@
             transform: scale(1.1);
         }
 
+        /* Three Dots Menu */
+        .three-dots-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dots-button {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .dots-button:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .dropdown-menu-custom.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 5px 0;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Archive Container */
-        .archive-container {
+        .archive-container, .logs-container {
             background: var(--card-bg);
             border-radius: 10px;
             padding: 20px;
@@ -244,8 +332,8 @@
             border-color: var(--primary);
         }
 
-        /* Archive Stats */
-        .archive-stats {
+        /* Stats Cards */
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
@@ -280,11 +368,11 @@
         }
 
         /* Archive Items */
-        .archive-items {
+        .archive-items, .log-items {
             margin-top: 20px;
         }
 
-        .archive-item {
+        .archive-item, .log-item {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -293,7 +381,7 @@
             transition: all 0.3s ease;
         }
 
-        .archive-item:hover {
+        .archive-item:hover, .log-item:hover {
             border-color: var(--primary);
             transform: translateX(5px);
         }
@@ -320,20 +408,11 @@
             margin-right: 10px;
         }
 
-        .type-member {
-            background: rgba(67, 97, 238, 0.1);
-            color: var(--primary);
-        }
-
-        .type-event {
-            background: rgba(76, 201, 240, 0.1);
-            color: var(--success);
-        }
-
-        .type-request {
-            background: rgba(231, 76, 60, 0.1);
-            color: var(--danger);
-        }
+        .type-member, .type-create { background: rgba(67, 97, 238, 0.1); color: var(--primary); }
+        .type-event, .type-update { background: rgba(76, 201, 240, 0.1); color: var(--success); }
+        .type-request, .type-delete { background: rgba(231, 76, 60, 0.1); color: var(--danger); }
+        .type-system { background: rgba(52, 152, 219, 0.1); color: #3498db; }
+        .type-user { background: rgba(155, 89, 182, 0.1); color: #9b59b6; }
 
         .item-meta {
             color: #6c757d;
@@ -358,14 +437,17 @@
             border-top: 1px solid var(--border-color);
         }
 
-        .btn-restore {
-            background: var(--success);
-            color: white;
+        .btn-restore, .btn-delete, .btn-view {
             border: none;
             padding: 5px 15px;
             border-radius: 5px;
             font-size: 0.85rem;
             transition: all 0.3s ease;
+        }
+
+        .btn-restore {
+            background: var(--success);
+            color: white;
         }
 
         .btn-restore:hover {
@@ -376,11 +458,6 @@
         .btn-delete {
             background: var(--danger);
             color: white;
-            border: none;
-            padding: 5px 15px;
-            border-radius: 5px;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
         }
 
         .btn-delete:hover {
@@ -388,19 +465,63 @@
             transform: scale(1.05);
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            color: #6c757d;
+        .btn-view {
+            background: var(--primary);
+            color: white;
         }
 
-        .empty-state i {
-            font-size: 4rem;
+        .btn-view:hover {
+            background: #3a0ca3;
+            transform: scale(1.05);
+        }
+
+        /* Filter Controls for Logs */
+        .filter-controls {
+            display: flex;
+            gap: 15px;
             margin-bottom: 20px;
-            color: #dee2e6;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            align-items: center;
         }
 
-        /* Search Bar */
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .date-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-input {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        /* Search Box */
         .search-box {
             margin-bottom: 20px;
         }
@@ -420,6 +541,56 @@
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #dee2e6;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
         }
 
         /* Dark Mode Toggle */
@@ -472,13 +643,22 @@
                 margin-right: 0;
             }
             
-            .archive-stats {
+            .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .date-range {
+                flex-direction: column;
             }
         }
         
         @media (max-width: 576px) {
-            .archive-stats {
+            .stats-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -491,7 +671,7 @@
                 flex-direction: column;
             }
             
-            .btn-restore, .btn-delete {
+            .btn-restore, .btn-delete, .btn-view {
                 width: 100%;
             }
         }
@@ -505,13 +685,11 @@
         </div>
         <ul class="sidebar-menu">
             <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
+            <li><a href="members.php"><i class="fas fa-users"></i> <span>Users</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="ordercard.php"><i class="fas fa-shopping-cart"></i> <span>Order</span></a></li>
-            <li><a href="#" class="active"><i class="fas fa-archive"></i> <span>Archive</span></a></li>
-            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
+            <li><a href="ordercard.php"><i class="fas fa-credit-card"></i> <span>NFC Card</span></a></li>
             <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
             <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
             <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
@@ -520,79 +698,109 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Bar -->
+        <!-- Top Bar with Three Dots Menu -->
         <div class="top-bar">
-            <h1><i class="fas fa-archive"></i> Archive</h1>
-            <div class="user-info">
-                <div class="user-avatar">AD</div>
-                <div>
-                    <div class="fw-bold">Admin User</div>
-                    <small class="text-muted">Archivist</small>
+            <h1><i class="fas fa-archive"></i> Archive & Logs</h1>
+            <div class="d-flex align-items-center gap-3">
+                <div class="three-dots-menu">
+                    <button class="dots-button" id="dotsMenuBtn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div class="dropdown-menu-custom" id="dotsDropdown">
+                        <button class="dropdown-item" onclick="switchSection('archive')">
+                            <i class="fas fa-archive"></i> Archive
+                        </button>
+                        <button class="dropdown-item" onclick="switchSection('logs')">
+                            <i class="fas fa-history"></i> Activity Logs
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="exportCurrentSection()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                        <button class="dropdown-item" onclick="clearCurrentSection()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                        <button class="dropdown-item" onclick="refreshCurrentSection()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">AD</div>
+                    <div>
+                        <div class="fw-bold">Admin User</div>
+                        <small class="text-muted">Administrator</small>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Search Box -->
         <div class="search-box">
-            <input type="text" class="search-input" placeholder="Search archived items..." id="searchInput">
+            <input type="text" class="search-input" placeholder="Search..." id="searchInput">
         </div>
 
-        <!-- Archive Stats -->
-        <div class="archive-stats">
-            <div class="stat-card">
-                <div class="stat-number" id="totalArchived">0</div>
-                <div class="stat-label">Total Archived</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="archivedMembers">0</div>
-                <div class="stat-label">Archived Members</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="archivedEvents">0</div>
-                <div class="stat-label">Archived Events</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="archivedRequests">0</div>
-                <div class="stat-label">Archived Requests</div>
-            </div>
-        </div>
+        <!-- Stats Section (Changes based on active section) -->
+        <div class="stats-grid" id="statsSection"></div>
 
-        <!-- Filter Tabs -->
-        <div class="filter-tabs">
-            <button class="filter-tab active" data-filter="all">All Items</button>
-            <button class="filter-tab" data-filter="member">Members</button>
-            <button class="filter-tab" data-filter="event">Events</button>
-            <button class="filter-tab" data-filter="request">Requests</button>
-            <button class="filter-tab" data-filter="recent">Recently Archived</button>
-        </div>
-
-        <!-- Archive Items Container -->
-        <div class="archive-container">
-            <h3 class="section-title"><i class="fas fa-box"></i> Archived Items</h3>
-            
-            <div class="archive-items" id="archiveList">
-                <!-- Archive items will be loaded here -->
-                <div class="empty-state">
-                    <i class="fas fa-box-open"></i>
-                    <h4>No Archived Items</h4>
-                    <p>Archived items will appear here</p>
+        <!-- Archive Section -->
+        <div class="content-section active" id="archiveSection">
+            <div class="archive-container">
+                <!-- Filter Tabs for Archive -->
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">All Items</button>
+                    <button class="filter-tab" data-filter="member">Members</button>
+                    <button class="filter-tab" data-filter="event">Events</button>
+                    <button class="filter-tab" data-filter="request">Requests</button>
+                    <button class="filter-tab" data-filter="recent">Recently Archived</button>
                 </div>
+
+                <!-- Archive Items -->
+                <h3 class="section-title"><i class="fas fa-box"></i> Archived Items</h3>
+                <div class="archive-items" id="archiveList"></div>
             </div>
         </div>
 
-        <!-- Bulk Actions -->
-        <div class="archive-container">
-            <h3 class="section-title"><i class="fas fa-tasks"></i> Bulk Actions</h3>
-            <div class="d-flex gap-2">
-                <button class="btn btn-primary" id="bulkRestoreBtn">
-                    <i class="fas fa-undo me-2"></i> Restore Selected
-                </button>
-                <button class="btn btn-danger" id="bulkDeleteBtn">
-                    <i class="fas fa-trash me-2"></i> Delete Selected
-                </button>
-                <button class="btn btn-outline-primary" id="exportBtn">
-                    <i class="fas fa-download me-2"></i> Export Archive
-                </button>
+        <!-- Logs Section -->
+        <div class="content-section" id="logsSection">
+            <div class="logs-container">
+                <!-- Filter Controls for Logs -->
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Type:</label>
+                        <select class="filter-select" id="typeFilter">
+                            <option value="all">All Types</option>
+                            <option value="create">Create</option>
+                            <option value="update">Update</option>
+                            <option value="delete">Delete</option>
+                            <option value="system">System</option>
+                            <option value="user">User</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Module:</label>
+                        <select class="filter-select" id="moduleFilter">
+                            <option value="all">All Modules</option>
+                            <option value="members">Members</option>
+                            <option value="events">Events</option>
+                            <option value="requests">Requests</option>
+                            <option value="archive">Archive</option>
+                            <option value="system">System</option>
+                        </select>
+                    </div>
+                    
+                    <div class="date-range">
+                        <label>Date:</label>
+                        <input type="date" class="date-input" id="startDate">
+                        <span>to</span>
+                        <input type="date" class="date-input" id="endDate">
+                    </div>
+                </div>
+
+                <!-- Log Items -->
+                <h3 class="section-title"><i class="fas fa-stream"></i> Activity History</h3>
+                <div class="log-items" id="logsList"></div>
             </div>
         </div>
     </div>
@@ -609,68 +817,51 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize data
             let archiveData = JSON.parse(localStorage.getItem('cbocArchive')) || [];
+            let activityLogs = JSON.parse(localStorage.getItem('cbocLogs')) || [];
+            let currentSection = 'archive';
             
             // Load initial data
             loadArchiveData();
-            updateStats();
+            loadLogs();
+            updateStats('archive');
             
-            // Filter tabs
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    loadArchiveData(this.dataset.filter);
-                });
+            // Three Dots Menu Toggle
+            const dotsMenuBtn = document.getElementById('dotsMenuBtn');
+            const dotsDropdown = document.getElementById('dotsDropdown');
+            
+            dotsMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dotsDropdown.classList.toggle('show');
+            });
+            
+            document.addEventListener('click', function() {
+                dotsDropdown.classList.remove('show');
             });
             
             // Search functionality
             document.getElementById('searchInput').addEventListener('input', function(e) {
                 const searchTerm = e.target.value.toLowerCase();
-                filterArchiveItems(searchTerm);
-            });
-            
-            // Bulk restore
-            document.getElementById('bulkRestoreBtn').addEventListener('click', function() {
-                const selectedItems = document.querySelectorAll('.archive-checkbox:checked');
-                if (selectedItems.length === 0) {
-                    alert('Please select items to restore');
-                    return;
-                }
-                
-                if (confirm(`Restore ${selectedItems.length} item(s)?`)) {
-                    selectedItems.forEach(checkbox => {
-                        const itemId = parseInt(checkbox.dataset.id);
-                        restoreItem(itemId);
-                    });
-                    loadArchiveData();
-                    updateStats();
-                    alert('Selected items restored successfully!');
+                if (currentSection === 'archive') {
+                    filterArchiveItems(searchTerm);
+                } else {
+                    filterLogs(searchTerm);
                 }
             });
             
-            // Bulk delete
-            document.getElementById('bulkDeleteBtn').addEventListener('click', function() {
-                const selectedItems = document.querySelectorAll('.archive-checkbox:checked');
-                if (selectedItems.length === 0) {
-                    alert('Please select items to delete');
-                    return;
-                }
-                
-                if (confirm(`Permanently delete ${selectedItems.length} item(s)? This action cannot be undone.`)) {
-                    selectedItems.forEach(checkbox => {
-                        const itemId = parseInt(checkbox.dataset.id);
-                        deleteItem(itemId);
-                    });
-                    loadArchiveData();
-                    updateStats();
-                    alert('Selected items deleted permanently!');
-                }
+            // Archive filter tabs
+            document.querySelectorAll('#archiveSection .filter-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('#archiveSection .filter-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    loadArchiveData(this.dataset.filter);
+                });
             });
             
-            // Export functionality
-            document.getElementById('exportBtn').addEventListener('click', function() {
-                exportArchiveData();
-            });
+            // Logs filters
+            document.getElementById('typeFilter').addEventListener('change', loadLogs);
+            document.getElementById('moduleFilter').addEventListener('change', loadLogs);
+            document.getElementById('startDate').addEventListener('change', loadLogs);
+            document.getElementById('endDate').addEventListener('change', loadLogs);
             
             // Dark Mode Toggle
             const darkModeToggle = document.getElementById('darkModeToggle');
@@ -698,6 +889,69 @@
             });
             
             // Functions
+            window.switchSection = function(section) {
+                currentSection = section;
+                
+                // Hide all sections
+                document.getElementById('archiveSection').classList.remove('active');
+                document.getElementById('logsSection').classList.remove('active');
+                
+                // Show selected section
+                document.getElementById(section + 'Section').classList.add('active');
+                
+                // Update stats
+                updateStats(section);
+                
+                // Clear search
+                document.getElementById('searchInput').value = '';
+                
+                // Reload data
+                if (section === 'archive') {
+                    loadArchiveData();
+                } else {
+                    loadLogs();
+                }
+            };
+            
+            window.exportCurrentSection = function() {
+                if (currentSection === 'archive') {
+                    exportArchiveData();
+                } else {
+                    exportLogs();
+                }
+            };
+            
+            window.clearCurrentSection = function() {
+                if (currentSection === 'archive') {
+                    if (confirm('Clear all archived items? This action cannot be undone.')) {
+                        archiveData = [];
+                        localStorage.setItem('cbocArchive', JSON.stringify(archiveData));
+                        loadArchiveData();
+                        updateStats('archive');
+                        showNotification('Archive cleared');
+                    }
+                } else {
+                    if (confirm('Clear all activity logs? This action cannot be undone.')) {
+                        activityLogs = [];
+                        localStorage.setItem('cbocLogs', JSON.stringify(activityLogs));
+                        loadLogs();
+                        updateStats('logs');
+                        showNotification('Logs cleared');
+                    }
+                }
+            };
+            
+            window.refreshCurrentSection = function() {
+                if (currentSection === 'archive') {
+                    loadArchiveData();
+                    updateStats('archive');
+                } else {
+                    loadLogs();
+                    updateStats('logs');
+                }
+                showNotification('Refreshed');
+            };
+            
             function loadArchiveData(filter = 'all') {
                 const archiveList = document.getElementById('archiveList');
                 
@@ -737,14 +991,12 @@
                     return;
                 }
                 
-                // Sort by most recent
                 filteredData.sort((a, b) => new Date(b.archivedAt) - new Date(a.archivedAt));
                 
                 archiveList.innerHTML = filteredData.map(item => `
                     <div class="archive-item">
                         <div class="item-header">
                             <div>
-                                <input type="checkbox" class="archive-checkbox" data-id="${item.id}">
                                 <span class="item-type type-${item.type}">${item.type.toUpperCase()}</span>
                                 <span class="item-title">${item.name}</span>
                             </div>
@@ -756,10 +1008,10 @@
                         </div>
                         ${item.description ? `<div class="item-reason">${item.description}</div>` : ''}
                         <div class="item-actions">
-                            <button class="btn-restore" onclick="restoreSingleItem(${item.id})">
+                            <button class="btn-restore" onclick="restoreItem(${item.id})">
                                 <i class="fas fa-undo me-1"></i> Restore
                             </button>
-                            <button class="btn-delete" onclick="deleteSingleItem(${item.id})">
+                            <button class="btn-delete" onclick="deleteItem(${item.id})">
                                 <i class="fas fa-trash me-1"></i> Delete
                             </button>
                         </div>
@@ -767,23 +1019,144 @@
                 `).join('');
             }
             
+            function loadLogs() {
+                const logsList = document.getElementById('logsList');
+                
+                // Initialize sample data if empty
+                if (activityLogs.length === 0) {
+                    initializeSampleLogs();
+                }
+                
+                // Get filter values
+                const typeFilter = document.getElementById('typeFilter').value;
+                const moduleFilter = document.getElementById('moduleFilter').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                // Filter logs
+                let filteredLogs = activityLogs;
+                
+                if (typeFilter !== 'all') {
+                    filteredLogs = filteredLogs.filter(log => log.type === typeFilter);
+                }
+                
+                if (moduleFilter !== 'all') {
+                    filteredLogs = filteredLogs.filter(log => log.module === moduleFilter);
+                }
+                
+                if (startDate) {
+                    filteredLogs = filteredLogs.filter(log => new Date(log.timestamp) >= new Date(startDate));
+                }
+                
+                if (endDate) {
+                    const end = new Date(endDate);
+                    end.setHours(23, 59, 59, 999);
+                    filteredLogs = filteredLogs.filter(log => new Date(log.timestamp) <= end);
+                }
+                
+                filteredLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                if (filteredLogs.length === 0) {
+                    logsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <h4>No Activity Logs</h4>
+                            <p>No logs found for the selected filters</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                logsList.innerHTML = filteredLogs.map(log => `
+                    <div class="log-item">
+                        <div class="item-header">
+                            <span class="log-timestamp">${formatDateTime(log.timestamp)}</span>
+                            <span class="item-type type-${log.type}">${log.type.toUpperCase()}</span>
+                        </div>
+                        <div class="item-title">${log.action}</div>
+                        <div class="item-meta">
+                            User: <strong>${log.user}</strong> | Module: ${log.module || 'General'}
+                        </div>
+                        ${log.details ? `<div class="item-reason">${log.details}</div>` : ''}
+                        <div class="item-actions">
+                            <button class="btn-view" onclick="viewLogDetails(${log.id})">
+                                <i class="fas fa-eye me-1"></i> View Details
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            function updateStats(section) {
+                const statsSection = document.getElementById('statsSection');
+                
+                if (section === 'archive') {
+                    const members = archiveData.filter(item => item.type === 'member').length;
+                    const events = archiveData.filter(item => item.type === 'event').length;
+                    const requests = archiveData.filter(item => item.type === 'request').length;
+                    
+                    statsSection.innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-number">${archiveData.length}</div>
+                            <div class="stat-label">Total Archived</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${members}</div>
+                            <div class="stat-label">Archived Members</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${events}</div>
+                            <div class="stat-label">Archived Events</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${requests}</div>
+                            <div class="stat-label">Archived Requests</div>
+                        </div>
+                    `;
+                } else {
+                    const today = new Date().toDateString();
+                    const todayLogs = activityLogs.filter(log => 
+                        new Date(log.timestamp).toDateString() === today
+                    ).length;
+                    
+                    const userLogs = activityLogs.filter(log => log.type === 'user').length;
+                    const systemLogs = activityLogs.filter(log => log.type === 'system').length;
+                    
+                    statsSection.innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-number">${activityLogs.length}</div>
+                            <div class="stat-label">Total Logs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${todayLogs}</div>
+                            <div class="stat-label">Today's Activities</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${userLogs}</div>
+                            <div class="stat-label">User Actions</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">${systemLogs}</div>
+                            <div class="stat-label">System Events</div>
+                        </div>
+                    `;
+                }
+            }
+            
             function filterArchiveItems(searchTerm) {
-                const items = document.querySelectorAll('.archive-item');
+                const items = document.querySelectorAll('#archiveList .archive-item');
                 items.forEach(item => {
                     const text = item.textContent.toLowerCase();
                     item.style.display = text.includes(searchTerm) ? 'block' : 'none';
                 });
             }
             
-            function updateStats() {
-                const members = archiveData.filter(item => item.type === 'member').length;
-                const events = archiveData.filter(item => item.type === 'event').length;
-                const requests = archiveData.filter(item => item.type === 'request').length;
-                
-                document.getElementById('totalArchived').textContent = archiveData.length;
-                document.getElementById('archivedMembers').textContent = members;
-                document.getElementById('archivedEvents').textContent = events;
-                document.getElementById('archivedRequests').textContent = requests;
+            function filterLogs(searchTerm) {
+                const items = document.querySelectorAll('#logsList .log-item');
+                items.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                });
             }
             
             function initializeSampleArchiveData() {
@@ -814,50 +1187,94 @@
                         description: 'Request for new laptops denied due to budget limitations.',
                         archivedBy: 'Admin User',
                         archivedAt: '2024-01-10T09:15:00Z'
-                    },
-                    {
-                        id: 4,
-                        type: 'member',
-                        name: 'Jane Smith',
-                        reason: 'Resigned',
-                        description: 'Member resigned from the organization effective January 1, 2024.',
-                        archivedBy: 'Admin User',
-                        archivedAt: '2024-01-05T16:45:00Z'
-                    },
-                    {
-                        id: 5,
-                        type: 'event',
-                        name: 'Community Workshop',
-                        reason: 'Cancelled',
-                        description: 'Workshop cancelled due to low registration numbers.',
-                        archivedBy: 'Admin User',
-                        archivedAt: '2023-11-30T11:20:00Z'
                     }
                 ];
                 localStorage.setItem('cbocArchive', JSON.stringify(archiveData));
             }
             
-            function restoreItem(id) {
-                const index = archiveData.findIndex(item => item.id === id);
-                if (index > -1) {
-                    archiveData.splice(index, 1);
-                    localStorage.setItem('cbocArchive', JSON.stringify(archiveData));
-                }
+            function initializeSampleLogs() {
+                activityLogs = [
+                    {
+                        id: 1,
+                        timestamp: new Date().toISOString(),
+                        action: 'User logged in to the system',
+                        user: 'Admin User',
+                        type: 'user',
+                        module: 'system',
+                        details: 'Successful login from Chrome browser'
+                    },
+                    {
+                        id: 2,
+                        timestamp: new Date(Date.now() - 3600000).toISOString(),
+                        action: 'New member added: John Doe',
+                        user: 'Admin User',
+                        type: 'create',
+                        module: 'members',
+                        details: 'Added new member with ID: MEM001'
+                    },
+                    {
+                        id: 3,
+                        timestamp: new Date(Date.now() - 7200000).toISOString(),
+                        action: 'Event created: Annual Meeting 2024',
+                        user: 'Admin User',
+                        type: 'create',
+                        module: 'events',
+                        details: 'Scheduled for February 15, 2024'
+                    }
+                ];
+                localStorage.setItem('cbocLogs', JSON.stringify(activityLogs));
             }
             
-            function deleteItem(id) {
-                restoreItem(id); // For now, same as restore
-            }
+            window.restoreItem = function(id) {
+                if (confirm('Restore this item?')) {
+                    const index = archiveData.findIndex(item => item.id === id);
+                    if (index > -1) {
+                        archiveData.splice(index, 1);
+                        localStorage.setItem('cbocArchive', JSON.stringify(archiveData));
+                        loadArchiveData();
+                        updateStats('archive');
+                        showNotification('Item restored successfully!');
+                    }
+                }
+            };
+            
+            window.deleteItem = function(id) {
+                if (confirm('Permanently delete this item?')) {
+                    const index = archiveData.findIndex(item => item.id === id);
+                    if (index > -1) {
+                        archiveData.splice(index, 1);
+                        localStorage.setItem('cbocArchive', JSON.stringify(archiveData));
+                        loadArchiveData();
+                        updateStats('archive');
+                        showNotification('Item deleted permanently!');
+                    }
+                }
+            };
+            
+            window.viewLogDetails = function(id) {
+                const log = activityLogs.find(l => l.id === id);
+                if (log) {
+                    alert(JSON.stringify(log, null, 2));
+                }
+            };
             
             function exportArchiveData() {
                 const dataStr = JSON.stringify(archiveData, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                const exportFileDefaultName = 'cboc-archive-export.json';
-                
+                downloadFile(dataStr, 'cboc-archive-export.json');
+            }
+            
+            function exportLogs() {
+                const dataStr = JSON.stringify(activityLogs, null, 2);
+                downloadFile(dataStr, 'cboc-logs-export.json');
+            }
+            
+            function downloadFile(data, filename) {
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(data);
                 const linkElement = document.createElement('a');
                 linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.setAttribute('download', filename);
                 linkElement.click();
+                showNotification('Export completed');
             }
             
             function formatDate(dateString) {
@@ -871,24 +1288,55 @@
                 });
             }
             
-            // Global functions for button clicks
-            window.restoreSingleItem = function(id) {
-                if (confirm('Restore this item?')) {
-                    restoreItem(id);
-                    loadArchiveData();
-                    updateStats();
-                    alert('Item restored successfully!');
-                }
-            };
+            function formatDateTime(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
             
-            window.deleteSingleItem = function(id) {
-                if (confirm('Permanently delete this item?')) {
-                    deleteItem(id);
-                    loadArchiveData();
-                    updateStats();
-                    alert('Item deleted permanently!');
+            function showNotification(message) {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--primary);
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 5px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 9999;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+            
+            // Add CSS for animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
                 }
-            };
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
         });
     </script>
 </body>

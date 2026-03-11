@@ -46,6 +46,85 @@
             --sidebar-hover-bg: rgba(255,255,255,0.05);
         }
 
+        /* Three Dots Menu Styles */
+        .three-dots-menu {
+            position: relative;
+            display: inline-block;
+            margin-right: 15px;
+        }
+
+        .dots-button {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .dots-button:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .dropdown-menu-custom.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 5px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .dark-mode .ql-toolbar.ql-snow {
             border-color: #444 !important;
             background-color: #2a2a2a !important;
@@ -780,13 +859,11 @@
         </div>
         <ul class="sidebar-menu">
             <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
+            <li><a href="members.php"><i class="fas fa-users"></i> <span>Users</span></a></li>
             <li><a href="calendar.php" class="active"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="ordercard.php"><i class="fas fa-shopping-cart"></i> <span>Order</span></a></li>
-            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
-            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
+            <li><a href="ordercard.php"><i class="fas fa-credit-card"></i> <span>NFC Card</span></a></li>
             <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
             <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
             <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
@@ -795,7 +872,7 @@
 
     <!-- Main Content -->
     <div class="main-content">
-        <!-- Top Bar -->
+        <!-- Top Bar with Three Dots Menu -->
         <div class="top-bar">
             <div>
                 <h1>Event Calendar</h1>
@@ -806,11 +883,41 @@
                     <small class="timezone-label">(PHT)</small>
                 </div>
             </div>
-            <div class="user-info">
-                <div class="user-avatar">AD</div>
-                <div>
-                    <div class="fw-bold">Admin User</div>
-                    <small class="text-muted">Administrator</small>
+            <div class="d-flex align-items-center">
+                <!-- Three Dots Menu -->
+                <div class="three-dots-menu">
+                    <button class="dots-button" id="dotsMenuBtn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div class="dropdown-menu-custom" id="dotsDropdown">
+                        <a href="archive.php" class="dropdown-item">
+                            <i class="fas fa-archive"></i> Archive
+                        </a>
+                        <a href="logs.php" class="dropdown-item">
+                            <i class="fas fa-history"></i> Activity Logs
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="exportEvents()">
+                            <i class="fas fa-download"></i> Export Events
+                        </button>
+                        <button class="dropdown-item" onclick="printCalendar()">
+                            <i class="fas fa-print"></i> Print Calendar
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="refreshCalendar()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="dropdown-item" onclick="showCalendarHelp()">
+                            <i class="fas fa-question-circle"></i> Help
+                        </button>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">AD</div>
+                    <div>
+                        <div class="fw-bold">Admin User</div>
+                        <small class="text-muted">Administrator</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1141,7 +1248,58 @@
         }
         testFirestore();
 
+        // Three Dots Menu Functions
+        window.exportEvents = function() {
+            if (events.length === 0) {
+                alert('No events to export');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(events, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'cboc-events-export.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('Events exported successfully!', 'success');
+        };
+
+        window.printCalendar = function() {
+            window.print();
+        };
+
+        window.refreshCalendar = function() {
+            location.reload();
+        };
+
+        window.showCalendarHelp = function() {
+            alert(`
+Calendar Help:
+- Click "Create New Event" to add events
+- Click on event cards to view details
+- Use Previous/Next buttons to navigate months
+- Events are color-coded by category
+- Toggle dark mode using the moon/sun button
+            `);
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Three Dots Menu Toggle
+            const dotsMenuBtn = document.getElementById('dotsMenuBtn');
+            const dotsDropdown = document.getElementById('dotsDropdown');
+
+            dotsMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dotsDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', function() {
+                dotsDropdown.classList.remove('show');
+            });
+
             // Initialize Quill Rich Text Editor
             const quill = new Quill('#richTextEditor', {
                 theme: 'snow',

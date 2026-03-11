@@ -31,6 +31,85 @@
             --text-dark: #212529;
             --text-light: #f8f9fa;
         }
+
+        /* Three Dots Menu Styles */
+        .three-dots-menu {
+            position: relative;
+            display: inline-block;
+            margin-right: 15px;
+        }
+
+        .dots-button {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .dots-button:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .dropdown-menu-custom.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 5px 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         
         /* Make sure the main-content matches your dashboard */
         .main-content {
@@ -214,6 +293,38 @@
             background: rgba(255,255,255,0.2);
         }
         
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+            border-radius: 8px;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification.success { background: linear-gradient(135deg, #10b981, #059669); }
+        .notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .notification.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .notification.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
         /* Dark mode styles */
         .dark-mode .main-content {
             background-color: #1a1a1a;
@@ -247,6 +358,23 @@
         
         .dark-mode .rsvp-table tr:hover {
             background-color: rgba(255,255,255,0.05);
+        }
+
+        .dark-mode .dropdown-menu-custom {
+            background: #2d2d2d;
+            border-color: #495057;
+        }
+
+        .dark-mode .dropdown-item {
+            color: #e9ecef;
+        }
+
+        .dark-mode .dropdown-item:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .dark-mode .dropdown-divider {
+            background: #495057;
         }
         
         /* Make sure it's responsive */
@@ -317,32 +445,60 @@
         </div>
         <ul class="sidebar-menu">
             <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="members.php"><i class="fas fa-users"></i> <span>Members</span></a></li>
+            <li><a href="members.php"><i class="fas fa-users"></i> <span>Users</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="ordercard.php"><i class="fas fa-shopping-cart"></i> <span>Order</span></a></li>
-            <li><a href="archive.php" class=""><i class="fas fa-archive"></i> <span>Archive</span></a></li>
-            <li><a href="logs.php"><i class="fas fa-history"></i> <span>Activity Logs</span></a></li>
+            <li><a href="ordercard.php"><i class="fas fa-credit-card"></i> <span>NFC Card</span></a></li>
             <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
-            <li><a href="#" class="active"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
+            <li><a href="rsvptracker.php" class="active"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
             <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
     </div>
 
     <!-- Main Content Area -->
     <div class="main-content">
-        <!-- Top Bar -->
+        <!-- Top Bar with Three Dots Menu -->
         <div class="top-bar">
             <div>
                 <h1><i class="fas fa-calendar-check"></i> RSVP Event Tracker</h1>
                 <p class="text-muted mb-0">Manage event invitations and guest responses</p>
             </div>
-            <div class="user-info">
-                <div class="user-avatar">AD</div>
-                <div>
-                    <div class="fw-bold">Admin User</div>
-                    <small class="text-muted">Administrator</small>
+            <div class="d-flex align-items-center">
+                <!-- Three Dots Menu -->
+                <div class="three-dots-menu">
+                    <button class="dots-button" id="dotsMenuBtn">
+                        <i class="fas fa-ellipsis-h"></i>
+                    </button>
+                    <div class="dropdown-menu-custom" id="dotsDropdown">
+                        <a href="archive.php" class="dropdown-item">
+                            <i class="fas fa-archive"></i> Archive
+                        </a>
+                        <a href="logs.php" class="dropdown-item">
+                            <i class="fas fa-history"></i> Activity Logs
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="exportRSVPs()">
+                            <i class="fas fa-download"></i> Export RSVPs
+                        </button>
+                        <button class="dropdown-item" onclick="printRSVPList()">
+                            <i class="fas fa-print"></i> Print List
+                        </button>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" onclick="refreshRSVPs()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="dropdown-item" onclick="showRSVPHelp()">
+                            <i class="fas fa-question-circle"></i> Help
+                        </button>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">AD</div>
+                    <div>
+                        <div class="fw-bold">Admin User</div>
+                        <small class="text-muted">Administrator</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -560,6 +716,59 @@
     <script>
         // RSVP Tracker Implementation
         document.addEventListener('DOMContentLoaded', function() {
+            // Three Dots Menu Functions
+            window.exportRSVPs = function() {
+                if (rsvpData.length === 0) {
+                    showNotification('No RSVPs to export', 'warning');
+                    return;
+                }
+                
+                const dataStr = JSON.stringify(rsvpData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                const exportFileDefaultName = 'cboc-rsvp-export.json';
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                showNotification('RSVPs exported successfully!', 'success');
+            };
+
+            window.printRSVPList = function() {
+                window.print();
+            };
+
+            window.refreshRSVPs = function() {
+                location.reload();
+            };
+
+            window.showRSVPHelp = function() {
+                alert(`
+RSVP Tracker Help:
+- Add RSVPs using the "Add RSVP" button
+- Edit or delete RSVPs using action buttons
+- Click on event date/venue to edit
+- Use search bar to find guests
+- Filter by status using the filter buttons
+- Export data as CSV or JSON
+- Statistics show guest counts in real-time
+                `);
+            };
+
+            // Three Dots Menu Toggle
+            const dotsMenuBtn = document.getElementById('dotsMenuBtn');
+            const dotsDropdown = document.getElementById('dotsDropdown');
+
+            dotsMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dotsDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', function() {
+                dotsDropdown.classList.remove('show');
+            });
+
             // DARK MODE TOGGLE (MUST MATCH YOUR DASHBOARD)
             const darkModeToggle = document.getElementById('darkModeToggle');
             const darkModeIcon = document.getElementById('darkModeIcon');
@@ -1155,42 +1364,74 @@
             }
             
             // Show a temporary notification
-            function showNotification(message) {
+            function showNotification(message, type = 'success') {
+                const icons = { 
+                    success: 'fa-check-circle', 
+                    error: 'fa-exclamation-circle', 
+                    warning: 'fa-exclamation-triangle', 
+                    info: 'fa-info-circle' 
+                };
+                
                 // Remove existing notification if present
-                const existingNotification = document.querySelector('.cboc-notification');
+                const existingNotification = document.querySelector('.notification');
                 if (existingNotification) {
                     existingNotification.remove();
                 }
                 
                 // Create notification element
                 const notification = document.createElement('div');
-                notification.className = 'cboc-notification';
-                notification.textContent = message;
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: #28a745;
-                    color: white;
-                    padding: 12px 20px;
-                    border-radius: 5px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                    z-index: 1100;
-                    animation: slideIn 0.3s ease;
-                `;
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `<i class="fas ${icons[type]}"></i><span>${message}</span>`;
                 
-                // Add to document
                 document.body.appendChild(notification);
                 
                 // Remove after 3 seconds
                 setTimeout(() => {
-                    notification.style.animation = 'fadeOut 0.5s ease';
+                    notification.style.animation = 'slideOut 0.3s ease';
                     setTimeout(() => {
                         if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
+                            notification.remove();
                         }
-                    }, 500);
+                    }, 300);
                 }, 3000);
+            }
+
+            // Add notification styles if not already present
+            if (!document.querySelector('#notification-styles')) {
+                const notificationStyle = document.createElement('style');
+                notificationStyle.id = 'notification-styles';
+                notificationStyle.textContent = `
+                    .notification {
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        z-index: 9999;
+                        min-width: 300px;
+                        animation: slideIn 0.3s ease;
+                        border-radius: 8px;
+                        padding: 15px 20px;
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+                    }
+                    .notification.success { background: linear-gradient(135deg, #10b981, #059669); }
+                    .notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+                    .notification.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+                    .notification.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+                    
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(notificationStyle);
             }
             
             // Initialize the RSVP tracker
