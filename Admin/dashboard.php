@@ -570,8 +570,8 @@
                 <div class="dashboard-section">
                     <h3 class="section-title"><i class="fas fa-calendar-alt"></i> Calendar</h3>
                     <ul class="calendar-list">
-                        <li><strong>Request</strong> - Team meeting at 10:00 AM</li>
-                        <li><strong>Request</strong> - Project deadline at 3:00 PM</li>
+                        <!-- <li><strong>Request</strong> - Team meeting at 10:00 AM</li>
+                        <li><strong>Request</strong> - Project deadline at 3:00 PM</li> -->
                     </ul>
                 </div>
 
@@ -622,8 +622,13 @@
                 <!-- New Members Section -->
                 <div class="dashboard-section">
                     <h3 class="section-title"><i class="fas fa-user-plus"></i> New Members</h3>
+        
+                    <!-- Member Cards Container -->
+                    <div id="newMembersContainer">
+                        <!-- Dynamic member cards will be inserted here -->
+                    </div>
                     
-                    <div class="member-card">
+                    <!-- <div class="member-card">
                         <div class="member-avatar">LM</div>
                         <div>
                             <h6 class="mb-1">Lucia Merry</h6>
@@ -661,7 +666,7 @@
                             <h6 class="mb-1">Ethan Cravejal</h6>
                             <p class="mb-0 text-muted small">CEO, Newcastle.</p>
                         </div>
-                    </div>
+                    </div> -->
                     
                     <div class="see-all">
                         <a href="members.php">See all <i class="fas fa-arrow-right"></i></a>
@@ -680,7 +685,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript for Interactive Elements -->
-    <script>
+    <script type="module">
+        import { db, storage } from './Firebase/firebase_conn.js';
+        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
+        
         document.addEventListener('DOMContentLoaded', function() {
             // Dark Mode Toggle
             const darkModeToggle = document.getElementById('darkModeToggle');
@@ -759,6 +768,125 @@
             }
         `;
         document.head.appendChild(style);
+
+        // Fetch Firebase DB for data and load
+        async function loadUpcomingEvents() {
+            const calendarList = document.querySelector(".calendar-list");
+            calendarList.innerHTML = "";
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const eventsQuery = query(
+                collection(db, "events"),
+                and(
+                    where("date", ">=", Timestamp.fromDate(today)),
+                    or(
+                        where("approved", "==", true),
+                        where("createdBy", "==", "Admin")
+                    )
+                )
+            );
+
+            try {
+                const snapshot = await getDocs(eventsQuery);
+
+                if (snapshot.empty) {
+                    const li = document.createElement("li");
+                    li.classList.add("text-muted");
+                    li.innerHTML = `<i class="fas fa-calendar-times"></i> No upcoming events`;
+                    calendarList.appendChild(li);
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const event = doc.data();
+
+                    const eventDate = event.date.toDate().toLocaleDateString();
+
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+                        <strong>${event.title}</strong> - 
+                        ${event.title} at ${eventDate} 
+                        from ${formatTime(event.startHour, event.startMinute)} 
+                        to ${formatTime(event.endHour, event.endMinute)}    
+                    `;
+
+                    calendarList.appendChild(li);
+                });
+
+            } catch (error) {
+                console.error("Error loading events:", error);
+            }
+        }
+        loadUpcomingEvents();
+
+        function formatTime(hour, minute) {
+            // Ensure hour and minute are numbers
+            hour = Number(hour);
+            minute = Number(minute);
+
+            // Pad minutes with leading zero
+            const paddedMinute = minute.toString().padStart(2, "0");
+
+            // Convert to 12-hour format
+            let period = "AM";
+            let standardHour = hour;
+
+            if (hour === 0) {
+                standardHour = 12; // midnight
+            } else if (hour === 12) {
+                period = "PM"; // noon
+            } else if (hour > 12) {
+                standardHour = hour - 12;
+                period = "PM";
+            }
+
+            return `${standardHour}:${paddedMinute} ${period}`;
+        }
+
+        function getInitials(name) {
+            return name.split(' ')
+                    .filter(n => n)
+                    .map(n => n[0].toUpperCase())
+                    .join('')
+                    .slice(0, 2); // Only first 2 letters
+        }
+
+        // Fetch approved users and render them
+        async function renderNewMembers() {
+            const container = document.getElementById('newMembersContainer');
+            container.innerHTML = ''; // Clear existing content
+
+            const usersRef = collection(db, "users");
+            const q = query(
+                usersRef,
+                where("approved", "==", true),
+                orderBy("createdAt", "desc")
+            );
+
+            const snapshot = await getDocs(q);
+            snapshot.forEach(doc => {
+                const user = doc.data();
+                const initials = getInitials(user.name || 'Unnamed');
+                const title = user.professionalTitle || '???';
+                const business = user.businessName || 'Unknown Business';
+
+                const card = document.createElement('div');
+                card.className = 'member-card';
+                card.innerHTML = `
+                    <div class="member-avatar">${initials}</div>
+                    <div>
+                        <h6 class="mb-1">${user.name || 'Unnamed'}</h6>
+                        <p class="mb-0 text-muted small">${title}, ${business}.</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Run on page load
+        renderNewMembers();
     </script>
 </body>
 </html>

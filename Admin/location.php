@@ -851,7 +851,7 @@
                 <div class="map-container">
                     <div class="map-header">
                         <h2 class="map-title">
-                            <i class="fas fa-map-marker-alt"></i> Rosario, Cavite - User Locations
+                            <i class="fas fa-map-marker-alt"></i> Rosario, Cavite - Business Locations
                         </h2>
                         <div class="map-controls">
                             <button class="map-control-btn" id="locateMe">
@@ -861,7 +861,7 @@
                                 <i class="fas fa-sync-alt"></i> Reset View
                             </button>
                             <button class="map-control-btn" id="toggleUsers">
-                                <i class="fas fa-users"></i> Show Users
+                                <i class="fas fa-users"></i> Show Businesses
                             </button>
                         </div>
                     </div>
@@ -872,10 +872,10 @@
             <!-- Users List Column -->
             <div class="col-lg-3">
                 <div class="map-container">
-                    <h3 class="section-title"><i class="fas fa-users"></i> Users</h3>
+                    <h3 class="section-title"><i class="fas fa-users"></i> Business</h3>
                     <div class="mb-3">
                         <div class="input-group">
-                            <input type="text" id="searchUsers" class="form-control" placeholder="Search users...">
+                            <input type="text" id="searchUsers" class="form-control" placeholder="Search businesses...">
                             <button class="btn btn-outline-primary" type="button" id="searchButton">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -893,9 +893,9 @@
     <!-- ═══════════════════════════════════════════
          FLOATING BUTTONS
     ═══════════════════════════════════════════ -->
-    <button class="add-user-btn" id="addUserBtn" data-bs-toggle="modal" data-bs-target="#addUserModal">
+    <!-- <button class="add-user-btn" id="addUserBtn" data-bs-toggle="modal" data-bs-target="#addUserModal">
         <i class="fas fa-plus"></i>
-    </button>
+    </button> -->
 
     <button class="dark-mode-toggle" id="darkModeToggle">
         <i class="fas fa-moon" id="darkModeIcon"></i>
@@ -904,7 +904,7 @@
     <!-- ═══════════════════════════════════════════
          ADD USER MODAL
     ═══════════════════════════════════════════ -->
-    <div class="modal fade user-modal" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade user-modal" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1005,12 +1005,12 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- ═══════════════════════════════════════════
          EDIT USER MODAL
     ═══════════════════════════════════════════ -->
-    <div class="modal fade user-modal" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade user-modal" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1116,12 +1116,12 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- ═══════════════════════════════════════════
          DELETE CONFIRMATION MODAL
     ═══════════════════════════════════════════ -->
-    <div class="modal fade user-modal" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <!-- <div class="modal fade user-modal" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1142,7 +1142,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -1156,18 +1156,32 @@
 
         // ── Import all backend operations from the shared module ──────────────
         import {
-            fetchUsers,
-            subscribeToUsers,
-            addUser,
-            updateUser,
-            deleteUser,
-            getInitials,
+        //     fetchUsers,
+        //     subscribeToUsers,
+        //     addUser,
+        //     updateUser,
+        //     deleteUser,
+        //     getInitials,
             getDefaultProfilePic,
-            geocodeAddress
+        //     geocodeAddress
         } from "./backend/backend.js";
+        import { db } from "./Firebase/firebase_conn.js";
+        import { doc, collection, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         // ─────────────────────────────────────────────────────────────────────
 
         document.addEventListener('DOMContentLoaded', function () {
+
+            // ── Inititialize ─────────────────────────────────────────────────────────
+            let users            = [];
+            let userMarkers      = [];
+            let userMarkersVisible = true;
+            let userToDelete     = null;
+            let userToEdit       = null;
+            let uploadedImages   = {};
+            let previewMarker    = null;
+            const defPFP = getDefaultProfilePic();
+            loadBusinessFromFirebase();
+            renderUserCards();
 
             // Three Dots Menu Functions
             window.exportLocations = function() {
@@ -1239,15 +1253,6 @@ Location Map Help:
             // Force Leaflet to recalculate container size after DOM paint
             setTimeout(() => map.invalidateSize(), 300);
 
-            // ── State ─────────────────────────────────────────────────────────
-            let users            = [];
-            let userMarkers      = [];
-            let userMarkersVisible = true;
-            let userToDelete     = null;
-            let userToEdit       = null;
-            let uploadedImages   = {};
-            let previewMarker    = null;
-
             // ── Marker icon factory ───────────────────────────────────────────
             const markerIcon = (status, picUrl) => L.divIcon({
                 html: `<div class="profile-pic-marker ${status.toLowerCase()}" style="background-image:url('${picUrl}')"></div>`,
@@ -1257,104 +1262,153 @@ Location Map Help:
             });
 
             // ── Subscribe to real-time Firestore updates ──────────────────────
-            subscribeToUsers((updatedUsers) => {
-                users = updatedUsers;
-                renderMarkers();
-                renderUserCards();
-                updateStatistics();
-            });
+            // subscribeToUsers((updatedUsers) => {
+            //     users = updatedUsers;
+            //     renderMarkers();
+            //     renderUserCards();
+            //     updateStatistics();
+            // });
+
+            // ── Loads businesses from Firebase DB ─────────────────────────────
+            function loadBusinessFromFirebase() {
+                onSnapshot(collection(db, "users"), (snapshot) => {
+                    try {
+                        users.length = 0; // clear markers array
+
+                        snapshot.forEach((userDoc) => {
+                            const userData = userDoc.data();
+                            const userId = userDoc.id;
+
+                            if (!Array.isArray(userData.businesses)) return;
+
+                            userData.businesses.forEach((business, index) => {
+                                if (
+                                    typeof business.lat !== "number" ||
+                                    typeof business.lng !== "number"
+                                ) return;
+
+                                users.push({
+                                    id: `${userId}_${index}`,
+                                    ownerId: userId,
+                                    name: business.name || "Unnamed Business",
+                                    address: business.address || "",
+                                    description: business.desc || "",
+                                    phone: business.phone || "",
+                                    logoUrl: business.logoUrl || "",
+                                    coords: [business.lat, business.lng]
+                                });
+                            });
+                        });
+
+                        renderMarkers();
+                        renderUserCards();
+                        console.log("Loaded businesses:", users);
+
+                    } catch (error) {
+                        console.error("Error loading businesses:", error);
+                    }
+                });
+            }
 
             // ── Render map markers ────────────────────────────────────────────
             function renderMarkers() {
-                userMarkers.forEach(({ marker }) => map.removeLayer(marker));
+                // Remove old markers
+                userMarkers.forEach(({ marker }) => {
+                    if (marker) map.removeLayer(marker);
+                });
                 userMarkers = [];
 
-                users.forEach(user => {
-                    if (!user.coords || user.coords.length !== 2) return;
+                users.forEach(business => {
+                    if (!business.coords || business.coords.length !== 2) return;
 
-                    const marker = L.marker(user.coords, {
-                        icon: markerIcon(user.status, user.profilePic)
-                    }).bindPopup(`
+                    const marker = L.marker(business.coords, {icon: markerIcon(business.status || "active", business.logoUrl || defPFP)}).bindPopup(`
                         <div class="user-popup">
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                <div class="user-profile-pic" style="background-image:url('${user.profilePic}')"></div>
+                                <div class="user-profile-pic"
+                                    style="background-image:url('${business.logoUrl || defPFP}')">
+                                </div>
                                 <div>
-                                    <h5 class="mb-0">${user.name}</h5>
-                                    <small>${user.role}</small>
+                                    <h5 class="mb-0">${business.name}</h5>
+                                    <small>${business.phone || "No phone available"}</small>
                                 </div>
                             </div>
+
                             <hr class="my-2">
-                            <p class="mb-1"><strong>Email:</strong> ${user.email}</p>
-                            <p class="mb-1"><strong>Status:</strong>
-                                <span class="user-status status-${user.status.toLowerCase()}">${user.status}</span>
+
+                            <p class="mb-1">
+                                <strong>Address:</strong> ${business.address || "No address provided"}
                             </p>
-                            <p class="mb-1"><strong>Last Seen:</strong> ${user.lastSeen}</p>
-                            <p class="mb-1"><strong>Address:</strong> ${user.address}</p>
+
+                            <p class="mb-1">
+                                <strong>Description:</strong><br>
+                                ${business.description || "No description available"}
+                            </p>
+
                             <div class="d-flex gap-2 mt-2">
-                                <button class="btn btn-sm btn-primary w-100" onclick="focusUserOnMap('${user.id}')">
+                                <button class="btn btn-sm btn-primary w-100"
+                                    onclick="focusUserOnMap('${business.id}')">
                                     <i class="fas fa-map-marker-alt"></i> View
-                                </button>
-                                <button class="btn btn-sm btn-warning w-100" onclick="editUserProfile('${user.id}')">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <button class="btn btn-sm btn-danger w-100" onclick="showDeleteConfirmation('${user.id}')">
-                                    <i class="fas fa-trash"></i> Delete
                                 </button>
                             </div>
                         </div>
                     `);
 
                     if (userMarkersVisible) marker.addTo(map);
-                    userMarkers.push({ id: user.id, marker, user });
+
+                    userMarkers.push({ id: business.id, marker, user: business });
                 });
             }
 
             // ── Render sidebar user cards ─────────────────────────────────────
             function renderUserCards() {
-                const container = document.getElementById('userLocationsList');
-                container.innerHTML = '';
+                const userListContainer = document.getElementById('userLocationsList');
+                userListContainer.innerHTML = '';
 
-                users.forEach(user => {
+                users.forEach(business => {
                     const card = document.createElement('div');
                     card.className = 'user-card';
-                    card.setAttribute('data-user-id', user.id);
+                    card.setAttribute('data-user-id', business.id);
 
                     card.innerHTML = `
                         <div class="user-card-actions">
-                            <button class="user-action-btn edit-user-btn" onclick="editUserProfile('${user.id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="user-action-btn delete-user-btn" onclick="showDeleteConfirmation('${user.id}')">
-                                <i class="fas fa-times"></i>
-                            </button>
                         </div>
+
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <div class="user-card-title">${user.name}</div>
-                                <div class="user-card-address">${user.address}</div>
+                                <div class="user-card-title">${business.name}</div>
+                                <div class="user-card-address">${business.address || "No address provided"}</div>
+
                                 <div class="d-flex align-items-center gap-2 mt-1">
-                                    <span class="role-badge role-${user.role.toLowerCase()}">${user.role}</span>
-                                    <span class="user-status status-${user.status.toLowerCase()}">${user.status}</span>
+                                    <span class="role-badge">
+                                        ${business.phone || "No phone"}
+                                    </span>
                                 </div>
                             </div>
-                            <div class="user-profile-pic" style="background-image:url('${user.profilePic}')"></div>
+
+                            <div class="user-profile-pic"
+                                style="background-image: url('${business.logoUrl || defPFP}')">
+                            </div>
                         </div>
+
                         <div class="mt-2">
                             <small class="text-muted">
-                                <i class="fas fa-clock"></i> Last seen: ${user.lastSeen}
+                                ${business.description || "No description available"}
                             </small>
+
                             <button class="btn btn-sm btn-outline-primary mt-2 w-100"
-                                onclick="focusUserOnMap('${user.id}')">
+                                onclick="focusUserOnMap('${business.id}')">
                                 <i class="fas fa-map-marker-alt"></i> View on Map
                             </button>
                         </div>
                     `;
 
-                    card.addEventListener('click', function (e) {
-                        if (!e.target.closest('button')) focusUserOnMap(user.id);
+                    card.addEventListener('click', function(e) {
+                        if (!e.target.closest('button')) {
+                            focusUserOnMap(business.id);
+                        }
                     });
 
-                    container.appendChild(card);
+                    userListContainer.appendChild(card);
                 });
             }
 
@@ -1371,136 +1425,144 @@ Location Map Help:
                 const user = users.find(u => u.id === userId);
                 if (!user || !user.coords || user.coords.length !== 2) return;
 
+                // Move map
                 map.flyTo(user.coords, 16, { animate: true });
 
-                const entry = userMarkers.find(m => m.id === userId);
-                if (entry?.marker) entry.marker.openPopup();
+                // Open marker popup
+                const userMarker = userMarkers.find(m => m.id === userId);
+                if (userMarker?.marker) {
+                    userMarker.marker.openPopup();
+                }
 
-                document.querySelectorAll('.user-card').forEach(c => c.classList.remove('active'));
+                // Highlight user card (if exists)
+                document.querySelectorAll('.user-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+
                 const card = document.querySelector(`[data-user-id="${userId}"]`);
                 if (card) card.classList.add('active');
             };
 
             // ── Open edit modal ───────────────────────────────────────────────
-            window.editUserProfile = function (userId) {
-                event.stopPropagation();
-                const user = users.find(u => u.id === userId);
-                if (!user) return;
+            // window.editUserProfile = function (userId) {
+            //     event.stopPropagation();
+            //     const user = users.find(u => u.id === userId);
+            //     if (!user) return;
 
-                userToEdit = user;
+            //     userToEdit = user;
 
-                document.getElementById('editUserId').value      = user.id;
-                document.getElementById('editUserName').value    = user.name;
-                document.getElementById('editUserEmail').value   = user.email;
-                document.getElementById('editUserRole').value    = user.role;
-                document.getElementById('editUserStatus').value  = user.status;
-                document.getElementById('editUserAddress').value = user.address;
-                document.getElementById('editUserLat').value     = user.coords[0];
-                document.getElementById('editUserLng').value     = user.coords[1];
-                document.getElementById('editUserAvatar').value  = user.avatar || getInitials(user.name);
-                document.getElementById('editUserLastSeen').value = user.lastSeen;
-                document.getElementById('editUserProfilePicUrl').value = uploadedImages[user.id] ? '' : (user.profilePic || '');
+            //     document.getElementById('editUserId').value      = user.id;
+            //     document.getElementById('editUserName').value    = user.name;
+            //     document.getElementById('editUserEmail').value   = user.email;
+            //     document.getElementById('editUserRole').value    = user.role;
+            //     document.getElementById('editUserStatus').value  = user.status;
+            //     document.getElementById('editUserAddress').value = user.address;
+            //     document.getElementById('editUserLat').value     = user.coords[0];
+            //     document.getElementById('editUserLng').value     = user.coords[1];
+            //     document.getElementById('editUserAvatar').value  = user.avatar || getInitials(user.name);
+            //     document.getElementById('editUserLastSeen').value = user.lastSeen;
+            //     document.getElementById('editUserProfilePicUrl').value = uploadedImages[user.id] ? '' : (user.profilePic || '');
 
-                updateEditProfilePreview();
-                new bootstrap.Modal(document.getElementById('editUserModal')).show();
+            //     updateEditProfilePreview();
+            //     new bootstrap.Modal(document.getElementById('editUserModal')).show();
 
-                map.flyTo(user.coords, 16);
-                const entry = userMarkers.find(m => m.id === userId);
-                if (entry?.marker) setTimeout(() => entry.marker.openPopup(), 1000);
+            //     map.flyTo(user.coords, 16);
+            //     const entry = userMarkers.find(m => m.id === userId);
+            //     if (entry?.marker) setTimeout(() => entry.marker.openPopup(), 1000);
 
-                // Live geocode while typing address
-                const addressInput = document.getElementById('editUserAddress');
-                let addressTimeout;
-                addressInput.addEventListener('input', function () {
-                    clearTimeout(addressTimeout);
-                    addressTimeout = setTimeout(async () => {
-                        if (this.value.length <= 3) return;
-                        const coords = await geocodeAddress(this.value);
-                        if (!coords) return;
-                        document.getElementById('editUserLat').value = coords.lat.toFixed(6);
-                        document.getElementById('editUserLng').value = coords.lng.toFixed(6);
-                        map.flyTo([coords.lat, coords.lng], 16);
-                        if (previewMarker) map.removeLayer(previewMarker);
-                        previewMarker = L.marker([coords.lat, coords.lng], {
-                            icon: L.divIcon({
-                                html: '<div style="width:40px;height:40px;background:rgba(255,0,0,0.5);border:3px solid red;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:12px;">?</div>',
-                                className: 'custom-div-icon',
-                                iconSize: [40, 40],
-                                iconAnchor: [20, 20]
-                            })
-                        }).addTo(map).bindPopup('Preview of new location<br>Click "Save Changes" to confirm').openPopup();
-                    }, 800);
-                });
-            };
+            //     // Live geocode while typing address
+            //     const addressInput = document.getElementById('editUserAddress');
+            //     let addressTimeout;
+            //     addressInput.addEventListener('input', function () {
+            //         clearTimeout(addressTimeout);
+            //         addressTimeout = setTimeout(async () => {
+            //             if (this.value.length <= 3) return;
+            //             const coords = await geocodeAddress(this.value);
+            //             if (!coords) return;
+            //             document.getElementById('editUserLat').value = coords.lat.toFixed(6);
+            //             document.getElementById('editUserLng').value = coords.lng.toFixed(6);
+            //             map.flyTo([coords.lat, coords.lng], 16);
+            //             if (previewMarker) map.removeLayer(previewMarker);
+            //             previewMarker = L.marker([coords.lat, coords.lng], {
+            //                 icon: L.divIcon({
+            //                     html: '<div style="width:40px;height:40px;background:rgba(255,0,0,0.5);border:3px solid red;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:12px;">?</div>',
+            //                     className: 'custom-div-icon',
+            //                     iconSize: [40, 40],
+            //                     iconAnchor: [20, 20]
+            //                 })
+            //             }).addTo(map).bindPopup('Preview of new location<br>Click "Save Changes" to confirm').openPopup();
+            //         }, 800);
+            //     });
+            // };
 
             // ── Show delete confirmation ──────────────────────────────────────
-            window.showDeleteConfirmation = function (userId) {
-                event.stopPropagation();
-                const user = users.find(u => u.id === userId);
-                if (!user) return;
-                userToDelete = user;
-                document.getElementById('deleteUserName').textContent = user.name;
-                new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
-            };
+            // window.showDeleteConfirmation = function (userId) {
+            //     event.stopPropagation();
+            //     const user = users.find(u => u.id === userId);
+            //     if (!user) return;
+            //     userToDelete = user;
+            //     document.getElementById('deleteUserName').textContent = user.name;
+            //     new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
+            // };
 
             // ── Profile preview helpers ───────────────────────────────────────
-            function updateNewProfilePreview() {
-                const name   = document.getElementById('newUserName').value || 'John Doe';
-                const role   = document.getElementById('newUserRole').value || 'User';
-                const status = document.getElementById('newUserStatus').value || 'Active';
-                const avatar = document.getElementById('newUserAvatar').value || getInitials(name) || 'JD';
-                const url    = document.getElementById('newUserProfilePicUrl').value;
+            // function updateNewProfilePreview() {
+            //     const name   = document.getElementById('newUserName').value || 'John Doe';
+            //     const role   = document.getElementById('newUserRole').value || 'User';
+            //     const status = document.getElementById('newUserStatus').value || 'Active';
+            //     const avatar = document.getElementById('newUserAvatar').value || getInitials(name) || 'JD';
+            //     const url    = document.getElementById('newUserProfilePicUrl').value;
 
-                document.getElementById('newProfileNamePreview').textContent = name;
-                document.getElementById('newProfileRolePreview').textContent = role;
+            //     document.getElementById('newProfileNamePreview').textContent = name;
+            //     document.getElementById('newProfileRolePreview').textContent = role;
 
-                const statusEl = document.getElementById('newProfileStatusPreview');
-                statusEl.textContent = status;
-                statusEl.className = `user-status status-${status.toLowerCase()}`;
+            //     const statusEl = document.getElementById('newProfileStatusPreview');
+            //     statusEl.textContent = status;
+            //     statusEl.className = `user-status status-${status.toLowerCase()}`;
 
-                const preview = document.getElementById('newProfilePicPreview');
-                const text    = document.getElementById('newProfilePicText');
-                if (url) {
-                    preview.style.backgroundImage = `url('${url}')`;
-                    text.style.display = 'none';
-                } else {
-                    preview.style.backgroundImage = '';
-                    preview.style.backgroundColor = '#4361ee';
-                    text.textContent = avatar;
-                    text.style.display = 'flex';
-                }
-            }
+            //     const preview = document.getElementById('newProfilePicPreview');
+            //     const text    = document.getElementById('newProfilePicText');
+            //     if (url) {
+            //         preview.style.backgroundImage = `url('${url}')`;
+            //         text.style.display = 'none';
+            //     } else {
+            //         preview.style.backgroundImage = '';
+            //         preview.style.backgroundColor = '#4361ee';
+            //         text.textContent = avatar;
+            //         text.style.display = 'flex';
+            //     }
+            // }
 
-            function updateEditProfilePreview() {
-                const name   = document.getElementById('editUserName').value;
-                const role   = document.getElementById('editUserRole').value;
-                const status = document.getElementById('editUserStatus').value;
-                const avatar = document.getElementById('editUserAvatar').value || getInitials(name);
-                const url    = document.getElementById('editUserProfilePicUrl').value;
-                const userId = document.getElementById('editUserId').value;
+            // function updateEditProfilePreview() {
+            //     const name   = document.getElementById('editUserName').value;
+            //     const role   = document.getElementById('editUserRole').value;
+            //     const status = document.getElementById('editUserStatus').value;
+            //     const avatar = document.getElementById('editUserAvatar').value || getInitials(name);
+            //     const url    = document.getElementById('editUserProfilePicUrl').value;
+            //     const userId = document.getElementById('editUserId').value;
 
-                document.getElementById('editProfileNamePreview').textContent = name;
-                document.getElementById('editProfileRolePreview').textContent = role;
+            //     document.getElementById('editProfileNamePreview').textContent = name;
+            //     document.getElementById('editProfileRolePreview').textContent = role;
 
-                const statusEl = document.getElementById('editProfileStatusPreview');
-                statusEl.textContent = status;
-                statusEl.className = `user-status status-${status.toLowerCase()}`;
+            //     const statusEl = document.getElementById('editProfileStatusPreview');
+            //     statusEl.textContent = status;
+            //     statusEl.className = `user-status status-${status.toLowerCase()}`;
 
-                const preview = document.getElementById('editProfilePicPreview');
-                const text    = document.getElementById('editProfilePicText');
-                if (uploadedImages[userId]) {
-                    preview.style.backgroundImage = `url('${uploadedImages[userId]}')`;
-                    text.style.display = 'none';
-                } else if (url) {
-                    preview.style.backgroundImage = `url('${url}')`;
-                    text.style.display = 'none';
-                } else {
-                    preview.style.backgroundImage = '';
-                    preview.style.backgroundColor = '#4361ee';
-                    text.textContent = avatar;
-                    text.style.display = 'flex';
-                }
-            }
+            //     const preview = document.getElementById('editProfilePicPreview');
+            //     const text    = document.getElementById('editProfilePicText');
+            //     if (uploadedImages[userId]) {
+            //         preview.style.backgroundImage = `url('${uploadedImages[userId]}')`;
+            //         text.style.display = 'none';
+            //     } else if (url) {
+            //         preview.style.backgroundImage = `url('${url}')`;
+            //         text.style.display = 'none';
+            //     } else {
+            //         preview.style.backgroundImage = '';
+            //         preview.style.backgroundColor = '#4361ee';
+            //         text.textContent = avatar;
+            //         text.style.display = 'flex';
+            //     }
+            // }
 
             // ── Image source toggle (Upload / URL) ────────────────────────────
             function initImageSourceOptions() {
@@ -1521,141 +1583,141 @@ Location Map Help:
             }
 
             // ── File upload handlers ──────────────────────────────────────────
-            function initFileUploadHandlers() {
-                function handleUpload(inputId, previewId, profilePreviewId, profileTextId, tempKey, type) {
-                    document.getElementById(inputId).addEventListener('change', function (e) {
-                        const file = e.target.files[0];
-                        if (!file) return;
-                        if (file.size > 5 * 1024 * 1024) { showNotification('File size must be less than 5MB', 'error'); this.value = ''; return; }
-                        if (!file.type.match('image.*')) { showNotification('Please select an image file', 'error'); this.value = ''; return; }
+            // function initFileUploadHandlers() {
+            //     function handleUpload(inputId, previewId, profilePreviewId, profileTextId, tempKey, type) {
+            //         document.getElementById(inputId).addEventListener('change', function (e) {
+            //             const file = e.target.files[0];
+            //             if (!file) return;
+            //             if (file.size > 5 * 1024 * 1024) { showNotification('File size must be less than 5MB', 'error'); this.value = ''; return; }
+            //             if (!file.type.match('image.*')) { showNotification('Please select an image file', 'error'); this.value = ''; return; }
 
-                        const reader = new FileReader();
-                        reader.onload = (evt) => {
-                            const imageData = evt.target.result;
-                            const key = tempKey || document.getElementById('editUserId').value;
-                            uploadedImages[key] = imageData;
+            //             const reader = new FileReader();
+            //             reader.onload = (evt) => {
+            //                 const imageData = evt.target.result;
+            //                 const key = tempKey || document.getElementById('editUserId').value;
+            //                 uploadedImages[key] = imageData;
 
-                            const previewContainer = document.getElementById(previewId);
-                            const img = Object.assign(document.createElement('img'), { src: imageData, alt: 'Profile Preview' });
-                            const removeBtn = document.createElement('button');
-                            removeBtn.type = 'button';
-                            removeBtn.className = 'remove-image-btn';
-                            removeBtn.innerHTML = '<i class="fas fa-trash"></i> Remove Image';
-                            removeBtn.onclick = () => {
-                                delete uploadedImages[key];
-                                previewContainer.innerHTML = '';
-                                document.getElementById(inputId).value = '';
-                                type === 'new' ? updateNewProfilePreview() : updateEditProfilePreview();
-                            };
+            //                 const previewContainer = document.getElementById(previewId);
+            //                 const img = Object.assign(document.createElement('img'), { src: imageData, alt: 'Profile Preview' });
+            //                 const removeBtn = document.createElement('button');
+            //                 removeBtn.type = 'button';
+            //                 removeBtn.className = 'remove-image-btn';
+            //                 removeBtn.innerHTML = '<i class="fas fa-trash"></i> Remove Image';
+            //                 removeBtn.onclick = () => {
+            //                     delete uploadedImages[key];
+            //                     previewContainer.innerHTML = '';
+            //                     document.getElementById(inputId).value = '';
+            //                     type === 'new' ? updateNewProfilePreview() : updateEditProfilePreview();
+            //                 };
 
-                            previewContainer.innerHTML = '';
-                            previewContainer.append(img, removeBtn);
+            //                 previewContainer.innerHTML = '';
+            //                 previewContainer.append(img, removeBtn);
 
-                            document.getElementById(profilePreviewId).style.backgroundImage = `url('${imageData}')`;
-                            document.getElementById(profileTextId).style.display = 'none';
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                }
+            //                 document.getElementById(profilePreviewId).style.backgroundImage = `url('${imageData}')`;
+            //                 document.getElementById(profileTextId).style.display = 'none';
+            //             };
+            //             reader.readAsDataURL(file);
+            //         });
+            //     }
 
-                handleUpload('newUserProfilePicUpload', 'newUploadPreview', 'newProfilePicPreview', 'newProfilePicText', `temp-${Date.now()}`, 'new');
-                handleUpload('editUserProfilePicUpload', 'editUploadPreview', 'editProfilePicPreview', 'editProfilePicText', null, 'edit');
-            }
+            //     handleUpload('newUserProfilePicUpload', 'newUploadPreview', 'newProfilePicPreview', 'newProfilePicText', `temp-${Date.now()}`, 'new');
+            //     handleUpload('editUserProfilePicUpload', 'editUploadPreview', 'editProfilePicPreview', 'editProfilePicText', null, 'edit');
+            // }
 
             // ── Save NEW user ─────────────────────────────────────────────────
-            document.getElementById('saveNewUser').addEventListener('click', async function () {
-                const name    = document.getElementById('newUserName').value.trim();
-                const email   = document.getElementById('newUserEmail').value.trim();
-                const role    = document.getElementById('newUserRole').value;
-                const status  = document.getElementById('newUserStatus').value;
-                const address = document.getElementById('newUserAddress').value.trim();
-                const lat     = parseFloat(document.getElementById('newUserLat').value);
-                const lng     = parseFloat(document.getElementById('newUserLng').value);
-                const avatar  = document.getElementById('newUserAvatar').value;
-                const url     = document.getElementById('newUserProfilePicUrl').value;
+            // document.getElementById('saveNewUser').addEventListener('click', async function () {
+            //     const name    = document.getElementById('newUserName').value.trim();
+            //     const email   = document.getElementById('newUserEmail').value.trim();
+            //     const role    = document.getElementById('newUserRole').value;
+            //     const status  = document.getElementById('newUserStatus').value;
+            //     const address = document.getElementById('newUserAddress').value.trim();
+            //     const lat     = parseFloat(document.getElementById('newUserLat').value);
+            //     const lng     = parseFloat(document.getElementById('newUserLng').value);
+            //     const avatar  = document.getElementById('newUserAvatar').value;
+            //     const url     = document.getElementById('newUserProfilePicUrl').value;
 
-                const tempKeys     = Object.keys(uploadedImages).filter(k => k.startsWith('temp-'));
-                const uploadedImage = tempKeys.length ? uploadedImages[tempKeys[0]] : null;
+            //     const tempKeys     = Object.keys(uploadedImages).filter(k => k.startsWith('temp-'));
+            //     const uploadedImage = tempKeys.length ? uploadedImages[tempKeys[0]] : null;
 
-                if (!name || !email || !role || !status || !address || isNaN(lat) || isNaN(lng)) {
-                    showNotification('Please fill all required fields correctly.', 'error');
-                    return;
-                }
+            //     if (!name || !email || !role || !status || !address || isNaN(lat) || isNaN(lng)) {
+            //         showNotification('Please fill all required fields correctly.', 'error');
+            //         return;
+            //     }
 
-                try {
-                    // ── BACKEND CALL ─────────────────────────────────────────
-                    await addUser({
-                        name, email, role, status, address,
-                        coords: [lat, lng],
-                        avatar: avatar || getInitials(name),
-                        profilePic: uploadedImage || url || getDefaultProfilePic()
-                    });
-                    // ─────────────────────────────────────────────────────────
+            //     try {
+            //         // ── BACKEND CALL ─────────────────────────────────────────
+            //         await addUser({
+            //             name, email, role, status, address,
+            //             coords: [lat, lng],
+            //             avatar: avatar || getInitials(name),
+            //             profilePic: uploadedImage || url || getDefaultProfilePic()
+            //         });
+            //         // ─────────────────────────────────────────────────────────
 
-                    if (uploadedImage) tempKeys.forEach(k => delete uploadedImages[k]);
+            //         if (uploadedImage) tempKeys.forEach(k => delete uploadedImages[k]);
 
-                    bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
-                    document.getElementById('addUserForm').reset();
-                    document.getElementById('newUploadPreview').innerHTML = '';
-                    updateNewProfilePreview();
-                    showNotification(`User "${name}" added successfully!`, 'success');
+            //         bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+            //         document.getElementById('addUserForm').reset();
+            //         document.getElementById('newUploadPreview').innerHTML = '';
+            //         updateNewProfilePreview();
+            //         showNotification(`User "${name}" added successfully!`, 'success');
 
-                } catch (err) {
-                    showNotification('Failed to save user. Check console.', 'error');
-                }
-            });
+            //     } catch (err) {
+            //         showNotification('Failed to save user. Check console.', 'error');
+            //     }
+            // });
 
             // ── Save EDITED user ──────────────────────────────────────────────
-            document.getElementById('saveEditUser').addEventListener('click', async function () {
-                const userId = document.getElementById('editUserId').value;
-                if (!userId) return;
+            // document.getElementById('saveEditUser').addEventListener('click', async function () {
+            //     const userId = document.getElementById('editUserId').value;
+            //     if (!userId) return;
 
-                const profilePic = uploadedImages[userId]
-                    || document.getElementById('editUserProfilePicUrl').value.trim()
-                    || null;
+            //     const profilePic = uploadedImages[userId]
+            //         || document.getElementById('editUserProfilePicUrl').value.trim()
+            //         || null;
 
-                try {
-                    // ── BACKEND CALL ─────────────────────────────────────────
-                    await updateUser(userId, {
-                        name:       document.getElementById('editUserName').value.trim(),
-                        email:      document.getElementById('editUserEmail').value.trim(),
-                        role:       document.getElementById('editUserRole').value,
-                        status:     document.getElementById('editUserStatus').value,
-                        address:    document.getElementById('editUserAddress').value.trim(),
-                        coords: [
-                            parseFloat(document.getElementById('editUserLat').value),
-                            parseFloat(document.getElementById('editUserLng').value)
-                        ],
-                        avatar:      document.getElementById('editUserAvatar').value.toUpperCase(),
-                        profilePic
-                    });
-                    // ─────────────────────────────────────────────────────────
+            //     try {
+            //         // ── BACKEND CALL ─────────────────────────────────────────
+            //         await updateUser(userId, {
+            //             name:       document.getElementById('editUserName').value.trim(),
+            //             email:      document.getElementById('editUserEmail').value.trim(),
+            //             role:       document.getElementById('editUserRole').value,
+            //             status:     document.getElementById('editUserStatus').value,
+            //             address:    document.getElementById('editUserAddress').value.trim(),
+            //             coords: [
+            //                 parseFloat(document.getElementById('editUserLat').value),
+            //                 parseFloat(document.getElementById('editUserLng').value)
+            //             ],
+            //             avatar:      document.getElementById('editUserAvatar').value.toUpperCase(),
+            //             profilePic
+            //         });
+            //         // ─────────────────────────────────────────────────────────
 
-                    bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
-                    if (previewMarker) { map.removeLayer(previewMarker); previewMarker = null; }
-                    showNotification('User updated successfully!', 'success');
+            //         bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+            //         if (previewMarker) { map.removeLayer(previewMarker); previewMarker = null; }
+            //         showNotification('User updated successfully!', 'success');
 
-                } catch (err) {
-                    showNotification('Failed to save changes. Check console.', 'error');
-                }
-            });
+            //     } catch (err) {
+            //         showNotification('Failed to save changes. Check console.', 'error');
+            //     }
+            // });
 
             // ── Confirm DELETE ────────────────────────────────────────────────
-            document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
-                if (!userToDelete) return;
-                try {
-                    // ── BACKEND CALL ─────────────────────────────────────────
-                    await deleteUser(userToDelete.id);
-                    // ─────────────────────────────────────────────────────────
+            // document.getElementById('confirmDeleteBtn').addEventListener('click', async function () {
+            //     if (!userToDelete) return;
+            //     try {
+            //         // ── BACKEND CALL ─────────────────────────────────────────
+            //         await deleteUser(userToDelete.id);
+            //         // ─────────────────────────────────────────────────────────
 
-                    bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
-                    showNotification(`User "${userToDelete.name}" deleted successfully!`, 'success');
-                    userToDelete = null;
+            //         bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
+            //         showNotification(`User "${userToDelete.name}" deleted successfully!`, 'success');
+            //         userToDelete = null;
 
-                } catch (err) {
-                    showNotification('Failed to delete user. Check console.', 'error');
-                }
-            });
+            //     } catch (err) {
+            //         showNotification('Failed to delete user. Check console.', 'error');
+            //     }
+            // });
 
             // ── Map controls ──────────────────────────────────────────────────
             document.getElementById('locateMe').addEventListener('click', function () {
@@ -1716,38 +1778,49 @@ Location Map Help:
             document.getElementById('searchButton').addEventListener('click', () => document.getElementById('searchUsers').focus());
 
             // ── Map click → update lat/lng in forms ───────────────────────────
-            map.on('click', function (e) {
-                document.getElementById('newUserLat').value = e.latlng.lat.toFixed(6);
-                document.getElementById('newUserLng').value = e.latlng.lng.toFixed(6);
-
-                if (document.getElementById('editUserModal').classList.contains('show')) {
-                    document.getElementById('editUserLat').value = e.latlng.lat.toFixed(6);
-                    document.getElementById('editUserLng').value = e.latlng.lng.toFixed(6);
+            map.on('click', function(e) {
+                const latInput = document.getElementById('newUserLat');
+                const lngInput = document.getElementById('newUserLng');
+                const editLatInput = document.getElementById('editUserLat');
+                const editLngInput = document.getElementById('editUserLng');
+                
+                // Update add form if visible
+                if (latInput && lngInput) {
+                    latInput.value = e.latlng.lat.toFixed(6);
+                    lngInput.value = e.latlng.lng.toFixed(6);
+                }
+                
+                // Update edit form if visible
+                if (editLatInput && editLngInput && document.getElementById('editUserModal').classList.contains('show')) {
+                    editLatInput.value = e.latlng.lat.toFixed(6);
+                    editLngInput.value = e.latlng.lng.toFixed(6);
+                    
+                    // Also update preview if coordinates changed
                     updateEditProfilePreview();
                 }
             });
 
             // ── Modal reset handlers ──────────────────────────────────────────
-            document.getElementById('addUserModal').addEventListener('hidden.bs.modal', function () {
-                document.getElementById('addUserForm').reset();
-                document.getElementById('newUploadPreview').innerHTML = '';
-                updateNewProfilePreview();
-            });
+            // document.getElementById('addUserModal').addEventListener('hidden.bs.modal', function () {
+            //     document.getElementById('addUserForm').reset();
+            //     document.getElementById('newUploadPreview').innerHTML = '';
+            //     updateNewProfilePreview();
+            // });
 
-            document.getElementById('editUserModal').addEventListener('hidden.bs.modal', function () {
-                document.getElementById('editUploadPreview').innerHTML = '';
-                if (previewMarker) { map.removeLayer(previewMarker); previewMarker = null; }
-            });
+            // document.getElementById('editUserModal').addEventListener('hidden.bs.modal', function () {
+            //     document.getElementById('editUploadPreview').innerHTML = '';
+            //     if (previewMarker) { map.removeLayer(previewMarker); previewMarker = null; }
+            // });
 
             // ── Real-time form previews ───────────────────────────────────────
-            ['newUserName', 'newUserRole', 'newUserStatus', 'newUserAvatar'].forEach(id =>
-                document.getElementById(id).addEventListener('input', updateNewProfilePreview)
-            );
-            ['editUserName', 'editUserRole', 'editUserStatus', 'editUserAvatar'].forEach(id =>
-                document.getElementById(id).addEventListener('input', updateEditProfilePreview)
-            );
-            document.getElementById('newUserProfilePicUrl').addEventListener('input', updateNewProfilePreview);
-            document.getElementById('editUserProfilePicUrl').addEventListener('input', updateEditProfilePreview);
+            // ['newUserName', 'newUserRole', 'newUserStatus', 'newUserAvatar'].forEach(id =>
+            //     document.getElementById(id).addEventListener('input', updateNewProfilePreview)
+            // );
+            // ['editUserName', 'editUserRole', 'editUserStatus', 'editUserAvatar'].forEach(id =>
+            //     document.getElementById(id).addEventListener('input', updateEditProfilePreview)
+            // );
+            // document.getElementById('newUserProfilePicUrl').addEventListener('input', updateNewProfilePreview);
+            // document.getElementById('editUserProfilePicUrl').addEventListener('input', updateEditProfilePreview);
 
             // ── Dark mode ─────────────────────────────────────────────────────
             const darkIcon = document.getElementById('darkModeIcon');
@@ -1778,8 +1851,8 @@ Location Map Help:
 
             // ── Init ──────────────────────────────────────────────────────────
             initImageSourceOptions();
-            initFileUploadHandlers();
-            updateNewProfilePreview();
+            // initFileUploadHandlers();
+            // updateNewProfilePreview();
         });
     </script>
 </body>

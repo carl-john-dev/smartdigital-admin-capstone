@@ -21,308 +21,308 @@
 <style>
     /* Add these styles to your existing style.css */
 
-/* Three Dots Menu Styles */
-.three-dots-menu {
-    position: relative;
-    display: inline-block;
-    margin-right: 15px;
-}
-
-.dots-button {
-    background: transparent;
-    border: none;
-    color: var(--text-color);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-}
-
-.dots-button:hover {
-    background: rgba(67, 97, 238, 0.1);
-    color: var(--primary);
-}
-
-.dropdown-menu-custom {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    min-width: 200px;
-    z-index: 1000;
-    display: none;
-    margin-top: 5px;
-}
-
-.dropdown-menu-custom.show {
-    display: block;
-    animation: fadeIn 0.2s ease;
-}
-
-.dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 15px;
-    color: var(--text-color);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    width: 100%;
-    text-align: left;
-    font-size: 0.95rem;
-}
-
-.dropdown-item:hover {
-    background: rgba(67, 97, 238, 0.1);
-    color: var(--primary);
-}
-
-.dropdown-item i {
-    width: 20px;
-    color: var(--primary);
-}
-
-.dropdown-divider {
-    height: 1px;
-    background: var(--border-color);
-    margin: 5px 0;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Enhanced Stat Cards */
-.stat-card {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.stat-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-}
-
-.stat-content {
-    flex: 1;
-}
-
-/* Card-specific colors */
-.processed-card .stat-icon {
-    background: rgba(40, 167, 69, 0.15);
-    color: #28a745;
-}
-
-.inprocess-card .stat-icon {
-    background: rgba(0, 123, 255, 0.15);
-    color: #007bff;
-}
-
-.ready-pickup-card .stat-icon {
-    background: rgba(255, 193, 7, 0.15);
-    color: #ffc107;
-}
-
-/* NFC Card Styles */
-.nfc-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    margin-left: 8px;
-}
-
-/* Pick Up Detail Section */
-.pickup-detail-section {
-    margin-top: 20px;
-}
-
-.pickup-items-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.pickup-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
-    background: var(--card-bg, #f8f9fa);
-    border-radius: 10px;
-    transition: all 0.3s ease;
-    border-left: 4px solid #ffc107;
-}
-
-.dark-mode .pickup-item {
-    background: #2d2d2d;
-}
-
-.pickup-item:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.pickup-item-icon {
-    width: 45px;
-    height: 45px;
-    border-radius: 10px;
-    background: rgba(255, 193, 7, 0.15);
-    color: #ffc107;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-}
-
-.pickup-item-details {
-    flex: 1;
-}
-
-.pickup-item-details h5 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.pickup-item-details p {
-    margin: 5px 0 0;
-    font-size: 0.85rem;
-    color: var(--text-muted, #6c757d);
-}
-
-.pickup-badge {
-    background: #ffc107;
-    color: #000;
-    font-weight: 500;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-}
-
-/* Notification Items */
-.notification-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-bottom: 1px solid var(--border-color, #dee2e6);
-}
-
-.dark-mode .notification-item {
-    border-bottom-color: #404040;
-}
-
-.notification-item:last-child {
-    border-bottom: none;
-}
-
-.notification-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 18px;
-}
-
-.notification-content {
-    flex: 1;
-}
-
-.notification-content h6 {
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 600;
-}
-
-.notification-content p {
-    margin: 2px 0;
-    font-size: 0.85rem;
-    color: var(--text-muted, #6c757d);
-}
-
-/* Pickup Quick Section */
-.pickup-quick-section {
-    background: var(--section-bg, white);
-}
-
-/* Table enhancements */
-.table {
-    margin-bottom: 0;
-}
-
-.table th {
-    border-top: none;
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Notification helper */
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-    min-width: 300px;
-    animation: slideIn 0.3s ease;
-    border-radius: 8px;
-    padding: 15px 20px;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.notification.success { background: linear-gradient(135deg, #10b981, #059669); }
-.notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
-.notification.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-.notification.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
-
-@keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOut {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .stats-container {
-        grid-template-columns: repeat(2, 1fr);
+    /* Three Dots Menu Styles */
+    .three-dots-menu {
+        position: relative;
+        display: inline-block;
+        margin-right: 15px;
     }
-    
-    .pickup-item {
+
+    .dots-button {
+        background: transparent;
+        border: none;
+        color: var(--text-color);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .dots-button:hover {
+        background: rgba(67, 97, 238, 0.1);
+        color: var(--primary);
+    }
+
+    .dropdown-menu-custom {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        min-width: 200px;
+        z-index: 1000;
+        display: none;
+        margin-top: 5px;
+    }
+
+    .dropdown-menu-custom.show {
+        display: block;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        width: 100%;
+        text-align: left;
+        font-size: 0.95rem;
+    }
+
+    .dropdown-item:hover {
+        background: rgba(67, 97, 238, 0.1);
+        color: var(--primary);
+    }
+
+    .dropdown-item i {
+        width: 20px;
+        color: var(--primary);
+    }
+
+    .dropdown-divider {
+        height: 1px;
+        background: var(--border-color);
+        margin: 5px 0;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Enhanced Stat Cards */
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    /* Card-specific colors */
+    .processed-card .stat-icon {
+        background: rgba(40, 167, 69, 0.15);
+        color: #28a745;
+    }
+
+    .inprocess-card .stat-icon {
+        background: rgba(0, 123, 255, 0.15);
+        color: #007bff;
+    }
+
+    .ready-pickup-card .stat-icon {
+        background: rgba(255, 193, 7, 0.15);
+        color: #ffc107;
+    }
+
+    /* NFC Card Styles */
+    .nfc-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        margin-left: 8px;
+    }
+
+    /* Pick Up Detail Section */
+    .pickup-detail-section {
+        margin-top: 20px;
+    }
+
+    .pickup-items-container {
+        display: flex;
         flex-direction: column;
-        text-align: center;
+        gap: 12px;
     }
-    
+
+    .pickup-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        background: var(--card-bg, #f8f9fa);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        border-left: 4px solid #ffc107;
+    }
+
+    .dark-mode .pickup-item {
+        background: #2d2d2d;
+    }
+
+    .pickup-item:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .pickup-item-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 10px;
+        background: rgba(255, 193, 7, 0.15);
+        color: #ffc107;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
     .pickup-item-details {
-        text-align: center;
+        flex: 1;
     }
-}
+
+    .pickup-item-details h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .pickup-item-details p {
+        margin: 5px 0 0;
+        font-size: 0.85rem;
+        color: var(--text-muted, #6c757d);
+    }
+
+    .pickup-badge {
+        background: #ffc107;
+        color: #000;
+        font-weight: 500;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+    }
+
+    /* Notification Items */
+    .notification-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-bottom: 1px solid var(--border-color, #dee2e6);
+    }
+
+    .dark-mode .notification-item {
+        border-bottom-color: #404040;
+    }
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-content h6 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .notification-content p {
+        margin: 2px 0;
+        font-size: 0.85rem;
+        color: var(--text-muted, #6c757d);
+    }
+
+    /* Pickup Quick Section */
+    .pickup-quick-section {
+        background: var(--section-bg, white);
+    }
+
+    /* Table enhancements */
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Notification helper */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        animation: slideIn 0.3s ease;
+        border-radius: 8px;
+        padding: 15px 20px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .notification.success { background: linear-gradient(135deg, #10b981, #059669); }
+    .notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .notification.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .notification.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .stats-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .pickup-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .pickup-item-details {
+            text-align: center;
+        }
+    }
 </style>
 <body>
     <!-- Sidebar -->
@@ -394,7 +394,7 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="stat-content">
-                    <div class="stat-number">156</div>
+                    <div class="stat-number processedCards">???</div>
                     <div class="stat-label">Cards Processed</div>
                 </div>
             </div>
@@ -404,7 +404,7 @@
                     <i class="fas fa-sync-alt fa-spin"></i>
                 </div>
                 <div class="stat-content">
-                    <div class="stat-number">23</div>
+                    <div class="stat-number activeCards">???</div>
                     <div class="stat-label">Cards in Process</div>
                 </div>
             </div>
@@ -414,7 +414,7 @@
                     <i class="fas fa-box-open"></i>
                 </div>
                 <div class="stat-content">
-                    <div class="stat-number">42</div>
+                    <div class="stat-number readyCards">???</div>
                     <div class="stat-label">Cards Ready for Pick Up</div>
                 </div>
             </div>
@@ -427,8 +427,8 @@
                     <h3 class="section-title">
                         <i class="fas fa-box-open text-warning"></i> NFC Cards Ready for Pick Up
                     </h3>
-                    <div class="pickup-items-container">
-                        <div class="pickup-item">
+                    <div class="pickup-items-container" id="pickupItemsContainer">
+                        <!-- <div class="pickup-item">
                             <div class="pickup-item-icon">
                                 <i class="fas fa-id-card"></i>
                             </div>
@@ -470,7 +470,7 @@
                                 <p><i class="fas fa-hashtag"></i> Card ID: NFC-2024-156 | <i class="fas fa-clock"></i> Ready since: Mar 4, 2024</p>
                                 <span class="badge pickup-badge">Ready for Pickup</span>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="see-all">
                         <a href="nfc-orders.php?filter=ready">View All Ready NFC Cards <i class="fas fa-arrow-right"></i></a>
@@ -494,8 +494,8 @@
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="processedCardsTable">
+                            <!-- <tr>
                                 <td>Jonatan</td>
                                 <td><code>NFC-2024-234</code></td>
                                 <td>Mar 6, 2024</td>
@@ -524,7 +524,7 @@
                                 <td><code>NFC-2024-238</code></td>
                                 <td>Mar 4, 2024</td>
                                 <td><span class="status status-resolve">Processed</span></td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -541,8 +541,8 @@
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="activeCardsTable">
+                            <!-- <tr>
                                 <td>Austin</td>
                                 <td><code>NFC-2024-239</code></td>
                                 <td>Mar 6, 2024</td>
@@ -571,7 +571,7 @@
                                 <td><code>NFC-2024-243</code></td>
                                 <td>Mar 3, 2024</td>
                                 <td><span class="status status-pending">Printing</span></td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -628,19 +628,19 @@
                     <div class="mt-3 p-3 bg-light rounded">
                         <div class="d-flex justify-content-between">
                             <span>Total Cards Ordered:</span>
-                            <span class="fw-bold">166</span>
+                            <span class="fw-bold totalCards">???</span>
                         </div>
                         <div class="d-flex justify-content-between mt-2">
                             <span>Ready for Pickup:</span>
-                            <span class="fw-bold text-warning">42</span>
+                            <span class="fw-bold text-warning readyCards">???</span>
                         </div>
                         <div class="d-flex justify-content-between mt-2">
                             <span>In Process:</span>
-                            <span class="fw-bold text-primary">23</span>
+                            <span class="fw-bold text-primary activeCards">???</span>
                         </div>
                         <div class="d-flex justify-content-between mt-2">
                             <span>Processed:</span>
-                            <span class="fw-bold text-success">101</span>
+                            <span class="fw-bold text-success processedCards">???</span>
                         </div>
                     </div>
                 </div>
@@ -657,7 +657,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript for Interactive Elements -->
-    <script>
+    <script type="module">
+        import { db } from './Firebase/firebase_conn.js';
+        import { collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
         document.addEventListener('DOMContentLoaded', function() {
             // Three Dots Menu Functions
             window.exportCardOrders = function() {
@@ -824,6 +827,215 @@ NFC Card Dashboard Help:
                 `;
                 document.head.appendChild(style);
             }
+
+            // Pulls data from DB about NFC Card Ready to pick up section
+            function loadReadyPickupCards() {
+                const container = document.getElementById("pickupItemsContainer");
+                const q = query(
+                    collection(db, "nfc_cards"),
+                    where("status", "==", "Ready for Pickup"),
+                    orderBy("date_ready_pickup", "desc")
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    container.innerHTML = "";
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const name = data.member_name || "Unknown Member";
+                        const cardId = data.card_id || "N/A";
+                        const readyDate = data.date_ready_pickup;
+                        let formattedDate = "Unknown";
+
+                        if (readyDate) {
+                            const date = readyDate.toDate();
+                            formattedDate = date.toLocaleString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit"
+                            });
+
+                        }
+
+                        const cardHTML = `
+                            <div class="pickup-item">
+                                <div class="pickup-item-icon">
+                                    <i class="fas fa-id-card"></i>
+                                </div>
+                                <div class="pickup-item-details">
+                                    <h5>${name} - NFC Card</h5>
+                                    <p>
+                                        <i class="fas fa-hashtag"></i> Card ID: ${cardId} |
+                                        <i class="fas fa-clock"></i> Ready since: ${formattedDate}
+                                    </p>
+                                    <span class="badge pickup-badge">Ready for Pickup</span>
+                                </div>
+                            </div>
+                        `;
+
+                        container.innerHTML += cardHTML;
+                    });
+                });
+            }
+            loadReadyPickupCards();
+
+            // Pulls data from DB about NFC Card Processed section
+            function loadProcessedCards() {
+                const tableBody = document.getElementById("processedCardsTable");
+
+                if (!tableBody) return;
+
+                const q = query(
+                    collection(db, "nfc_cards"),
+                    where("status", "==", "Processed"),
+                    orderBy("date_processed", "desc")
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    tableBody.innerHTML = "";
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const name = data.member_name || "Unknown";
+                        const cardId = data.card_id || "N/A";
+                        const status = data.status || "Processed";
+
+                        let processedDate = "Unknown";
+
+                        if (data.date_processed) {
+                            const date = data.date_processed.toDate();
+                            processedDate = date.toLocaleString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit"
+                            });
+
+                        }
+
+                        const row = `
+                            <tr>
+                                <td>${name}</td>
+                                <td><code>${cardId}</code></td>
+                                <td>${processedDate}</td>
+                                <td><span class="status status-resolve">${status}</span></td>
+                            </tr>
+                        `;
+
+                        tableBody.innerHTML += row;
+                    });
+                });
+            }
+            loadProcessedCards();
+
+            // Pulls data from DB about NFC Card In Process section
+            function loadActiveCards() {
+                const tableBody = document.getElementById("activeCardsTable");
+
+                if (!tableBody) return;
+
+                const q = query(
+                    collection(db, "nfc_cards"),
+                    where("status", "!=", "Processed"),
+                    orderBy("status")
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    tableBody.innerHTML = "";
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+
+                        // Skip cards ready for pickup
+                        if (data.status === "Ready for Pickup") return;
+
+                        const name = data.member_name || "Unknown";
+                        const cardId = data.card_id || "N/A";
+                        const status = data.status || "Pending";
+
+                        let startedDate = "Unknown";
+
+                        if (data.date_started) {
+                            const date = data.date_started.toDate();
+                            startedDate = date.toLocaleString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit"
+                            });
+
+                        }
+
+                        const row = `
+                            <tr>
+                                <td>${name}</td>
+                                <td><code>${cardId}</code></td>
+                                <td>${startedDate}</td>
+                                <td><span class="status status-pending">${status}</span></td>
+                            </tr>
+                        `;
+
+                        tableBody.innerHTML += row;
+                    });
+
+                    if (tableBody.innerHTML === "") {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">
+                                    No active NFC card processes
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+            }
+            loadActiveCards();
+
+            // Update Card Counts based on Firebase DB
+            function loadNFCCardCounts() {
+                const cardsRef = collection(db, "nfc_cards");
+
+                onSnapshot(cardsRef, (snapshot) => {
+                    let total = 0;
+                    let ready = 0;
+                    let processed = 0;
+                    let active = 0;
+
+                    snapshot.forEach(doc => {
+                        total++;
+                        const data = doc.data();
+                        const status = data.status;
+
+                        if (status === "Ready for Pickup") {
+                            ready++;
+                        }
+                        else if (status === "Processed") {
+                            processed++;
+                        }
+                        else {
+                            active++;
+                        }
+                    });
+
+                    // Update dashboard UI
+                    document.querySelectorAll(".totalCards").forEach(el => {
+                        el.textContent = total;
+                    });
+                    document.querySelectorAll(".readyCards").forEach(el => {
+                        el.textContent = ready;
+                    });
+                    document.querySelectorAll(".processedCards").forEach(el => {
+                        el.textContent = processed;
+                    });
+                    document.querySelectorAll(".activeCards").forEach(el => {
+                        el.textContent = active;
+                    });
+                });
+            }
+            loadNFCCardCounts();
         });
     </script>
 </body>

@@ -977,16 +977,7 @@
 
             <script type="module">
                 import { db } from "./Firebase/firebase_conn.js";
-                import {
-                    collection,
-                    query,
-                    where,
-                    getDocs,
-                    onSnapshot,
-                    updateDoc,
-                    deleteDoc,
-                    doc
-                } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+                import { collection, query, where, getDocs, onSnapshot, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
                 
                 const defaultUI = document.getElementById("defaultEventManagement");
                 const pendingContainer = document.getElementById("pendingEventsContainer");
@@ -1231,7 +1222,7 @@
     <!-- JavaScript for Calendar -->
     <script type="module">
         import { db, storage } from './Firebase/firebase_conn.js';
-        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
 
         async function testFirestore() {
@@ -1604,98 +1595,169 @@ Calendar Help:
             document.getElementById('eventDate').valueAsDate = new Date();
             
             // Calendar rendering function
-            function renderCalendar(date) {
+            async function renderCalendar(date) {
                 const calendarGrid = document.getElementById('calendarGrid');
                 const currentMonthYear = document.getElementById('currentMonthYear');
-                
-                // Clear existing calendar days (keep headers)
-                while (calendarGrid.children.length > 7) {
-                    calendarGrid.removeChild(calendarGrid.lastChild);
-                }
-                
-                // Set month and year title
-                const monthNames = ["January", "February", "March", "April", "May", "June",
-                    "July", "August", "September", "October", "November", "December"
-                ];
+
+                // Clear previous calendar
+                while (calendarGrid.children.length > 7) calendarGrid.removeChild(calendarGrid.lastChild);
+
+                // Set month/year
+                const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
                 currentMonthYear.textContent = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-                
-                // Get first day of month and number of days
+
+                // Compute first/last days
                 const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
                 const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
                 const daysInMonth = lastDay.getDate();
                 const startingDay = firstDay.getDay();
+
+                // Fetch all events for the month at once
+                const monthStart = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-01`;
+                const monthEnd = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${daysInMonth.toString().padStart(2,'0')}`;
                 
-                // Add days from previous month
-                const prevMonthLastDay = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
-                for (let i = startingDay - 1; i >= 0; i--) {
-                    const dayElement = createDayElement(prevMonthLastDay - i, true, date);
-                    calendarGrid.appendChild(dayElement);
-                }
-                
-                // Add days of current month
-                const today = new Date();
-                for (let i = 1; i <= daysInMonth; i++) {
-                    const dayElement = createDayElement(i, false, date);
-                    
-                    // Check if this is today
-                    if (date.getMonth() === today.getMonth() && 
-                        date.getFullYear() === today.getFullYear() && 
-                        i === today.getDate()) {
-                        dayElement.classList.add('today');
+                const eventsRef = collection(db, 'events');
+                const approvedQuery = query(eventsRef, where('approved','==',true));
+                const adminQuery = query(eventsRef, where('createdBy','==','Admin'));
+                const [approvedSnap, adminSnap] = await Promise.all([getDocs(approvedQuery), getDocs(adminQuery)]);
+                const allDocs = [...approvedSnap.docs, ...adminSnap.docs];
+
+                // Map events by date string for quick lookup
+                const eventsByDate = {};
+                allDocs.forEach(doc => {
+                    const data = doc.data();
+                    let eventDate;
+                    if (data.date instanceof Timestamp) {
+                        const ts = data.date.toDate();
+                        eventDate = `${ts.getFullYear()}-${(ts.getMonth()+1).toString().padStart(2,'0')}-${ts.getDate().toString().padStart(2,'0')}`;
+                    } else {
+                        eventDate = data.date;
                     }
-                    
-                    calendarGrid.appendChild(dayElement);
+
+                    if (!eventsByDate[eventDate]) eventsByDate[eventDate] = [];
+                    eventsByDate[eventDate].push(data);
+                });
+
+                // Helper function to create day element synchronously
+                function createDayElementSync(dayNumber, isOtherMonth) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day';
+                    if (isOtherMonth) dayElement.classList.add('other-month');
+
+                    const dayNumberElement = document.createElement('div');
+                    dayNumberElement.className = 'day-number';
+                    dayNumberElement.textContent = dayNumber;
+                    dayElement.appendChild(dayNumberElement);
+
+                    const dayStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${dayNumber.toString().padStart(2,'0')}`;
+                    const dayEvents = eventsByDate[dayStr] || [];
+
+                    if (dayEvents.length > 0) {
+                        dayElement.classList.add('has-events');
+                        dayEvents.forEach(eventData => {
+                            const eventElement = document.createElement('div');
+                            eventElement.className = `event-item ${eventData.category || ''}`;
+                            eventElement.textContent = eventData.title || '';
+                            eventElement.setAttribute('data-bs-toggle','tooltip');
+                            eventElement.setAttribute('title',`${eventData.title}${eventData.startTime ? ' - '+eventData.startTime : ''}`);
+                            eventElement.addEventListener('click', e => {
+                                e.stopPropagation();
+                                showEventDetails(eventData);
+                            });
+                            dayElement.appendChild(eventElement);
+                        });
+                    }
+                    return dayElement;
                 }
-                
-                // Add days from next month to complete the grid
-                const totalCells = 42; // 6 rows * 7 days
+
+                // Previous month tail
+                const prevMonthLastDay = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
+                for (let i = startingDay-1; i >= 0; i--) {
+                    calendarGrid.appendChild(createDayElementSync(prevMonthLastDay - i, true));
+                }
+
+                // Current month
+                for (let i = 1; i <= daysInMonth; i++) {
+                    calendarGrid.appendChild(createDayElementSync(i, false));
+                }
+
+                // Next month fill
+                const totalCells = 42;
                 const daysSoFar = startingDay + daysInMonth;
                 const nextMonthDays = totalCells - daysSoFar;
-                
                 for (let i = 1; i <= nextMonthDays; i++) {
-                    const dayElement = createDayElement(i, true, date);
-                    calendarGrid.appendChild(dayElement);
+                    calendarGrid.appendChild(createDayElementSync(i, true));
                 }
             }
             
             // Create a day element
-            function createDayElement(dayNumber, isOtherMonth, currentDate) {
+            async function createDayElement(dayNumber, isOtherMonth, currentDate) {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
-                
-                if (isOtherMonth) {
-                    dayElement.classList.add('other-month');
-                }
-                
+
+                if (isOtherMonth) dayElement.classList.add('other-month');
+
                 const dayNumberElement = document.createElement('div');
                 dayNumberElement.className = 'day-number';
                 dayNumberElement.textContent = dayNumber;
                 dayElement.appendChild(dayNumberElement);
-                
-                // Add events for this day
+
+                // Format YYYY-MM-DD
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth() + 1;
-                const dateString = `${year}-${month.toString().padStart(2, '0')}-${dayNumber.toString().padStart(2, '0')}`;
-                
-                const dayEvents = events.filter(event => event.date === dateString && event.published);
-                
-                if (dayEvents.length > 0) {
-                    dayElement.classList.add('has-events');
-                    
-                    dayEvents.forEach(event => {
-                        const eventElement = document.createElement('div');
-                        eventElement.className = `event-item ${event.category}`;
-                        eventElement.textContent = event.title;
-                        eventElement.setAttribute('data-bs-toggle', 'tooltip');
-                        eventElement.setAttribute('title', `${event.title}${event.startTime ? ' - ' + event.startTime : ''}`);
-                        eventElement.addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            showEventDetails(event);
-                        });
-                        dayElement.appendChild(eventElement);
+                const dateString = `${year}-${month.toString().padStart(2,'0')}-${dayNumber.toString().padStart(2,'0')}`;
+
+                try {
+                    const eventsRef = collection(db, 'events');
+
+                    // Query approved events OR admin-created events
+                    const approvedQuery = query(eventsRef, where('approved', '==', true));
+                    const adminQuery = query(eventsRef, where('createdBy', '==', 'Admin'));
+
+                    const [approvedSnap, adminSnap] = await Promise.all([
+                        getDocs(approvedQuery),
+                        getDocs(adminQuery)
+                    ]);
+
+                    const allDocs = [...approvedSnap.docs, ...adminSnap.docs];
+
+                    // Filter for this date
+                    const dayEvents = allDocs.filter(doc => {
+                        const data = doc.data();
+                        let eventDate;
+
+                        if (data.date instanceof Timestamp) {
+                            const ts = data.date.toDate();
+                            eventDate = `${ts.getFullYear()}-${(ts.getMonth()+1).toString().padStart(2,'0')}-${ts.getDate().toString().padStart(2,'0')}`;
+                        } else {
+                            eventDate = data.date; // assume YYYY-MM-DD string
+                        }
+
+                        return eventDate === dateString;
                     });
+
+                    if (dayEvents.length > 0) {
+                        dayElement.classList.add('has-events');
+
+                        dayEvents.forEach(doc => {
+                            const data = doc.data();
+                            const eventElement = document.createElement('div');
+                            eventElement.className = `event-item ${data.category || ''}`;
+                            eventElement.textContent = data.title || '';
+                            eventElement.setAttribute('data-bs-toggle', 'tooltip');
+                            eventElement.setAttribute('title', `${data.title}${data.startTime ? ' - ' + data.startTime : ''}`);
+                            eventElement.addEventListener('click', e => {
+                                e.stopPropagation();
+                                showEventDetails(data);
+                            });
+                            dayElement.appendChild(eventElement);
+                        });
+                    }
+
+                } catch (err) {
+                    console.error('Error fetching events:', err);
                 }
-                
+
                 return dayElement;
             }
             
