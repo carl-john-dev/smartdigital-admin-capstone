@@ -586,8 +586,8 @@
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="recentUsersTable">
+                            <!-- <tr>
                                 <td>Jonatan</td>
                                 <td>Membership</td>
                                 <td><span class="status status-pending">Pending</span></td>
@@ -611,7 +611,7 @@
                                 <td>Isabelle</td>
                                 <td>Request</td>
                                 <td><span class="status status-resolve">Resolve</span></td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -819,7 +819,6 @@
                 console.error("Error loading events:", error);
             }
         }
-        loadUpcomingEvents();
 
         function formatTime(hour, minute) {
             // Ensure hour and minute are numbers
@@ -885,7 +884,57 @@
             });
         }
 
+        // Load Member Approval Data
+        async function loadRecentUsers() {
+            const tableBody = document.getElementById("recentUsersTable");
+            tableBody.innerHTML = "";
+
+            try {
+                const q = query(
+                    collection(db, "users"),
+                    orderBy("createdAt", "desc")
+                );
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">
+                                No recent requests
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+
+                    const approved = user.approved === true;
+
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                        <td>${user.name || "Unknown"}</td>
+                        <td>Account Approval</td>
+                        <td>
+                            <span class="status ${approved ? "status-resolve" : "status-pending"}">
+                                ${approved ? "Resolved" : "Pending"}
+                            </span>
+                        </td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error("Error loading users:", error);
+            }
+        }
+
         // Run on page load
+        loadUpcomingEvents();
+        loadRecentUsers();
         renderNewMembers();
     </script>
 </body>

@@ -217,11 +217,11 @@
         <div class="stats-container stagger-animation" id="statsContainer">
             <div class="stat-card">
                 <div class="stat-number" id="totalusers">0</div>
-                <div class="stat-label">Total users</div>
+                <div class="stat-label">Total Users</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="activeusers">0</div>
-                <div class="stat-label">Active users</div>
+                <div class="stat-label">Active Users</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="pendingusers">0</div>
@@ -238,14 +238,14 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addusersModal">
-                        <i class="fas fa-plus me-1"></i> Add users
+                        <i class="fas fa-plus me-1"></i> Add Users
                     </button>
                     <button class="btn btn-outline-secondary" onclick="refreshusers()">
                         <i class="fas fa-sync-alt me-1"></i> Refresh
                     </button>
                 </div>
                 <div class="d-flex gap-2">
-                    <input type="text" class="form-control" id="searchInput" placeholder="Search users..." style="width: 250px;">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search Users..." style="width: 250px;">
                     <select class="form-select" id="statusFilter" style="width: 150px;" onchange="filterusers()">
                         <option value="all">All Status</option>
                         <option value="Active">Active</option>
@@ -261,12 +261,12 @@
             <div class="col-lg-8">
                 <!-- users Table Section -->
                 <div class="dashboard-section">
-                    <h3 class="section-title"><i class="fas fa-users"></i> All users</h3>
+                    <h3 class="section-title"><i class="fas fa-users"></i> All Users</h3>
                     <div id="usersTableContainer">
                         <!-- users will be loaded here -->
                         <div class="loading-spinner">
                             <i class="fas fa-circle-notch"></i>
-                            <p class="mt-2">Loading users...</p>
+                            <p class="mt-2">Loading Users...</p>
                         </div>
                     </div>
                 </div>
@@ -286,7 +286,7 @@
                 
                 <!-- Quick Stats -->
                 <div class="dashboard-section mt-3">
-                    <h3 class="section-title"><i class="fas fa-chart-pie"></i> users Distribution</h3>
+                    <h3 class="section-title"><i class="fas fa-chart-pie"></i> Users Distribution</h3>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-2">
                             <span>Active</span>
@@ -322,7 +322,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add New users</h5>
+                    <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add New Users</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -368,7 +368,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="addusers()">Add users</button>
+                    <button type="button" class="btn btn-primary" onclick="addusers()">Add Users</button>
                 </div>
             </div>
         </div>
@@ -379,7 +379,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit users</h5>
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Users</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -427,7 +427,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="updateusers()">Update users</button>
+                    <button type="button" class="btn btn-primary" onclick="updateusers()">Update Users</button>
                 </div>
             </div>
         </div>
@@ -438,7 +438,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-user me-2"></i>users Details</h5>
+                    <h5 class="modal-title"><i class="fas fa-user me-2"></i>Users Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center" id="viewusersContent">
@@ -462,12 +462,12 @@
                 </div>
                 <div class="modal-body text-center" id="deleteusersContent">
                     <i class="fas fa-trash text-danger fa-3x mb-3"></i>
-                    <p>Are you sure you want to delete this users?</p>
+                    <p>Are you sure you want to delete this user?</p>
                     <p class="text-danger"><small>This action cannot be undone.</small></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete users</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Users</button>
                 </div>
             </div>
         </div>
@@ -481,20 +481,9 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
-    <script>
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAQLWlfqnxqNCoHxTh6RL0ZSXZeJ7legz0",
-            authDomain: "smartcard-475413.firebaseapp.com",
-            projectId: "smartcard-475413",
-            storageBucket: "smartcard-475413.firebasestorage.app",
-            messagingSenderId: "731351689459",
-            appId: "1:731351689459:web:1331697726d9aab1092f86"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    <script type="module">
+        import { db, storage } from './Firebase/firebase_conn.js';
+        import { collection, query, where, doc, getDocs, getFirestore, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         
         // Global variables
         let allusers = [];
@@ -582,27 +571,44 @@ Users Management Help:
         }
 
         // Load users from Firebase
-        function loadusers() {
-            db.collection('users').get()
-                .then((querySnapshot) => {
-                    allusers = [];
-                    querySnapshot.forEach((doc) => {
-                        allusers.push({
-                            id: doc.id,
-                            ...doc.data()
-                        });
+        async function loadusers() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "users"));
+
+                allusers = [];
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+
+                    // Split name into first and last
+                    const fullName = data.name || "";
+                    const nameParts = fullName.trim().split(" ");
+
+                    const firstName = nameParts[0] || "???";
+                    const lastName = nameParts.slice(1).join(" ") || "";
+
+                    allusers.push({
+                        id: doc.id,
+                        ...data,
+                        firstName: firstName,
+                        lastName: lastName
                     });
-                    
-                    displayusers(allusers);
-                    updateStats();
-                    updateRecentActivity();
-                })
-                .catch((error) => {
-                    console.error('Error loading users:', error);
-                    showToast('Error loading users', 'error');
-                    document.getElementById('usersTableContainer').innerHTML = 
-                        `<div class="empty-state"><p class="text-danger">Error: ${error.message}</p></div>`;
                 });
+
+                displayusers(allusers);
+                updateStats();
+                updateRecentActivity();
+
+            } catch (error) {
+                console.error("Error loading users:", error);
+
+                showToast("Error loading users", "error");
+
+                document.getElementById("usersTableContainer").innerHTML =
+                    `<div class="empty-state">
+                        <p class="text-danger">Error: ${error.message}</p>
+                    </div>`;
+            }
         }
 
         // Display users in table
@@ -614,7 +620,7 @@ Users Management Help:
                     <div class="empty-state">
                         <i class="fas fa-users-slash"></i>
                         <h5>No users Found</h5>
-                        <p>Click "Add users" to create your first users.</p>
+                        <p>Click "Add Users" to create your first users.</p>
                     </div>
                 `;
                 return;
@@ -624,7 +630,7 @@ Users Management Help:
                 <table>
                     <thead>
                         <tr>
-                            <th>users</th>
+                            <th>Users</th>
                             <th>Contact</th>
                             <th>Role</th>
                             <th>Join Date</th>
@@ -661,7 +667,7 @@ Users Management Help:
                         </td>
                         <td><span class="status status-resolve">${users.role || 'User'}</span></td>
                         <td>${joinDate}</td>
-                        <td><span class="status ${statusClass}">${users.status || 'Pending'}</span></td>
+                        <td><span class="status ${users.approved ? "status-resolve" : "status-pending"}">${users.approved ? 'Resolved' : 'Pending'}</span></td>
                         <td class="action-buttons">
                             <button class="btn btn-sm btn-outline-primary me-1" onclick="viewusers('${users.id}')">
                                 <i class="fas fa-eye"></i>
@@ -715,19 +721,19 @@ Users Management Help:
             
             db.collection('users').add(usersData)
                 .then(() => {
-                    showToast('users added successfully!', 'success');
+                    showToast('User added successfully!', 'success');
                     bootstrap.Modal.getInstance(document.getElementById('addusersModal')).hide();
                     document.getElementById('addusersForm').reset();
                     loadusers();
                 })
                 .catch((error) => {
-                    console.error('Error adding users:', error);
-                    showToast('Error adding users', 'error');
+                    console.error('Error adding user:', error);
+                    showToast('Error adding user', 'error');
                 });
         }
 
         // View users details
-        function viewusers(id) {
+        async function viewusers(id) {
             const users = allusers.find(m => m.id === id);
             if (!users) return;
             
@@ -913,7 +919,7 @@ Users Management Help:
                 html += `
                     <li>
                         <strong>${users.firstName} ${users.lastName}</strong> - 
-                        ${users.status === 'Active' ? 'Joined' : 'Pending'} 
+                        ${users.approved === true ? 'Joined' : 'Pending'} 
                         <small class="text-muted">(${date})</small>
                     </li>
                 `;

@@ -484,7 +484,9 @@
             <div class="col-lg-8">
                 <!-- Recently Processed NFC Cards -->
                 <div class="dashboard-section">
-                    <h3 class="section-title"><i class="fas fa-check-circle text-success"></i> Recently Processed NFC Cards</h3>
+                    <h3 class="section-title mb-0">
+                        <i class="fas fa-check-circle text-success"></i> Recently Processed NFC Cards
+                    </h3>
                     <table class="table">
                         <thead>
                             <tr>
@@ -492,6 +494,7 @@
                                 <th>Card ID</th>
                                 <th>Processed Date</th>
                                 <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="processedCardsTable">
@@ -531,7 +534,15 @@
 
                 <!-- NFC Cards In Process -->
                 <div class="dashboard-section">
-                    <h3 class="section-title"><i class="fas fa-sync-alt fa-spin text-primary"></i> NFC Cards in Process</h3>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h3 class="section-title mb-0">
+                            <i class="fas fa-sync-alt fa-spin text-primary"></i> NFC Cards in Process
+                        </h3>
+
+                        <button class="btn btn-primary btn-sm" onclick="openCreateNFCModal()">
+                            <i class="fas fa-plus"></i> Create NFC
+                        </button>
+                    </div>
                     <table class="table">
                         <thead>
                             <tr>
@@ -539,6 +550,7 @@
                                 <th>Card ID</th>
                                 <th>Started</th>
                                 <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="activeCardsTable">
@@ -653,13 +665,37 @@
         <i class="fas fa-moon" id="darkModeIcon"></i>
     </button>
 
+    <!-- Create NFC Modal -->
+    <div class="modal fade" id="createNFCModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Create NFC Card</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <label class="form-label">Member Name</label>
+                    <input type="text" id="nfcMemberName" class="form-control" placeholder="Enter member name">
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" onclick="createNFCCard()">Create Card</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript for Interactive Elements -->
     <script type="module">
         import { db } from './Firebase/firebase_conn.js';
-        import { collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { collection, query, where, onSnapshot, orderBy, addDoc, updateDoc, getDocs, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
         document.addEventListener('DOMContentLoaded', function() {
             // Three Dots Menu Functions
@@ -921,6 +957,12 @@ NFC Card Dashboard Help:
                                 <td><code>${cardId}</code></td>
                                 <td>${processedDate}</td>
                                 <td><span class="status status-resolve">${status}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-success"
+                                        onclick="markCardReady('${doc.id}', this)"">
+                                        <i class="fas fa-check"></i> Mark as Ready
+                                    </button>
+                                </td>
                             </tr>
                         `;
 
@@ -975,6 +1017,12 @@ NFC Card Dashboard Help:
                                 <td><code>${cardId}</code></td>
                                 <td>${startedDate}</td>
                                 <td><span class="status status-pending">${status}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-success"
+                                        onclick="markCardProcessed('${doc.id}', this)"">
+                                        <i class="fas fa-check"></i> Process
+                                    </button>
+                                </td>
                             </tr>
                         `;
 
@@ -1036,6 +1084,101 @@ NFC Card Dashboard Help:
                 });
             }
             loadNFCCardCounts();
+
+            // Open MOdal for Create NFC
+            window.openCreateNFCModal = function () {
+                const modal = new bootstrap.Modal(document.getElementById("createNFCModal"));
+                modal.show();
+            }
+
+            // Mark a card as Processed
+            window.markCardProcessed = async function(cardId, btn) {
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+
+                try {
+                    await updateDoc(doc(db, "nfc_cards", cardId),{
+                        status: "Processed",
+                        date_processed: serverTimestamp()
+                    });
+                } catch(e){
+                    console.error(e);
+                    btn.disabled = false;
+                    btn.innerHTML = "Processed";
+                }
+            }
+
+            // Mark a card as Ready for Pickup
+            window.markCardReady = async function(cardId, btn) {
+                btn.disabled = true;
+                btn.innerHTML = "Processing...";
+
+                try {
+                    await updateDoc(doc(db, "nfc_cards", cardId),{
+                        status: "Ready for Pickup",
+                        date_ready_pickup: serverTimestamp()
+                    });
+                } catch(e){
+                    console.error(e);
+                    btn.disabled = false;
+                    btn.innerHTML = "Processed";
+                }
+            }
+
+            // Create an NFC Card
+            window.createNFCCard = async function () {
+                const nameInput = document.getElementById("nfcMemberName");
+                const memberName = nameInput.value.trim();
+
+                if (!memberName) {
+                    alert("Please enter member name");
+                    return;
+                }
+
+                try {
+                    const cardId = await generateUniqueCardId();
+
+                    await addDoc(collection(db, "nfc_cards"), {
+                        card_id: cardId,
+                        member_name: memberName,
+                        status: "In Process",
+                        date_started: serverTimestamp()
+                    });
+
+                    nameInput.value = "";
+
+                    bootstrap.Modal.getInstance(
+                        document.getElementById("createNFCModal")
+                    ).hide();
+
+                    showToast("NFC card created successfully", "success");
+
+                } catch (error) {
+                    console.error("Error creating NFC card:", error);
+                    showToast("Failed to create NFC card", "error");
+                }
+            }
+
+            // Generates unique ID for each NFC Card
+            async function generateUniqueCardId() {
+                const year = new Date().getFullYear();
+                let cardId;
+                let exists = true;
+
+                while (exists) {
+                    const randomNum = Math.floor(100 + Math.random() * 900);
+                    cardId = `NFC-${year}-${randomNum}`;
+
+                    const q = query(
+                        collection(db, "nfc_cards"),
+                        where("card_id", "==", cardId)
+                    );
+
+                    const snapshot = await getDocs(q);
+                    exists = !snapshot.empty;
+                }
+                return cardId;
+            }
         });
     </script>
 </body>
