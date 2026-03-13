@@ -1421,7 +1421,7 @@ Location Map Help:
             }
 
             // ── Focus map on a user ───────────────────────────────────────────
-            window.focusUserOnMap = function (userId) {
+            window.focusUserOnMap = async function (userId) {
                 const user = users.find(u => u.id === userId);
                 if (!user || !user.coords || user.coords.length !== 2) return;
 

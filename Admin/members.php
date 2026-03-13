@@ -348,13 +348,13 @@
                                 <label class="form-label">Company</label>
                                 <input type="text" class="form-control" id="company">
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <!-- <div class="col-md-6 mb-3">
                                 <label class="form-label">Role</label>
                                 <select class="form-select" id="role">
                                     <option value="User">User</option>
                                     <option value="Admin">Admin</option>
                                 </select>
-                            </div>
+                            </div> -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Status</label>
                                 <select class="form-select" id="status">
@@ -406,14 +406,14 @@
                                 <label class="form-label">Company</label>
                                 <input type="text" class="form-control" id="editCompany">
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <!-- <div class="col-md-6 mb-3">
                                 <label class="form-label">Role</label>
                                 <select class="form-select" id="editRole">
                                     <option value="User">User</option>
                                     <option value="Moderator">Moderator</option>
                                     <option value="Admin">Admin</option>
                                 </select>
-                            </div>
+                            </div> -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Status</label>
                                 <select class="form-select" id="editStatus">
@@ -693,7 +693,7 @@ Users Management Help:
         }
 
         // Add new users
-        function addusers() {
+        window.addusers = async function () {
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
             const email = document.getElementById('email').value;
@@ -701,6 +701,8 @@ Users Management Help:
             const company = document.getElementById('company').value;
             const role = document.getElementById('role')?.value || 'User';
             const status = document.getElementById('status').value;
+
+            const name = firstName + " " + lastName;
             
             if (!firstName || !lastName || !email) {
                 showToast('Please fill in all required fields', 'warning');
@@ -708,32 +710,32 @@ Users Management Help:
             }
             
             const usersData = {
-                firstName,
-                lastName,
+                name,
                 email,
                 phone,
                 company,
                 role,
                 status,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                createdAt: serverTimestamp()
             };
             
-            db.collection('users').add(usersData)
-                .then(() => {
-                    showToast('User added successfully!', 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('addusersModal')).hide();
-                    document.getElementById('addusersForm').reset();
-                    loadusers();
-                })
-                .catch((error) => {
-                    console.error('Error adding user:', error);
-                    showToast('Error adding user', 'error');
-                });
+            try {
+                await addDoc(collection(db, "users"), usersData);
+                showToast('User added successfully!', 'success');
+                bootstrap.Modal
+                    .getInstance(document.getElementById('addusersModal'))
+                    .hide();
+                document.getElementById('addusersForm').reset();
+                loadusers();
+
+            } catch (error) {
+                console.error('Error adding user:', error);
+                showToast('Error adding user', 'error');
+            }
         }
 
         // View users details
-        async function viewusers(id) {
+        window.viewusers = async function (id) {
             const users = allusers.find(m => m.id === id);
             if (!users) return;
             
@@ -764,7 +766,7 @@ Users Management Help:
         }
 
         // Edit users
-        function editusers(id) {
+        window.editusers = async function (id) {
             const users = allusers.find(m => m.id === id);
             if (!users) return;
             
@@ -776,22 +778,22 @@ Users Management Help:
             document.getElementById('editEmail').value = users.email || '';
             document.getElementById('editPhone').value = users.phone || '';
             document.getElementById('editCompany').value = users.company || '';
-            document.getElementById('editRole').value = users.role || 'User';
             document.getElementById('editStatus').value = users.status || 'Pending';
             
             new bootstrap.Modal(document.getElementById('editusersModal')).show();
         }
 
         // Update users
-        function updateusers() {
+        window.updateusers = async function () {
             const id = document.getElementById('editusersId').value;
             const firstName = document.getElementById('editFirstName').value;
             const lastName = document.getElementById('editLastName').value;
             const email = document.getElementById('editEmail').value;
             const phone = document.getElementById('editPhone').value;
             const company = document.getElementById('editCompany').value;
-            const role = document.getElementById('editRole').value;
             const status = document.getElementById('editStatus').value;
+
+            const name = firstName + " " + lastName;
             
             if (!firstName || !lastName || !email) {
                 showToast('Please fill in all required fields', 'warning');
@@ -799,30 +801,33 @@ Users Management Help:
             }
             
             const usersData = {
-                firstName,
-                lastName,
+                name,
                 email,
                 phone,
                 company,
-                role,
                 status,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                updatedAt: serverTimestamp()
             };
             
-            db.collection('users').doc(id).update(usersData)
-                .then(() => {
-                    showToast('users updated successfully!', 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('editusersModal')).hide();
-                    loadusers();
-                })
-                .catch((error) => {
-                    console.error('Error updating users:', error);
-                    showToast('Error updating users', 'error');
-                });
+            try {
+                const userRef = doc(db, "users", id);
+                await updateDoc(userRef, usersData);
+                showToast('User updated successfully!', 'success');
+
+                bootstrap.Modal
+                    .getInstance(document.getElementById('editusersModal'))
+                    .hide();
+
+                loadusers();
+
+            } catch (error) {
+                console.error("Error updating user:", error);
+                showToast('Error updating user', 'error');
+            }
         }
 
         // Delete users
-        function deleteusers(id) {
+        window.deleteusers = async function (id) {
             const users = allusers.find(m => m.id === id);
             if (!users) return;
             
@@ -838,23 +843,25 @@ Users Management Help:
         }
 
         // Confirm delete
-        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
             if (!currentusersId) return;
-            
-            db.collection('users').doc(currentusersId).delete()
-                .then(() => {
-                    showToast('users deleted successfully!', 'success');
-                    bootstrap.Modal.getInstance(document.getElementById('deleteusersModal')).hide();
-                    loadusers();
-                })
-                .catch((error) => {
-                    console.error('Error deleting users:', error);
-                    showToast('Error deleting users', 'error');
-                });
+
+            try {
+                await deleteDoc(doc(db, "users", currentusersId));
+                showToast('User deleted successfully!', 'success');
+                bootstrap.Modal
+                    .getInstance(document.getElementById('deleteusersModal'))
+                    .hide();
+                loadusers();
+
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                showToast('Error deleting user', 'error');
+            }
         });
 
         // Edit from view modal
-        function editFromView() {
+        window.editFromView = async function () {
             bootstrap.Modal.getInstance(document.getElementById('viewusersModal')).hide();
             setTimeout(() => {
                 editusers(currentusersId);
@@ -862,9 +869,13 @@ Users Management Help:
         }
 
         // Filter users
-        function filterusers() {
+        window.filterusers = function () {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
+            let statusFilter = document.getElementById('statusFilter').value;
+
+            if (statusFilter == "Pending") {
+                statusFilter = "pending";
+            }
             
             const filtered = allusers.filter(users => {
                 const matchesSearch = 
@@ -885,8 +896,8 @@ Users Management Help:
         function updateStats() {
             const total = allusers.length;
             const active = allusers.filter(m => m.status === 'Active').length;
-            const pending = allusers.filter(m => m.status === 'Pending').length;
-            const inactive = allusers.filter(m => m.status === 'Inactive').length;
+            const pending = allusers.filter(m => m.status === 'pending').length;
+            const inactive = allusers.filter(m => m.status !== 'Active' && m.status !== 'pending').length;
             
             document.getElementById('totalusers').textContent = total;
             document.getElementById('activeusers').textContent = active;
@@ -965,7 +976,7 @@ Users Management Help:
         }
 
         // Refresh users
-        function refreshusers() {
+        window.refreshusers = async function () {
             document.getElementById('usersTableContainer').innerHTML = `
                 <div class="loading-spinner">
                     <i class="fas fa-circle-notch"></i>

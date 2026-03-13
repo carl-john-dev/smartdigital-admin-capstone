@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="style.css">
     <!-- RSVP Tracker Custom CSS (minimal) -->
     <link rel="icon" type="icon" href="rsvp.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
         /* Use the same CSS variables from your dashboard */
         :root {
@@ -503,106 +505,122 @@
             </div>
         </div>
 
-        <!-- Event Details Card -->
-        <div class="event-details-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h4 class="mb-2">CBOC Event</h4>
-                    <p class="mb-0">
-                        <i class="fas fa-calendar-alt"></i> 
-                        <span class="editable-event" id="editEventDate" title="Click to edit">
-                            Date: <strong id="eventDateDisplay">June 15, 2023</strong>
-                        </span>
-                        <span class="mx-3">|</span>
-                        <i class="fas fa-map-marker-alt"></i> 
-                        <span class="editable-event" id="editVenue" title="Click to edit">
-                            Venue: <strong id="venueDisplay">Grand Ballroom</strong>
-                        </span>
+        <!-- Upcoming Events Section -->
+        <div class="card mt-3 mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-calendar"></i> Upcoming Events</h5>
+            </div>
+
+            <div class="card-body" id="eventsListContainer">
+                <div class="text-muted text-center py-3">
+                    Loading upcoming events...
+                </div>
+            </div>
+        </div>
+
+        <div id="eventContent" style="display:none;">
+            <!-- Event Details Card -->
+            <div class="event-details-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-2">CBOC Event</h4>
+                        <p class="mb-0">
+                            <i class="fas fa-calendar-alt"></i> 
+                            <span class="editable-event" id="editEventDate" title="Click to edit">
+                                Date: <strong id="eventDateDisplay">June 15, 2023</strong>
+                            </span>
+                            <span class="mx-3">|</span>
+                            <i class="fas fa-map-marker-alt"></i> 
+                            <span class="editable-event" id="editVenue" title="Click to edit">
+                                Venue: <strong id="venueDisplay">Grand Ballroom</strong>
+                            </span>
+                        </p>
+                    </div>
+                    <button class="btn btn-light" onclick="addRSVPBtn()">
+                        <i class="fas fa-plus"></i> Add RSVP
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <!-- <div class="rsvp-stats">
+                <div class="stat-card-mini">
+                    <div class="stat-number text-success" id="confirmedCount">0</div>
+                    <div class="stat-label">Confirmed</div>
+                    <i class="fas fa-check-circle mt-2 text-success"></i>
+                </div>
+                <div class="stat-card-mini">
+                    <div class="stat-number text-warning" id="pendingCount">0</div>
+                    <div class="stat-label">Pending</div>
+                    <i class="fas fa-clock mt-2 text-warning"></i>
+                </div>
+                <div class="stat-card-mini">
+                    <div class="stat-number text-danger" id="declinedCount">0</div>
+                    <div class="stat-label">Declined</div>
+                    <i class="fas fa-times-circle mt-2 text-danger"></i>
+                </div>
+                <div class="stat-card-mini">
+                    <div class="stat-number text-info" id="plusOneCount">0</div>
+                    <div class="stat-label">Plus One</div>
+                    <i class="fas fa-user-plus mt-2 text-info"></i>
+                </div>
+            </div> -->
+
+            <!-- Search and Controls -->
+            <div class="dashboard-section">
+                <!-- <div class="rsvp-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search by name or email...">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary filter-btn active" data-filter="all">All</button>
+                        <button class="btn btn-outline-success filter-btn" data-filter="confirmed">Confirmed</button>
+                        <button class="btn btn-outline-warning filter-btn" data-filter="pending">Pending</button>
+                        <button class="btn btn-outline-danger filter-btn" data-filter="declined">Declined</button>
+                        <button class="btn btn-outline-info filter-btn" data-filter="plusOne">Plus One</button>
+                    </div>
+                </div> -->
+
+                <h2>List of Attendees</h2>
+                <!-- RSVP Table -->
+                <div class="table-responsive mt-4">
+                    <table class="rsvp-table">
+                        <thead>
+                            <tr>
+                                <th>Attendees</th>
+                                <th>Email</th>
+                                <!-- <th>Status</th> -->
+                                <th>Plus One</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- RSVP data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Export Controls -->
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button class="btn btn-outline-secondary" onclick="exportCSV()">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="exportPDF()">
+                        <i class="fas fa-file-code"></i> Export PDF
+                    </button>
+                    <!-- <button class="btn btn-outline-danger" id="resetDataBtn">
+                        <i class="fas fa-trash"></i> Reset Data
+                    </button> -->
+                </div>
+
+                <!-- Footer Info -->
+                <div class="text-center mt-4 pt-3 border-top">
+                    <p class="text-muted mb-0">
+                        Total Guests: <span class="fw-bold" id="totalGuests">0</span> | 
+                        Last updated: <span id="lastUpdated">-</span>
                     </p>
                 </div>
-                <button class="btn btn-light" id="addRSVPBtn">
-                    <i class="fas fa-plus"></i> Add RSVP
-                </button>
-            </div>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="rsvp-stats">
-            <div class="stat-card-mini">
-                <div class="stat-number text-success" id="confirmedCount">0</div>
-                <div class="stat-label">Confirmed</div>
-                <i class="fas fa-check-circle mt-2 text-success"></i>
-            </div>
-            <div class="stat-card-mini">
-                <div class="stat-number text-warning" id="pendingCount">0</div>
-                <div class="stat-label">Pending</div>
-                <i class="fas fa-clock mt-2 text-warning"></i>
-            </div>
-            <div class="stat-card-mini">
-                <div class="stat-number text-danger" id="declinedCount">0</div>
-                <div class="stat-label">Declined</div>
-                <i class="fas fa-times-circle mt-2 text-danger"></i>
-            </div>
-            <div class="stat-card-mini">
-                <div class="stat-number text-info" id="plusOneCount">0</div>
-                <div class="stat-label">Plus One</div>
-                <i class="fas fa-user-plus mt-2 text-info"></i>
-            </div>
-        </div>
-
-        <!-- Search and Controls -->
-        <div class="dashboard-section">
-            <div class="rsvp-controls">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search by name or email...">
-                </div>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary filter-btn active" data-filter="all">All</button>
-                    <button class="btn btn-outline-success filter-btn" data-filter="confirmed">Confirmed</button>
-                    <button class="btn btn-outline-warning filter-btn" data-filter="pending">Pending</button>
-                    <button class="btn btn-outline-danger filter-btn" data-filter="declined">Declined</button>
-                    <button class="btn btn-outline-info filter-btn" data-filter="plusOne">Plus One</button>
-                </div>
-            </div>
-
-            <!-- RSVP Table -->
-            <div class="table-responsive mt-4">
-                <table class="rsvp-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Plus One</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <!-- RSVP data will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Export Controls -->
-            <div class="d-flex justify-content-end gap-2 mt-4">
-                <button class="btn btn-outline-secondary" id="exportCSVBtn">
-                    <i class="fas fa-file-csv"></i> Export CSV
-                </button>
-                <button class="btn btn-outline-secondary" id="exportJSONBtn">
-                    <i class="fas fa-file-code"></i> Export JSON
-                </button>
-                <button class="btn btn-outline-danger" id="resetDataBtn">
-                    <i class="fas fa-trash"></i> Reset Data
-                </button>
-            </div>
-
-            <!-- Footer Info -->
-            <div class="text-center mt-4 pt-3 border-top">
-                <p class="text-muted mb-0">
-                    Total Guests: <span class="fw-bold" id="totalGuests">0</span> | 
-                    Last updated: <span id="lastUpdated">-</span>
-                </p>
             </div>
         </div>
     </div>
@@ -626,7 +644,7 @@
                             <label for="email" class="form-label">Email Address *</label>
                             <input type="email" class="form-control" id="email" required>
                         </div>
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="confirmation" class="form-label">Confirmation Status *</label>
                             <select class="form-select" id="confirmation" required>
                                 <option value="">Select Status</option>
@@ -634,7 +652,7 @@
                                 <option value="pending">Pending</option>
                                 <option value="declined">Declined</option>
                             </select>
-                        </div>
+                        </div> -->
                         <div class="mb-3">
                             <label for="plusOne" class="form-label">Plus One</label>
                             <select class="form-select" id="plusOne">
@@ -644,7 +662,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="plusOneName" class="form-label">Plus One Name (if applicable)</label>
-                            <input type="text" class="form-control" id="plusOneName" placeholder="Enter name of plus one">
+                            <input type="text" class="form-control" id="plusOneName" placeholder="Enter name of plus one" disabled>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -713,7 +731,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- RSVP Tracker JavaScript -->
-    <script>
+    <script type="module">
+        import { db, storage } from './Firebase/firebase_conn.js';
+        import { collection, query, where, doc, getDocs, getFirestore, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+        // Initialization
+        let selectedEventId = null;
+        let upcomingEvents = []; 
+
         // RSVP Tracker Implementation
         document.addEventListener('DOMContentLoaded', function() {
             // Three Dots Menu Functions
@@ -832,6 +857,67 @@ RSVP Tracker Help:
                 }
             }
 
+            // Load RSVP data from Firebase
+            async function loadRSVPsForEvent(eventId) {
+                const tableBody = document.getElementById("tableBody");
+                const totalGuestsEl = document.getElementById("totalGuests");
+
+                tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Loading RSVPs...</td></tr>`;
+                totalGuestsEl.textContent = "0";
+
+                if (!eventId) {
+                    tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Select an event to see RSVPs.</td></tr>`;
+                    return;
+                }
+
+                try {
+                    const rsvpRef = collection(db, "events", eventId, "rsvp");
+                    const snapshot = await getDocs(rsvpRef);
+
+                    if (snapshot.empty) {
+                        tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No RSVPs yet for this event.</td></tr>`;
+                        return;
+                    }
+
+                    let rowsHtml = "";
+                    let totalGuests = 0;
+
+                    snapshot.forEach(doc => {
+                        const rsvp = doc.data();
+                        const name = rsvp.name || "Unnamed";
+                        const email = rsvp.email || "-";
+                        const plusOne = rsvp.plusOne ? "Yes" : "No";
+
+                        let plusOneDisplay = "No";
+
+                        if (rsvp.plusOne) {
+                            plusOneDisplay = `Yes - (${rsvp.plusOne || "Unnamed"})`;
+                        }
+
+                        rowsHtml += `
+                            <tr>
+                                <td>${name}</td>
+                                <td>${email}</td>
+                                <td>${plusOneDisplay}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary edit-btn" onclick="editRSVP('${doc.id}')">Edit</button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" onclick="deleteRSVP('${doc.id}')">Delete</button>
+                                </td>
+                            </tr>
+                        `;
+
+                        totalGuests += 1 + (rsvp.plusOne ? 1 : 0); // count plus ones
+                    });
+
+                    tableBody.innerHTML = rowsHtml;
+                    totalGuestsEl.textContent = totalGuests;
+
+                } catch (error) {
+                    console.error("Error loading RSVPs:", error);
+                    tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error loading RSVPs</td></tr>`;
+                }
+            }
+
             // Load event details from localStorage or use default
             function loadEventDetails() {
                 const storedEvent = localStorage.getItem(EVENT_STORAGE_KEY);
@@ -868,9 +954,9 @@ RSVP Tracker Help:
             }
 
             // Initialize data from localStorage
-            let rsvpData = loadData();
+            // let rsvpData = loadData();
             let eventDetails = loadEventDetails();
-            let nextId = getNextId(rsvpData);
+            // let nextId = getNextId(rsvpData);
 
             // DOM Elements
             const tableBody = document.getElementById('tableBody');
@@ -1067,31 +1153,53 @@ RSVP Tracker Help:
             }
             
             // Update the counts in the dashboard
-            function updateCounts() {
-                const confirmed = rsvpData.filter(item => item.confirmation === 'confirmed').length;
-                const pending = rsvpData.filter(item => item.confirmation === 'pending').length;
-                const declined = rsvpData.filter(item => item.confirmation === 'declined').length;
-                const plusOne = rsvpData.filter(item => item.plusOne === 'yes').length;
-                const total = rsvpData.length;
+            // function updateCounts() {
+            //     const confirmed = rsvpData.filter(item => item.confirmation === 'confirmed').length;
+            //     const pending = rsvpData.filter(item => item.confirmation === 'pending').length;
+            //     const declined = rsvpData.filter(item => item.confirmation === 'declined').length;
+            //     const plusOne = rsvpData.filter(item => item.plusOne === 'yes').length;
+            //     const total = rsvpData.length;
                 
-                confirmedCount.textContent = confirmed;
-                pendingCount.textContent = pending;
-                declinedCount.textContent = declined;
-                plusOneCount.textContent = plusOne;
-                totalGuests.textContent = total + plusOne; // Include plus ones in total guests
-            }
+            //     confirmedCount.textContent = confirmed;
+            //     pendingCount.textContent = pending;
+            //     declinedCount.textContent = declined;
+            //     plusOneCount.textContent = plusOne;
+            //     totalGuests.textContent = total + plusOne; // Include plus ones in total guests
+            // }
             
             // Update last updated timestamp
-            function updateLastUpdated() {
-                const now = new Date();
-                const options = { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                };
-                lastUpdated.textContent = now.toLocaleDateString('en-US', options);
+            async function updateLastUpdated() {
+                if (!selectedEventId) return;
+                const lastUpdatedEl = document.getElementById("lastUpdated");
+
+                try {
+                    const eventRef = doc(db, "events", selectedEventId);
+                    const snapshot = await getDoc(eventRef);
+                    if (!snapshot.exists()) {
+                        lastUpdatedEl.textContent = "-";
+                        return;
+                    }
+
+                    const data = snapshot.data();
+                    if (!data.updatedAt) {
+                        lastUpdatedEl.textContent = "-";
+                        return;
+                    }
+
+                    const updatedDate = data.updatedAt.toDate();
+                    const options = { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    };
+                    lastUpdatedEl.textContent = updatedDate.toLocaleDateString('en-US', options);
+
+                } catch (error) {
+                    console.error("Error getting updatedAt:", error);
+                    lastUpdatedEl.textContent = "-";
+                }
             }
             
             // Open modal for adding a new RSVP
@@ -1433,8 +1541,255 @@ RSVP Tracker Help:
                 `;
                 document.head.appendChild(notificationStyle);
             }
+
+            // Load events from DB
+            async function loadUpcomingEvents() {
+                console.log("loadUpcomingEvents");
+                const container = document.getElementById("eventsListContainer");
+                const today = new Date();
+                today.setHours(0,0,0,0);
+
+                // ❗ Get ALL events (no where filter)
+                const q = query(collection(db, "events"));
+                const snapshot = await getDocs(q);
+
+                snapshot.forEach(doc => {
+                    const event = doc.data();
+                    let eventDate;
+
+                    // Handle Timestamp
+                    if (event.date?.toDate) {
+                        eventDate = event.date.toDate();
+                    }
+
+                    // Handle YYYY-MM-DD string
+                    else if (typeof event.date === "string") {
+                        eventDate = new Date(event.date);
+                    }
+
+                    if (!eventDate) return;
+
+                    eventDate.setHours(0,0,0,0);
+
+                    if (eventDate >= today) {
+                        upcomingEvents.push({
+                            id: doc.id,
+                            ...event,
+                            parsedDate: eventDate
+                        });
+                    }
+
+                });
+
+                // Sort events by date
+                upcomingEvents.sort((a,b) => a.parsedDate - b.parsedDate);
+
+                if (upcomingEvents.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                            <div>No upcoming events found.</div>
+                            <small>Create an event first to start tracking RSVPs.</small>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = `<div class="list-group">`;
+                upcomingEvents.forEach(event => {
+                    const eventId = event.id;
+                    const date = event.parsedDate.toLocaleDateString();
+                    html += `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>${event.title || "Untitled Event"}</strong>
+                            <div class="text-muted small">
+                                <i class="fas fa-calendar-alt"></i> ${date}
+                                ${event.venue ? `<span class="mx-2">|</span> <i class="fas fa-map-marker-alt"></i> ${event.venue}` : ""}
+                            </div>
+                        </div>
+
+                        <button class="btn btn-sm btn-primary"
+                            onclick="selectEventForRSVP('${eventId}')">
+                            Check RSVP
+                        </button>
+                    </div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML = html;
+            }
+
+            // Display RSVP for an event
+            window.selectEventForRSVP = function (eventId) {
+                selectedEventId = eventId;
+                updateEventVisibility();
+                updateEventDetailsCard();
+                console.log("Selected Event:", selectedEventId);
+                loadRSVPsForEvent(selectedEventId);
+            }
+
+            // Display table when Checking for RSVP
+            window.updateEventVisibility = function () {
+                const eventContent = document.getElementById("eventContent");
+
+                if (selectedEventId === null) {
+                    eventContent.style.display = "none";
+                } else {
+                    eventContent.style.display = "block";
+                }
+            }
+
+            // Update contents of Event Details Card
+            window.updateEventDetailsCard = function () {
+                if (!selectedEventId) return;
+
+                const event = upcomingEvents.find(ev => ev.id === selectedEventId);
+                if (!event) return;
+
+                // DOM elements
+                const titleEl = document.querySelector(".event-details-card h4");
+                const dateEl = document.getElementById("eventDateDisplay");
+                const venueEl = document.getElementById("venueDisplay");
+
+                // Fill them
+                titleEl.textContent = event.title || "Untitled Event";
+
+                // Format date as YYYY-MM-DD or nicer
+                const dateStr = event.parsedDate
+                    ? event.parsedDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+                    : "Unknown Date";
+                dateEl.textContent = dateStr;
+
+                venueEl.textContent = event.venue || "Unknown Venue";
+            }
+
+            // Export CSV Function
+            window.exportCSV = function () {
+                const table = document.querySelector(".rsvp-table tbody");
+                if (!table) return;
+
+                let csv = "Attendees,Email,Plus One\n";
+
+                table.querySelectorAll("tr").forEach(row => {
+                    const cells = row.querySelectorAll("td");
+                    if (cells.length < 3) return; // skip placeholders
+                    const rowData = [
+                        cells[0].textContent.trim(),
+                        cells[1].textContent.trim(),
+                        cells[2].textContent.trim()
+                    ];
+                    csv += rowData.join(",") + "\n";
+                });
+
+                const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "RSVP_List.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+            };
+
+            //Export PDF Function
+            window.exportPDF = function () {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                const table = document.querySelector(".rsvp-table tbody");
+                if (!table) return;
+
+                const rows = [];
+                table.querySelectorAll("tr").forEach(row => {
+                    const cells = row.querySelectorAll("td");
+                    if (cells.length < 3) return; // skip placeholders
+                    rows.push([
+                        cells[0].textContent.trim(),
+                        cells[1].textContent.trim(),
+                        cells[2].textContent.trim()
+                    ]);
+                });
+
+                doc.setFontSize(16);
+                doc.text("RSVP List", 14, 20);
+                doc.setFontSize(12);
+                doc.autoTable({
+                    head: [["Attendees", "Email", "Plus One"]],
+                    body: rows,
+                    startY: 30
+                });
+
+                doc.save("RSVP_List.pdf");
+            };
+
+            // Show Add RSVP Modal
+            window.addRSVPBtn = function () {
+                if (!selectedEventId) {
+                    alert("Please select an event first.");
+                    return;
+                }
+
+                document.getElementById("rsvpForm").reset();
+
+                const modal = new bootstrap.Modal(document.getElementById("rsvpModal"));
+                modal.show();
+            };
+
+            // Add RSVP to Database
+            document.getElementById("rsvpForm").addEventListener("submit", async function(e) {
+                e.preventDefault();
+                if (!selectedEventId) return;
+
+                const name = document.getElementById("name").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const plusOne = document.getElementById("plusOneName").value.trim();
+
+                try {
+                    await addDoc(
+                        collection(db, "events", selectedEventId, "rsvp"),
+                        {
+                            name: name,
+                            email: email,
+                            plusOne: plusOne,
+                            createdAt: new Date()
+                        }
+                    );
+
+                    await updateDoc(
+                        doc(db, "events", selectedEventId),
+                        {
+                            updatedAt: serverTimestamp()
+                        }
+                    )
+
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById("rsvpModal")).hide();
+
+                    // Reload RSVP table
+                    loadRSVPsForEvent(selectedEventId);
+
+                } catch (error) {
+                    console.error("Error saving RSVP:", error);
+                    alert("Error saving RSVP");
+                }
+
+            });
+
+            // Enable Plus One name input if chosen Yes
+            document.getElementById("plusOne").addEventListener("change", function(){
+                const plusOneName = document.getElementById("plusOneName");
+
+                if (this.value === "yes") {
+                    plusOneName.disabled = false;
+                } else {
+                    plusOneName.disabled = true;
+                    plusOneName.value = "";
+                }
+            });
             
             // Initialize the RSVP tracker
+            loadUpcomingEvents();
+            updateEventVisibility();
             init();
         });
     </script>
