@@ -741,6 +741,24 @@
         .dark-mode .leaflet-popup-content-wrapper { background: var(--card-bg); color: var(--text-color); }
         .dark-mode .leaflet-popup-tip { background: var(--card-bg); }
 
+        /* NEW: status badge styles for the business sidebar cards */
+        .badge-approved { background:#d1fae5; color:#065f46; font-size:.75rem; padding:3px 8px; border-radius:10px; font-weight:600; }
+        .badge-pending  { background:#fef3c7; color:#92400e; font-size:.75rem; padding:3px 8px; border-radius:10px; font-weight:600; }
+        .badge-rejected { background:#fee2e2; color:#991b1b; font-size:.75rem; padding:3px 8px; border-radius:10px; font-weight:600; }
+
+        /* NEW: filter pills for the business list sidebar */
+        .filter-pills { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+        .filter-pill  { padding:4px 12px; border-radius:20px; border:1px solid var(--border-color); background:transparent; color:var(--text-color); cursor:pointer; font-size:.8rem; transition:all .2s; }
+        .filter-pill.active { background:#B71C1C; color:white; border-color:#B71C1C; }
+
+        /* NEW: DTI document link button — opens Cloudinary URL in new tab */
+        .dti-btn {
+            display:inline-flex; align-items:center; gap:5px; font-size:.8rem;
+            color:#B71C1C; background:#fce4e4; border:1px solid #f5c2c2;
+            border-radius:6px; padding:4px 10px; text-decoration:none; transition:all .2s;
+        }
+        .dti-btn:hover { background:#f5c2c2; color:#B71C1C; }
+
         @media (max-width: 768px) {
             .sidebar { width: 70px; }
             .sidebar:hover { width: 70px; }
@@ -829,19 +847,19 @@
         <div class="stats-container">
             <div class="stat-card">
                 <div class="stat-number" id="totalUsers">0</div>
-                <div class="stat-label">Total Users</div>
+                <div class="stat-label">Total Businesses</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="activeUsers">0</div>
-                <div class="stat-label">Active Users</div>
+                <div class="stat-number" id="activeUsers" style="color:#065f46">0</div>
+                <div class="stat-label">Approved</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="inactiveUsers">0</div>
-                <div class="stat-label">Inactive Users</div>
+                <div class="stat-number" id="inactiveUsers" style="color:#991b1b">0</div>
+                <div class="stat-label">Rejected</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="pendingUsers">0</div>
-                <div class="stat-label">Pending Users</div>
+                <div class="stat-number" id="pendingUsers" style="color:#92400e">0</div>
+                <div class="stat-label">Pending Review</div>
             </div>
         </div>
 
@@ -880,6 +898,13 @@
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
+                    </div>
+                    <!-- NEW: Filter pills — show All / Approved / Pending / Rejected -->
+                    <div class="filter-pills">
+                        <button class="filter-pill active" data-filter="all">All</button>
+                        <button class="filter-pill" data-filter="approved">Approved</button>
+                        <button class="filter-pill" data-filter="pending">Pending</button>
+                        <button class="filter-pill" data-filter="rejected">Rejected</button>
                     </div>
                     <div id="userLocationsList">
                         <!-- User cards rendered by JS -->
@@ -1144,13 +1169,72 @@
         </div>
     </div> -->
 
+    <!-- ═══════════════════════════════════════════
+         NEW: BUSINESS DETAIL MODAL
+         Shows full business info, DTI document link
+         (Cloudinary URL — opens in new tab), and
+         Approve / Reject buttons for the admin.
+    ═══════════════════════════════════════════ -->
+    <div class="modal fade" id="bizDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bizDetailTitle">Business Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="bizDetailBody"></div>
+                <div class="modal-footer" id="bizDetailFooter"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Approve Confirmation Modal -->
+    <div class="modal fade" id="approveModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title text-success"><i class="fas fa-check-circle me-2"></i>Approve Business</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Approve <strong id="approveBusinessName"></strong>? It will appear on the public map.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success btn-sm" id="confirmApproveBtn">Approve</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW: Reject Modal with reason field -->
+    <div class="modal fade" id="rejectModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title text-danger"><i class="fas fa-times-circle me-2"></i>Reject Business</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Reject <strong id="rejectBusinessName"></strong>?</p>
+                    <label class="form-label">Reason <span class="text-danger">*</span></label>
+                    <textarea id="rejectReason" class="form-control" rows="3" placeholder="Explain the rejection reason…"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger btn-sm" id="confirmRejectBtn">Reject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <!-- ═══════════════════════════════════════════
-         PAGE JAVASCRIPT  (UI logic only)
+         PAGE JAVASCRIPT  
     ═══════════════════════════════════════════ -->
     <script type="module">
 
@@ -1169,17 +1253,26 @@
         import { doc, collection, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         // ─────────────────────────────────────────────────────────────────────
 
+        // ── Cloudinary config — same cloud name / preset as the Flutter app ──
+        const CLOUDINARY_CLOUD  = 'dfwe9loex';
+        const CLOUDINARY_PRESET = 'smartcard';
+
         document.addEventListener('DOMContentLoaded', function () {
 
             // ── Inititialize ─────────────────────────────────────────────────────────
-            let users            = [];
-            let userMarkers      = [];
+            let users              = [];   // all businesses from 'businesses' collection
+            let userMarkers        = [];
             let userMarkersVisible = true;
-            let userToDelete     = null;
-            let userToEdit       = null;
-            let uploadedImages   = {};
-            let previewMarker    = null;
+            let userToDelete       = null;
+            let userToEdit         = null;
+            let uploadedImages     = {};
+            let previewMarker      = null;
+            let activeFilter       = 'all';   // NEW: which filter pill is active
+            let pendingApproveId   = null;    // NEW: business id awaiting approval
+            let pendingRejectId    = null;    // NEW: business id awaiting rejection
             const defPFP = getDefaultProfilePic();
+
+            // NEW: load from the 'businesses' collection (not users.businesses array)
             loadBusinessFromFirebase();
             renderUserCards();
 
@@ -1254,12 +1347,19 @@ Location Map Help:
             setTimeout(() => map.invalidateSize(), 300);
 
             // ── Marker icon factory ───────────────────────────────────────────
-            const markerIcon = (status, picUrl) => L.divIcon({
-                html: `<div class="profile-pic-marker ${status.toLowerCase()}" style="background-image:url('${picUrl}')"></div>`,
-                className: 'custom-div-icon',
-                iconSize: [40, 40],
-                iconAnchor: [20, 20]
-            });
+            // NOTE: pin border color now reflects business approval status
+            // so admin can distinguish approved (green) / pending (amber) / rejected (red) at a glance
+            const markerIcon = (status, picUrl) => {
+                const borderColor = status === 'approved' ? '#10b981'
+                                  : status === 'rejected' ? '#ef4444'
+                                  : '#f59e0b'; // pending = amber
+                return L.divIcon({
+                    html: `<div class="profile-pic-marker ${status.toLowerCase()}" style="background-image:url('${picUrl}');border-color:${borderColor}"></div>`,
+                    className: 'custom-div-icon',
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
+                });
+            };
 
             // ── Subscribe to real-time Firestore updates ──────────────────────
             // subscribeToUsers((updatedUsers) => {
@@ -1270,38 +1370,47 @@ Location Map Help:
             // });
 
             // ── Loads businesses from Firebase DB ─────────────────────────────
+            // CHANGED: now reads from the top-level 'businesses' collection.
+            // The Flutter app writes each submitted business as a separate document
+            // with fields: name, desc, address, phone, logoUrl, dtiDocumentUrl,
+            // dtiFileName, lat, lng, status ('pending'|'approved'|'rejected'), uid.
+            // Previously this read from users.businesses (array inside user docs)
+            // which was the wrong collection for the new data model.
             function loadBusinessFromFirebase() {
-                onSnapshot(collection(db, "users"), (snapshot) => {
+                onSnapshot(collection(db, "businesses"), (snapshot) => {
                     try {
-                        users.length = 0; // clear markers array
+                        users.length = 0; // clear array before repopulating
 
-                        snapshot.forEach((userDoc) => {
-                            const userData = userDoc.data();
-                            const userId = userDoc.id;
+                        snapshot.forEach((bizDoc) => {
+                            const data = bizDoc.data();
 
-                            if (!Array.isArray(userData.businesses)) return;
+                            // Only plot businesses that have valid lat/lng coordinates
+                            if (
+                                typeof data.lat !== "number" ||
+                                typeof data.lng !== "number"
+                            ) return;
 
-                            userData.businesses.forEach((business, index) => {
-                                if (
-                                    typeof business.lat !== "number" ||
-                                    typeof business.lng !== "number"
-                                ) return;
-
-                                users.push({
-                                    id: `${userId}_${index}`,
-                                    ownerId: userId,
-                                    name: business.name || "Unnamed Business",
-                                    address: business.address || "",
-                                    description: business.desc || "",
-                                    phone: business.phone || "",
-                                    logoUrl: business.logoUrl || "",
-                                    coords: [business.lat, business.lng]
-                                });
+                            users.push({
+                                id:              bizDoc.id,
+                                uid:             data.uid             || '',
+                                name:            data.name            || "Unnamed Business",
+                                address:         data.address         || "",
+                                description:     data.desc            || "",
+                                phone:           data.phone           || "",
+                                logoUrl:         data.logoUrl         || "",
+                                dtiUrl:          data.dtiDocumentUrl  || null,  // Cloudinary secure_url
+                                dtiFileName:     data.dtiFileName     || null,
+                                status:          data.status          || "pending",
+                                rejectionReason: data.rejectionReason || null,
+                                userName:        data.userName        || "",
+                                submittedAt:     data.submittedAt     || null,
+                                coords: [data.lat, data.lng]
                             });
                         });
 
                         renderMarkers();
                         renderUserCards();
+                        updateStatistics();
                         console.log("Loaded businesses:", users);
 
                     } catch (error) {
@@ -1321,7 +1430,12 @@ Location Map Help:
                 users.forEach(business => {
                     if (!business.coords || business.coords.length !== 2) return;
 
-                    const marker = L.marker(business.coords, {icon: markerIcon(business.status || "active", business.logoUrl || defPFP)}).bindPopup(`
+                    // Human-readable status label shown in the popup
+                    const statusLabel = business.status === 'approved' ? '✅ Approved'
+                                      : business.status === 'rejected' ? '❌ Rejected'
+                                      : '⏳ Pending Review';
+
+                    const marker = L.marker(business.coords, {icon: markerIcon(business.status || "pending", business.logoUrl || defPFP)}).bindPopup(`
                         <div class="user-popup">
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 <div class="user-profile-pic"
@@ -1330,6 +1444,7 @@ Location Map Help:
                                 <div>
                                     <h5 class="mb-0">${business.name}</h5>
                                     <small>${business.phone || "No phone available"}</small>
+                                    <div style="margin-top:3px;font-size:.78rem;">${statusLabel}</div>
                                 </div>
                             </div>
 
@@ -1349,6 +1464,10 @@ Location Map Help:
                                     onclick="focusUserOnMap('${business.id}')">
                                     <i class="fas fa-map-marker-alt"></i> View
                                 </button>
+                                <button class="btn btn-sm btn-outline-secondary w-100"
+                                    onclick="window._openBizDetail('${business.id}')">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </button>
                             </div>
                         </div>
                     `);
@@ -1364,29 +1483,54 @@ Location Map Help:
                 const userListContainer = document.getElementById('userLocationsList');
                 userListContainer.innerHTML = '';
 
-                users.forEach(business => {
+                const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+
+                // Filter by active pill AND search term
+                const filtered = users.filter(b => {
+                    const matchFilter = activeFilter === 'all' || b.status === activeFilter;
+                    const matchSearch = !searchTerm
+                        || b.name.toLowerCase().includes(searchTerm)
+                        || b.address.toLowerCase().includes(searchTerm)
+                        || b.phone.includes(searchTerm);
+                    return matchFilter && matchSearch;
+                });
+
+                if (filtered.length === 0) {
+                    userListContainer.innerHTML = '<div class="text-center text-muted py-4" style="font-size:.9rem;">No businesses match.</div>';
+                    return;
+                }
+
+                filtered.forEach(business => {
                     const card = document.createElement('div');
                     card.className = 'user-card';
                     card.setAttribute('data-user-id', business.id);
+
+                    // Status badge
+                    const badge = business.status === 'approved'
+                        ? '<span class="badge-approved">Approved</span>'
+                        : business.status === 'rejected'
+                        ? '<span class="badge-rejected">Rejected</span>'
+                        : '<span class="badge-pending">Pending</span>';
 
                     card.innerHTML = `
                         <div class="user-card-actions">
                         </div>
 
                         <div class="d-flex justify-content-between align-items-start">
-                            <div>
+                            <div style="flex:1;min-width:0;">
                                 <div class="user-card-title">${business.name}</div>
                                 <div class="user-card-address">${business.address || "No address provided"}</div>
 
-                                <div class="d-flex align-items-center gap-2 mt-1">
+                                <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
                                     <span class="role-badge">
                                         ${business.phone || "No phone"}
                                     </span>
+                                    ${badge}
                                 </div>
                             </div>
 
                             <div class="user-profile-pic"
-                                style="background-image: url('${business.logoUrl || defPFP}')">
+                                style="background-image: url('${business.logoUrl || defPFP}');flex-shrink:0;">
                             </div>
                         </div>
 
@@ -1395,10 +1539,16 @@ Location Map Help:
                                 ${business.description || "No description available"}
                             </small>
 
-                            <button class="btn btn-sm btn-outline-primary mt-2 w-100"
-                                onclick="focusUserOnMap('${business.id}')">
-                                <i class="fas fa-map-marker-alt"></i> View on Map
-                            </button>
+                            <div class="d-flex gap-1 mt-2">
+                                <button class="btn btn-sm btn-outline-primary flex-fill"
+                                    onclick="focusUserOnMap('${business.id}')">
+                                    <i class="fas fa-map-marker-alt"></i> View on Map
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary flex-fill"
+                                    onclick="window._openBizDetail('${business.id}')">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </button>
+                            </div>
                         </div>
                     `;
 
@@ -1415,9 +1565,9 @@ Location Map Help:
             // ── Update stats counters ─────────────────────────────────────────
             function updateStatistics() {
                 document.getElementById('totalUsers').textContent    = users.length;
-                document.getElementById('activeUsers').textContent   = users.filter(u => u.status === 'Active').length;
-                document.getElementById('inactiveUsers').textContent = users.filter(u => u.status === 'Inactive').length;
-                document.getElementById('pendingUsers').textContent  = users.filter(u => u.status === 'Pending').length;
+                document.getElementById('activeUsers').textContent   = users.filter(u => u.status === 'approved').length;
+                document.getElementById('inactiveUsers').textContent = users.filter(u => u.status === 'rejected').length;
+                document.getElementById('pendingUsers').textContent  = users.filter(u => u.status === 'pending').length;
             }
 
             // ── Focus map on a user ───────────────────────────────────────────
@@ -1442,6 +1592,171 @@ Location Map Help:
                 const card = document.querySelector(`[data-user-id="${userId}"]`);
                 if (card) card.classList.add('active');
             };
+
+            // ── NEW: Open business detail modal ───────────────────────────────
+            // Renders full business info, DTI document link (Cloudinary URL opens
+            // in a new tab), and Approve / Reject / Revoke buttons for admin.
+            window._openBizDetail = function(bizId) {
+                const biz = users.find(b => b.id === bizId);
+                if (!biz) return;
+
+                const statusBadge = biz.status === 'approved'
+                    ? '<span class="badge-approved" style="font-size:.85rem;padding:4px 12px;">✅ Approved</span>'
+                    : biz.status === 'rejected'
+                    ? '<span class="badge-rejected" style="font-size:.85rem;padding:4px 12px;">❌ Rejected</span>'
+                    : '<span class="badge-pending" style="font-size:.85rem;padding:4px 12px;">⏳ Pending</span>';
+
+                const logoHtml = biz.logoUrl
+                    ? `<img src="${biz.logoUrl}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid #B71C1C;">`
+                    : `<div style="width:64px;height:64px;border-radius:50%;background:#fce4e4;display:flex;align-items:center;justify-content:center;border:3px solid #B71C1C;font-size:24px;font-weight:700;color:#B71C1C;">${biz.name.charAt(0)}</div>`;
+
+                // DTI document is stored as a Cloudinary secure_url —
+                // no download needed, just open in a new browser tab
+                const dtiHtml = biz.dtiUrl
+                    ? `<a href="${biz.dtiUrl}" target="_blank" class="dti-btn">
+                         <i class="fas fa-file-alt"></i> View DTI Document${biz.dtiFileName ? ' — ' + biz.dtiFileName : ''}
+                       </a>`
+                    : `<span class="text-muted" style="font-size:.85rem;"><i class="fas fa-times-circle text-danger me-1"></i>No DTI document attached</span>`;
+
+                const submittedDate = biz.submittedAt
+                    ? new Date(biz.submittedAt.seconds * 1000).toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'})
+                    : '—';
+
+                document.getElementById('bizDetailTitle').textContent = biz.name;
+                document.getElementById('bizDetailBody').innerHTML = `
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        ${logoHtml}
+                        <div>
+                            <div style="font-size:1.1rem;font-weight:700;">${biz.name}</div>
+                            <div class="text-muted" style="font-size:.85rem;">Owner: ${biz.userName || '—'}</div>
+                            <div class="mt-1">${statusBadge}</div>
+                        </div>
+                    </div>
+                    <div class="mb-2"><i class="fas fa-align-left me-2" style="color:#B71C1C;"></i>${biz.description || '—'}</div>
+                    <div class="mb-2"><i class="fas fa-map-marker-alt me-2" style="color:#B71C1C;"></i>${biz.address || '—'}</div>
+                    <div class="mb-2"><i class="fas fa-phone me-2" style="color:#B71C1C;"></i>${biz.phone || '—'}</div>
+                    <div class="mb-3"><i class="fas fa-calendar me-2" style="color:#B71C1C;"></i>Submitted: ${submittedDate}</div>
+                    <hr>
+                    <div class="fw-bold mb-2"><i class="fas fa-file-contract me-2" style="color:#B71C1C;"></i>DTI Registration Document</div>
+                    ${dtiHtml}
+                    ${biz.status === 'rejected' && biz.rejectionReason ? `
+                        <div style="margin-top:12px;background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:10px;">
+                            <div style="font-weight:600;color:#991b1b;margin-bottom:4px;"><i class="fas fa-exclamation-circle me-1"></i>Rejection Reason</div>
+                            <div style="color:#991b1b;">${biz.rejectionReason}</div>
+                        </div>` : ''}
+                `;
+
+                // Footer buttons depend on the current status
+                let footerHtml = `<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
+                if (biz.status === 'pending') {
+                    footerHtml += `
+                        <button class="btn btn-danger" onclick="bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();setTimeout(()=>window._promptReject('${biz.id}','${biz.name.replace(/'/g,"\\'")}'),350)">
+                            <i class="fas fa-times me-1"></i>Reject
+                        </button>
+                        <button class="btn btn-success" onclick="bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();setTimeout(()=>window._promptApprove('${biz.id}','${biz.name.replace(/'/g,"\\'")}'),350)">
+                            <i class="fas fa-check me-1"></i>Approve
+                        </button>`;
+                } else if (biz.status === 'approved') {
+                    footerHtml += `
+                        <button class="btn btn-outline-danger" onclick="bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();setTimeout(()=>window._promptReject('${biz.id}','${biz.name.replace(/'/g,"\\'")}'),350)">
+                            <i class="fas fa-ban me-1"></i>Revoke Approval
+                        </button>`;
+                } else {
+                    // rejected — offer to approve instead
+                    footerHtml += `
+                        <button class="btn btn-success" onclick="bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();setTimeout(()=>window._promptApprove('${biz.id}','${biz.name.replace(/'/g,"\\'")}'),350)">
+                            <i class="fas fa-check me-1"></i>Approve Instead
+                        </button>`;
+                }
+                document.getElementById('bizDetailFooter').innerHTML = footerHtml;
+
+                new bootstrap.Modal(document.getElementById('bizDetailModal')).show();
+            };
+
+            // ── NEW: Approve / Reject prompt helpers ──────────────────────────
+            window._promptApprove = function(id, name) {
+                pendingApproveId = id;
+                document.getElementById('approveBusinessName').textContent = name;
+                new bootstrap.Modal(document.getElementById('approveModal')).show();
+            };
+
+            window._promptReject = function(id, name) {
+                pendingRejectId = id;
+                document.getElementById('rejectBusinessName').textContent = name;
+                document.getElementById('rejectReason').value = '';
+                new bootstrap.Modal(document.getElementById('rejectModal')).show();
+            };
+
+            // ── NEW: Confirm Approve ───────────────────────────────────────────
+            document.getElementById('confirmApproveBtn').addEventListener('click', async () => {
+                if (!pendingApproveId) return;
+                try {
+                    // Flip status to 'approved' in the businesses collection
+                    await updateDoc(doc(db, 'businesses', pendingApproveId), {
+                        status:          'approved',
+                        approvedAt:      serverTimestamp(),
+                        rejectionReason: null
+                    });
+                    // Notify the business owner via user_notifications
+                    // (matches what the Flutter app's userNotificationsStream listens to)
+                    const biz = users.find(b => b.id === pendingApproveId);
+                    if (biz?.uid) {
+                        await addDoc(collection(db, 'user_notifications'), {
+                            uid:        biz.uid,
+                            type:       'business_approved',
+                            title:      'Business Approved! 🎉',
+                            body:       `"${biz.name}" has been approved and is now visible on the map.`,
+                            businessId: pendingApproveId,
+                            read:       false,
+                            createdAt:  serverTimestamp()
+                        });
+                    }
+                    bootstrap.Modal.getInstance(document.getElementById('approveModal')).hide();
+                    showNotification('Business approved!', 'success');
+                } catch(e) {
+                    console.error(e);
+                    showNotification('Error approving: ' + e.message, 'error');
+                }
+                pendingApproveId = null;
+            });
+
+            // ── NEW: Confirm Reject ────────────────────────────────────────────
+            document.getElementById('confirmRejectBtn').addEventListener('click', async () => {
+                const reason = document.getElementById('rejectReason').value.trim();
+                if (!reason) {
+                    document.getElementById('rejectReason').classList.add('is-invalid');
+                    return;
+                }
+                document.getElementById('rejectReason').classList.remove('is-invalid');
+                if (!pendingRejectId) return;
+                try {
+                    // Flip status to 'rejected' and save the reason
+                    await updateDoc(doc(db, 'businesses', pendingRejectId), {
+                        status:          'rejected',
+                        rejectionReason: reason,
+                        rejectedAt:      serverTimestamp()
+                    });
+                    // Notify the business owner via user_notifications
+                    const biz = users.find(b => b.id === pendingRejectId);
+                    if (biz?.uid) {
+                        await addDoc(collection(db, 'user_notifications'), {
+                            uid:        biz.uid,
+                            type:       'business_rejected',
+                            title:      'Business Submission Rejected',
+                            body:       `"${biz.name}" was not approved. Reason: ${reason}`,
+                            businessId: pendingRejectId,
+                            read:       false,
+                            createdAt:  serverTimestamp()
+                        });
+                    }
+                    bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+                    showNotification('Business rejected.', 'warning');
+                } catch(e) {
+                    console.error(e);
+                    showNotification('Error rejecting: ' + e.message, 'error');
+                }
+                pendingRejectId = null;
+            });
 
             // ── Open edit modal ───────────────────────────────────────────────
             // window.editUserProfile = function (userId) {
@@ -1757,25 +2072,35 @@ Location Map Help:
 
             // ── Search ────────────────────────────────────────────────────────
             document.getElementById('searchUsers').addEventListener('input', function () {
+                renderUserCards(); // re-render cards with current search + active filter
+
+                // Also hide/show map markers that don't match the search term
                 const term = this.value.toLowerCase();
                 users.forEach(user => {
                     const matches =
                         user.name.toLowerCase().includes(term) ||
-                        user.email.toLowerCase().includes(term) ||
-                        user.address.toLowerCase().includes(term) ||
-                        user.role.toLowerCase().includes(term);
+                        (user.address || '').toLowerCase().includes(term) ||
+                        (user.phone || '').toLowerCase().includes(term);
 
                     const entry = userMarkers.find(m => m.id === user.id);
-                    const card  = document.querySelector(`[data-user-id="${user.id}"]`);
 
                     if (entry) {
                         (!term || matches) && userMarkersVisible ? entry.marker.addTo(map) : map.removeLayer(entry.marker);
                     }
-                    if (card) card.style.display = (!term || matches) ? '' : 'none';
                 });
             });
 
             document.getElementById('searchButton').addEventListener('click', () => document.getElementById('searchUsers').focus());
+
+            // ── NEW: Filter pill click handler ────────────────────────────────
+            document.querySelectorAll('.filter-pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    activeFilter = this.dataset.filter;
+                    renderUserCards();
+                });
+            });
 
             // ── Map click → update lat/lng in forms ───────────────────────────
             map.on('click', function(e) {
