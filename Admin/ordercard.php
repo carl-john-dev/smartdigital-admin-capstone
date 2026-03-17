@@ -16,7 +16,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="icon" href="CBOC LOGO.jpg"/>
-  
+    <script type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+    <script type="text/javascript">
+    (function(){
+        emailjs.init({
+            publicKey: "z8UU6_zG2JRpqhc-m",
+        });
+    })();
+    </script>
+    <script>
+        console.log("The auto-email sender only works if the receiver E-mail is valid.\nOtherwise, it returns an error.\n\n  -Arjon");
+    </script>
 </head>
 <style>
     /* Add these styles to your existing style.css */
@@ -328,18 +340,29 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3><i class="fas fa-tachometer-alt"></i> CBOC NFC Cards</h3>
+            <h3><i class="fas fa-tachometer-alt"> </i>CBOC</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="members.php"><i class="fas fa-users"></i> <span>Users</span></a></li>
-            <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
+
+            <div class="menu-category">Overview</div>
+            <li><a href="dashboard.php"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+
+            <div class="menu-category">Members</div>
+            <li><a href="members.php"><i class="fas fa-users"></i><span>Users</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
-            <li><a href="request.php"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="ordercard.php" class="active"><i class="fas fa-credit-card"></i> <span>NFC Card</span></a></li>
-            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
-            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
-            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i><span>E-Portfolio</span></a></li>
+
+            <div class="menu-category">Events</div>
+            <li><a href="calendar.php"><i class="fas fa-calendar"></i><span>Calendar</span></a></li>
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i><span>RSVP Tracker</span></a></li>
+
+            <div class="menu-category">Operations</div>
+            <li><a href="request.php"><i class="fas fa-clipboard-list"></i><span>Approvals</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-shopping-cart"></i><span>NFC Card</span></a></li>
+
+            <div class="menu-category">Account</div>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+
         </ul>
     </div>
 
@@ -538,10 +561,9 @@
                         <h3 class="section-title mb-0">
                             <i class="fas fa-sync-alt fa-spin text-primary"></i> NFC Cards in Process
                         </h3>
-
-                        <button class="btn btn-primary btn-sm" onclick="openCreateNFCModal()">
+                        <!-- <button class="btn btn-primary btn-sm" onclick="openCreateNFCModal()">
                             <i class="fas fa-plus"></i> Create NFC
-                        </button>
+                        </button> -->
                     </div>
                     <table class="table">
                         <thead>
@@ -594,8 +616,12 @@
                 <!-- Quick Pick Up Notifications -->
                 <div class="dashboard-section pickup-quick-section">
                     <h3 class="section-title"><i class="fas fa-bell"></i> Card Pick Up Notifications</h3>
-                    
-                    <div class="notification-item">
+
+                    <div id="notificationsContainer">
+                        <!-- Notifications will be inserted here -->
+                    </div>
+
+                    <!-- <div class="notification-item">
                         <div class="notification-icon bg-warning">
                             <i class="fas fa-id-card"></i>
                         </div>
@@ -626,7 +652,7 @@
                             <p>NFC card ready for pickup</p>
                             <small class="text-muted">Yesterday</small>
                         </div>
-                    </div>
+                    </div> -->
                     
                     <div class="see-all">
                         <a href="nfc-orders.php?filter=notifications">View All Notifications <i class="fas fa-arrow-right"></i></a>
@@ -695,7 +721,21 @@
     <!-- JavaScript for Interactive Elements -->
     <script type="module">
         import { db } from './Firebase/firebase_conn.js';
-        import { collection, query, where, onSnapshot, orderBy, addDoc, updateDoc, getDocs, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { collection, 
+                 collectionGroup,
+                 query, 
+                 where, 
+                 onSnapshot, 
+                 orderBy, 
+                 getDoc, 
+                 addDoc, 
+                 updateDoc, 
+                 setDoc,
+                 getDocs, 
+                 serverTimestamp,
+                 limit,
+                 doc 
+        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
         document.addEventListener('DOMContentLoaded', function() {
             // Three Dots Menu Functions
@@ -867,19 +907,25 @@ NFC Card Dashboard Help:
             // Pulls data from DB about NFC Card Ready to pick up section
             function loadReadyPickupCards() {
                 const container = document.getElementById("pickupItemsContainer");
+
+                if (!container) return;
+
                 const q = query(
-                    collection(db, "nfc_cards"),
+                    collectionGroup(db, "nfc_card"),
                     where("status", "==", "Ready for Pickup"),
                     orderBy("date_ready_pickup", "desc")
                 );
 
                 onSnapshot(q, (snapshot) => {
                     container.innerHTML = "";
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
+
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+
                         const name = data.member_name || "Unknown Member";
                         const cardId = data.card_id || "N/A";
                         const readyDate = data.date_ready_pickup;
+
                         let formattedDate = "Unknown";
 
                         if (readyDate) {
@@ -891,7 +937,6 @@ NFC Card Dashboard Help:
                                 hour: "numeric",
                                 minute: "2-digit"
                             });
-
                         }
 
                         const cardHTML = `
@@ -912,9 +957,16 @@ NFC Card Dashboard Help:
 
                         container.innerHTML += cardHTML;
                     });
+
+                    if (container.innerHTML === "") {
+                        container.innerHTML = `
+                            <div class="text-center text-muted">
+                                No NFC cards ready for pickup
+                            </div>
+                        `;
+                    }
                 });
             }
-            loadReadyPickupCards();
 
             // Pulls data from DB about NFC Card Processed section
             function loadProcessedCards() {
@@ -923,7 +975,7 @@ NFC Card Dashboard Help:
                 if (!tableBody) return;
 
                 const q = query(
-                    collection(db, "nfc_cards"),
+                    collectionGroup(db, "nfc_card"),
                     where("status", "==", "Processed"),
                     orderBy("date_processed", "desc")
                 );
@@ -931,8 +983,9 @@ NFC Card Dashboard Help:
                 onSnapshot(q, (snapshot) => {
                     tableBody.innerHTML = "";
 
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+
                         const name = data.member_name || "Unknown";
                         const cardId = data.card_id || "N/A";
                         const status = data.status || "Processed";
@@ -948,7 +1001,6 @@ NFC Card Dashboard Help:
                                 hour: "numeric",
                                 minute: "2-digit"
                             });
-
                         }
 
                         const row = `
@@ -959,7 +1011,7 @@ NFC Card Dashboard Help:
                                 <td><span class="status status-resolve">${status}</span></td>
                                 <td>
                                     <button class="btn btn-sm btn-success"
-                                        onclick="markCardReady('${doc.id}', this)"">
+                                        onclick="markCardReady('${docSnap.ref.path}', this)">
                                         <i class="fas fa-check"></i> Mark as Ready
                                     </button>
                                 </td>
@@ -968,9 +1020,18 @@ NFC Card Dashboard Help:
 
                         tableBody.innerHTML += row;
                     });
+
+                    if (tableBody.innerHTML === "") {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    No processed NFC cards
+                                </td>
+                            </tr>
+                        `;
+                    }
                 });
             }
-            loadProcessedCards();
 
             // Pulls data from DB about NFC Card In Process section
             function loadActiveCards() {
@@ -979,18 +1040,17 @@ NFC Card Dashboard Help:
                 if (!tableBody) return;
 
                 const q = query(
-                    collection(db, "nfc_cards"),
-                    where("status", "!=", "Processed"),
-                    orderBy("status")
+                    collectionGroup(db, "nfc_card"),
+                    where("status", "in", ["Pending", "In Processing"]),
+                    orderBy("date_started", "desc")
                 );
 
                 onSnapshot(q, (snapshot) => {
                     tableBody.innerHTML = "";
 
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
 
-                        // Skip cards ready for pickup
                         if (data.status === "Ready for Pickup") return;
 
                         const name = data.member_name || "Unknown";
@@ -1008,7 +1068,6 @@ NFC Card Dashboard Help:
                                 hour: "numeric",
                                 minute: "2-digit"
                             });
-
                         }
 
                         const row = `
@@ -1019,7 +1078,7 @@ NFC Card Dashboard Help:
                                 <td><span class="status status-pending">${status}</span></td>
                                 <td>
                                     <button class="btn btn-sm btn-success"
-                                        onclick="markCardProcessed('${doc.id}', this)"">
+                                        onclick="markCardProcessed('${docSnap.ref.path}', this)">
                                         <i class="fas fa-check"></i> Process
                                     </button>
                                 </td>
@@ -1040,11 +1099,10 @@ NFC Card Dashboard Help:
                     }
                 });
             }
-            loadActiveCards();
 
             // Update Card Counts based on Firebase DB
             function loadNFCCardCounts() {
-                const cardsRef = collection(db, "nfc_cards");
+                const cardsRef = collectionGroup(db, "nfc_card");
 
                 onSnapshot(cardsRef, (snapshot) => {
                     let total = 0;
@@ -1083,102 +1141,203 @@ NFC Card Dashboard Help:
                     });
                 });
             }
-            loadNFCCardCounts();
 
-            // Open MOdal for Create NFC
+            // Open Modal for Create NFC
             window.openCreateNFCModal = function () {
                 const modal = new bootstrap.Modal(document.getElementById("createNFCModal"));
                 modal.show();
             }
 
             // Mark a card as Processed
-            window.markCardProcessed = async function(cardId, btn) {
+            window.markCardProcessed = async function(cardPath, btn) {
                 btn.disabled = true;
                 btn.innerHTML = "Processing...";
 
                 try {
-                    await updateDoc(doc(db, "nfc_cards", cardId),{
+
+                    const cardRef = doc(db, cardPath);
+
+                    await updateDoc(cardRef, {
                         status: "Processed",
                         date_processed: serverTimestamp()
                     });
-                } catch(e){
+
+                    btn.innerHTML = "Processed";
+
+                } catch(e) {
                     console.error(e);
                     btn.disabled = false;
-                    btn.innerHTML = "Processed";
+                    btn.innerHTML = "Process";
                 }
             }
 
             // Mark a card as Ready for Pickup
-            window.markCardReady = async function(cardId, btn) {
+            window.markCardReady = async function(cardPath, btn) {
                 btn.disabled = true;
                 btn.innerHTML = "Processing...";
 
                 try {
-                    await updateDoc(doc(db, "nfc_cards", cardId),{
+
+                    const cardRef = doc(db, cardPath);
+
+                    await updateDoc(cardRef, {
                         status: "Ready for Pickup",
                         date_ready_pickup: serverTimestamp()
                     });
-                } catch(e){
+
+                    // Get card data after update
+                    const cardSnap = await getDoc(cardRef);
+                    const cardData = cardSnap.data();
+
+                    // Get the user's email
+                    const userId = cardPath.split('/')[1]; // users/{userId}/nfc_card/{cardDoc}
+                    const userSnap = await getDoc(doc(db, "users", userId));
+                    const userData = userSnap.data();
+                    const email = userData?.email;
+
+                    if (email) {
+                        // Send email via EmailJS (variable names must match template exactly)
+                        emailjs.send("service_1s1jyud", "template_pz1xyg8", {
+                            name: userData.name || "Member",
+                            email: email,
+                            card_id: cardData.card_id
+                        })
+                        .then(() => {
+                            console.log(`Email sent to ${email}`);
+                        }, (err) => {
+                            console.error("EmailJS error:", err);
+                        });
+                    }
+
+                    // 5️⃣ Add notification to user_notifications collection
+                    await addDoc(collection(db, "user_notifications"), {
+                        user_id: userId,
+                        name: userData.name,
+                        type: "nfc_ready_to_pickup",
+                        createdAt: serverTimestamp(),
+                        card_id: cardData.card_id
+                    });
+
+                    btn.innerHTML = "Ready";
+
+                } catch(e) {
                     console.error(e);
                     btn.disabled = false;
-                    btn.innerHTML = "Processed";
+                    btn.innerHTML = "Mark as Ready";
                 }
             }
 
             // Create an NFC Card
-            window.createNFCCard = async function () {
-                const nameInput = document.getElementById("nfcMemberName");
-                const memberName = nameInput.value.trim();
+            async function createNFCCardsForUsers() {
+                const usersSnapshot = await getDocs(collection(db, "users"));
 
-                if (!memberName) {
-                    alert("Please enter member name");
-                    return;
-                }
+                for (const userDoc of usersSnapshot.docs) {
+                    const userId = userDoc.id;
+                    const userData = userDoc.data();
 
-                try {
+                    const cardRef = doc(db, "users", userId, "nfc_card", "card");
+                    const cardSnap = await getDoc(cardRef);
+
+                    // Skip if card already exists
+                    if (cardSnap.exists()) {
+                        // console.log(`User ${userId} already has NFC card`);
+                        continue;
+                    }
+
+                    // Generate card ID
                     const cardId = await generateUniqueCardId();
 
-                    await addDoc(collection(db, "nfc_cards"), {
+                    await setDoc(cardRef, {
                         card_id: cardId,
-                        member_name: memberName,
-                        status: "In Process",
+                        member_name: userData.name || "Unknown",
+                        status: "In Processing",
                         date_started: serverTimestamp()
                     });
 
-                    nameInput.value = "";
-
-                    bootstrap.Modal.getInstance(
-                        document.getElementById("createNFCModal")
-                    ).hide();
-
-                    showToast("NFC card created successfully", "success");
-
-                } catch (error) {
-                    console.error("Error creating NFC card:", error);
-                    showToast("Failed to create NFC card", "error");
+                    // console.log(`Created NFC card for ${userData.name}`);
                 }
             }
 
             // Generates unique ID for each NFC Card
             async function generateUniqueCardId() {
                 const year = new Date().getFullYear();
-                let cardId;
-                let exists = true;
 
-                while (exists) {
-                    const randomNum = Math.floor(100 + Math.random() * 900);
-                    cardId = `NFC-${year}-${randomNum}`;
+                const random16 = Math.floor(
+                    1000000000000000 + Math.random() * 9000000000000000
+                );
 
-                    const q = query(
-                        collection(db, "nfc_cards"),
-                        where("card_id", "==", cardId)
-                    );
-
-                    const snapshot = await getDocs(q);
-                    exists = !snapshot.empty;
-                }
-                return cardId;
+                return `NFC-${year}-${random16}`;
             }
+
+            function loadUserNotifications() {
+                const container = document.getElementById("notificationsContainer");
+                if (!container) return;
+
+                // Query: user_notifications where type == "nfc_ready_to_pickup", newest first
+                const q = query(
+                    collection(db, "user_notifications"),
+                    where("type", "==", "nfc_ready_to_pickup"),
+                    orderBy("createdAt", "desc")
+                );
+
+                onSnapshot(q, (snapshot) => {
+                    container.innerHTML = ""; // clear old notifications
+
+                    if (snapshot.empty) {
+                        container.innerHTML = `<p class="text-muted">No new notifications</p>`;
+                        return;
+                    }
+
+                    snapshot.forEach(docSnap => {
+                        const data = docSnap.data();
+                        const name = data.name || "Member";
+                        const createdAt = data.createdAt ? data.createdAt.toDate() : null;
+                        const timeString = createdAt ? timeAgo(createdAt) : "";
+
+                        // Notification item HTML
+                        const notifHTML = `
+                            <div class="notification-item">
+                                <div class="notification-icon bg-warning">
+                                    <i class="fas fa-id-card"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <h6>${name}</h6>
+                                    <p>NFC card ready for pickup</p>
+                                    <small class="text-muted">${timeString}</small>
+                                </div>
+                            </div>
+                        `;
+
+                        container.innerHTML += notifHTML;
+                    });
+                });
+            }
+
+            function timeAgo(date) {
+                const now = new Date();
+                const diff = now - date; // milliseconds
+
+                const seconds = Math.floor(diff / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+
+                if (days > 1) return `${days} days ago`;
+                if (days === 1) return "Yesterday";
+                if (hours > 1) return `${hours} hours ago`;
+                if (hours === 1) return "1 hour ago";
+                if (minutes > 1) return `${minutes} minutes ago`;
+                if (minutes === 1) return "1 minute ago";
+                return "Just now";
+            }
+
+            // Initialize
+            createNFCCardsForUsers();
+            loadActiveCards();
+            loadNFCCardCounts();
+            loadProcessedCards();
+            loadReadyPickupCards();
+            loadUserNotifications();
         });
     </script>
 </body>

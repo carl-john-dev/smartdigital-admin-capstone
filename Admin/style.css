@@ -136,6 +136,16 @@
             transform: translateX(0);
         }
 
+        /* show only when sidebar expands */
+        .sidebar:hover .menu-category{
+            opacity:1;
+        }
+
+        /* remove spacing conflicts */
+        .sidebar-menu .menu-category + li{
+            margin-top:0;
+        }
+
         /* Add staggered animation for menu items */
         .sidebar-menu li:nth-child(1) span { transition-delay: 0.05s; }
         .sidebar-menu li:nth-child(2) span { transition-delay: 0.1s; }

@@ -609,18 +609,29 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3><i class="fas fa-tachometer-alt"></i> CBOC</h3>
+            <h3><i class="fas fa-tachometer-alt"> </i>CBOC</h3>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="members.php"><i class="fas fa-users"></i> <span>Users</span></a></li>
-            <li><a href="calendar.php"><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
+
+            <div class="menu-category">Overview</div>
+            <li><a href="dashboard.php"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+
+            <div class="menu-category">Members</div>
+            <li><a href="members.php"><i class="fas fa-users"></i><span>Users</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
-            <li><a href="request.php" class="active"><i class="fas fa-clipboard-list"></i> <span>Requests</span></a></li>
-            <li><a href="ordercard.php"><i class="fas fa-credit-card"></i> <span>NFC Card</span></a></li>
-            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i> <span>E-Portfolio</span></a></li>
-            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i> <span>RSVP Tracker</span></a></li>
-            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i><span>E-Portfolio</span></a></li>
+
+            <div class="menu-category">Events</div>
+            <li><a href="calendar.php"><i class="fas fa-calendar"></i><span>Calendar</span></a></li>
+            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i><span>RSVP Tracker</span></a></li>
+
+            <div class="menu-category">Operations</div>
+            <li><a href="#" class="active"><i class="fas fa-clipboard-list"></i><span>Approvals</span></a></li>
+            <li><a href="ordercard.php"><i class="fas fa-shopping-cart"></i><span>NFC Card</span></a></li>
+
+            <div class="menu-category">Account</div>
+            <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+
         </ul>
     </div>
 
@@ -630,7 +641,7 @@
         <div class="top-bar">
             <div class="page-header">
                 <div class="club-title">Cavite Business Owners Club</div>
-                <h1 class="page-title">Request Management</h1>
+                <h1 class="page-title">Approvals Management</h1>
             </div>
             <div class="d-flex align-items-center">
                 <!-- Three Dots Menu -->
@@ -647,7 +658,7 @@
                         </a>
                         <div class="dropdown-divider"></div>
                         <button class="dropdown-item" onclick="exportRequests()">
-                            <i class="fas fa-download"></i> Export Requests
+                            <i class="fas fa-download"></i> Export Approvals
                         </button>
                         <button class="dropdown-item" onclick="printRequests()">
                             <i class="fas fa-print"></i> Print List
@@ -674,33 +685,33 @@
         <!-- Stats Section -->
         <div class="stats-container">
             <div class="stat-card">
-                <div class="stat-number">45</div>
-                <div class="stat-label">Total Requests</div>
+                <div class="stat-number">???</div>
+                <div class="stat-label">Total Approvals</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">12</div>
+                <div class="stat-number">???</div>
                 <div class="stat-label">Pending</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">28</div>
+                <div class="stat-number">???</div>
                 <div class="stat-label">Approved</div>
             </div>
-            <div class="stat-card">
+            <!-- <div class="stat-card">
                 <div class="stat-number">5</div>
                 <div class="stat-label">Rejected</div>
-            </div>
+            </div> -->
         </div>
 
         <!-- Request Management Section -->
         <div class="request-container">
             <div class="request-header">
-                <h2 class="request-title"><i class="fas fa-clipboard-list"></i> All Requests</h2>
+                <h2 class="request-title"><i class="fas fa-clipboard-list"></i> All Approvals</h2>
                 <div class="request-actions">
                     <button class="request-btn" id="filterRequests">
                         <i class="fas fa-filter"></i> Filter
                     </button>
                     <button class="request-btn" id="newRequestBtn" data-bs-toggle="modal" data-bs-target="#requestModal">
-                        <i class="fas fa-plus"></i> New Request
+                        <i class="fas fa-plus"></i> New Approval
                     </button>
                 </div>
             </div>
@@ -710,7 +721,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Request Type</th>
+                            <th>Approval Type</th>
                             <th>Email</th>
                             <th>Operation</th>
                             <th>Status</th>
@@ -730,7 +741,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="requestModalLabel">Add New Request</h5>
+                    <h5 class="modal-title" id="requestModalLabel">Add New Approval</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -741,7 +752,7 @@
                             <input type="text" class="form-control" id="requestName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="requestType" class="form-label">Request Type</label>
+                            <label for="requestType" class="form-label">Approval Type</label>
                             <select class="form-select" id="requestType" required>
                                 <option value="">Select Request Type</option>
                                 <option value="Membership Application">Membership Application</option>
@@ -784,7 +795,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="saveRequest">Save Request</button>
+                    <button type="button" class="btn btn-primary" id="saveRequest">Save Approval</button>
                 </div>
             </div>
         </div>
@@ -812,19 +823,19 @@
             onSnapshot
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-        async function testFirestore() {
-            try {
-                const snapshot = await getDocs(collection(db, "users"));
-                console.log("Number of documents in 'users':", snapshot.size);
-                snapshot.forEach(docSnap => {
-                    console.log(docSnap.id, docSnap.data());
-                });
-            } catch (error) {
-                console.error("Firestore error:", error);
-            }
-        }
+        // async function testFirestore() {
+        //     try {
+        //         const snapshot = await getDocs(collection(db, "users"));
+        //         console.log("Number of documents in 'users':", snapshot.size);
+        //         snapshot.forEach(docSnap => {
+        //             console.log(docSnap.id, docSnap.data());
+        //         });
+        //     } catch (error) {
+        //         console.error("Firestore error:", error);
+        //     }
+        // }
 
-        testFirestore();
+        // testFirestore();
 
         document.addEventListener('DOMContentLoaded', function() {
             // Three Dots Menu Functions
@@ -844,7 +855,7 @@
                 linkElement.setAttribute('download', exportFileDefaultName);
                 linkElement.click();
                 
-                showNotification('Requests exported successfully!', 'success');
+                showNotification('Approvals exported successfully!', 'success');
             };
 
             window.printRequests = function() {
@@ -857,13 +868,13 @@
 
             window.showRequestHelp = function() {
                 alert(`
-Request Management Help:
-- Click "New Request" to create a request
-- Use Edit button to modify request details
-- Use Accept button to approve pending requests
-- Use Delete button to remove requests
+Approval Management Help:
+- Click "New Approval" to create a Approval
+- Use Edit button to modify Approval details
+- Use Accept button to approve pending Approvals
+- Use Delete button to remove Approvals
 - Filter by status using the Filter button
-- Stats cards show real-time request counts
+- Stats cards show real-time Approval counts
                 `);
             };
 
@@ -933,39 +944,108 @@ Request Management Help:
             window.requests = requests;
 
             // Render requests table
+            let membershipRequests = [];
+            let businessRequests = [];
+            let eventRequests = [];
+
             function renderRequests() {
                 const tableBody = document.getElementById('requestsTableBody');
-                tableBody.innerHTML = '';
+                if (!tableBody) return;
 
-                const q = query(
+                // 🔹 USERS (Membership Approval)
+                const usersQuery = query(
                     collection(db, "users"),
                     where("approved", "==", false)
                 );
 
-                onSnapshot(q, (snapshot) => {
-                    tableBody.innerHTML = '';
+                onSnapshot(usersQuery, (snapshot) => {
+                    membershipRequests = snapshot.docs.map(docSnap => ({
+                        id: docSnap.id,
+                        type: "Membership Approval",
+                        username: docSnap.data().username,
+                        email: docSnap.data().email,
+                        raw: docSnap.data()
+                    }));
 
-                    snapshot.forEach(docSnap => {
-                        const data = docSnap.data();
-                        const id = docSnap.id;
+                    updateTable();
+                });
 
+                // 🔹 BUSINESSES (Business Approval)
+                const businessQuery = query(
+                    collection(db, "businesses"),
+                    where("status", "==", "pending") // ⚠️ adjust if needed
+                );
+
+                onSnapshot(businessQuery, (snapshot) => {
+                    businessRequests = snapshot.docs.map(docSnap => ({
+                        id: docSnap.id,
+                        type: "Business Approval",
+                        username: docSnap.data().business_name || "Business",
+                        email: docSnap.data().email,
+                        raw: docSnap.data()
+                    }));
+
+                    updateTable();
+                });
+
+                // 🔹 EVENTS (Event Approval)
+                const eventsQuery = query(
+                    collection(db, "events"),
+                    where("approved", "==", false)
+                );
+
+                onSnapshot(eventsQuery, (snapshot) => {
+                    eventRequests = snapshot.docs.map(docSnap => ({
+                        id: docSnap.id,
+                        type: "Event Approval",
+                        username: docSnap.data().title || "Event",
+                        email: docSnap.data().email,
+                        raw: docSnap.data()
+                    }));
+
+                    updateTable();
+                });
+
+                // 🔁 Combine + Render
+                function updateTable() {
+                    tableBody.innerHTML = "";
+
+                    const allRequests = [
+                        ...membershipRequests,
+                        ...businessRequests,
+                        ...eventRequests
+                    ];
+
+                    if (allRequests.length === 0) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    No pending approvals
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    allRequests.forEach(req => {
                         const row = document.createElement('tr');
+
                         row.innerHTML = `
-                            <td>${data.username ?? '-'}</td>
-                            <td>Membership Application</td>
-                            <td>${data.email ?? '-'}</td>
+                            <td>${req.username ?? '-'}</td>
+                            <td>${req.type}</td>
+                            <td>${req.email ?? '-'}</td>
                             <td>Create</td>
                             <td><span class="request-status status-pending">Pending</span></td>
                             <td>
-                                <button class="request-action-btn edit" data-id="${id}">
+                                <!-- <button class="request-action-btn edit" data-id="${req.id}" data-type="${req.type}">
                                     <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="request-action-btn accept" data-id="${id}">
+                                </button> -->
+                                <button class="request-action-btn accept" data-id="${req.id}" data-type="${req.type}">
                                     <i class="fas fa-check"></i>
                                 </button>
-                                <button class="request-action-btn delete" data-id="${id}">
+                                <!-- <button class="request-action-btn delete" data-id="${req.id}" data-type="${req.type}">
                                     <i class="fas fa-trash"></i>
-                                </button>
+                                </button> -->
                             </td>
                         `;
 
@@ -974,7 +1054,7 @@ Request Management Help:
 
                     attachRequestHandlers();
                     updateStats();
-                });
+                }
             }
 
             function attachRequestHandlers() {
@@ -988,14 +1068,36 @@ Request Management Help:
                 document.querySelectorAll('.request-action-btn.accept').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         const id = btn.dataset.id;
+                        const type = btn.dataset.type;
 
-                        await updateDoc(
-                            doc(db, "users", id),
-                            { approved: true }
-                        );
+                        try {
+                            let ref;
+                            let updateData = {};
 
-                        showNotification('Request approved successfully!', 'success');
-                        renderRequests(); // refresh table
+                            // 🔀 Decide which collection to update
+                            if (type === "Membership Approval") {
+                                ref = doc(db, "users", id);
+                                updateData = { approved: true };
+
+                            } else if (type === "Business Approval") {
+                                ref = doc(db, "businesses", id);
+                                updateData = { status: "approved" };
+
+                            } else if (type === "Event Approval") {
+                                ref = doc(db, "events", id);
+                                updateData = { approved: true };
+                            }
+
+                            if (!ref) return;
+
+                            await updateDoc(ref, updateData);
+
+                            showNotification('Request approved successfully!', 'success');
+
+                        } catch (error) {
+                            console.error("Approval error:", error);
+                            showNotification('Failed to approve request', 'error');
+                        }
                     });
                 });
 
@@ -1016,17 +1118,99 @@ Request Management Help:
             }
 
             // Update statistics
-            function updateStats() {
-                const total = requests.length;
-                const pending = requests.filter(r => r.status === 'Pending').length;
-                const approved = requests.filter(r => r.status === 'Approved').length;
-                const rejected = requests.filter(r => r.status === 'Rejected').length;
+            let stats = {
+                membershipPending: 0,
+                membershipApproved: 0,
+                businessPending: 0,
+                businessApproved: 0,
+                eventPending: 0,
+                eventApproved: 0
+            };
 
-                document.querySelectorAll('.stat-number')[0].textContent = total;
-                document.querySelectorAll('.stat-number')[1].textContent = pending;
-                document.querySelectorAll('.stat-number')[2].textContent = approved;
-                document.querySelectorAll('.stat-number')[3].textContent = rejected;
+            function loadRequestStats() {
+                // 🔹 USERS (Membership)
+                onSnapshot(collection(db, "users"), (snapshot) => {
+                    let pending = 0;
+                    let approved = 0;
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data.approved === true) approved++;
+                        else pending++;
+                    });
+
+                    stats.membershipPending = pending;
+                    stats.membershipApproved = approved;
+
+                    updateStats();
+                });
+
+                // 🔹 BUSINESSES
+                onSnapshot(collection(db, "businesses"), (snapshot) => {
+                    let pending = 0;
+                    let approved = 0;
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+
+                        if (data.status === "approved") {
+                            approved++;
+                        } else {
+                            pending++; // anything not approved = pending
+                        }
+                    });
+
+                    stats.businessPending = pending;
+                    stats.businessApproved = approved;
+
+                    updateStats();
+                });
+
+                // 🔹 EVENTS
+                onSnapshot(collection(db, "events"), (snapshot) => {
+                    let pending = 0;
+                    let approved = 0;
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+
+                        if (data.approved === true) {
+                            approved++;
+                        } else {
+                            pending++;
+                        }
+                    });
+
+                    stats.eventPending = pending;
+                    stats.eventApproved = approved;
+
+                    updateStats();
+                });
             }
+
+            function updateStats() {
+                const total =
+                    stats.membershipPending + stats.membershipApproved +
+                    stats.businessPending + stats.businessApproved +
+                    stats.eventPending + stats.eventApproved;
+
+                const pending =
+                    stats.membershipPending +
+                    stats.businessPending +
+                    stats.eventPending;
+
+                const approved =
+                    stats.membershipApproved +
+                    stats.businessApproved +
+                    stats.eventApproved;
+
+                const statEls = document.querySelectorAll('.stat-number');
+
+                if (statEls[0]) statEls[0].textContent = total;
+                if (statEls[1]) statEls[1].textContent = pending;
+                if (statEls[2]) statEls[2].textContent = approved;
+            }
+            loadRequestStats();
 
             // Edit request
             function editRequest(id) {
