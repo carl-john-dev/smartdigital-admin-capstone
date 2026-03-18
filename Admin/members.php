@@ -907,8 +907,8 @@ Users Management Help:
         function updateStats() {
             const total = allusers.length;
             const active = allusers.filter(m => m.status === 'Active').length;
-            const pending = allusers.filter(m => m.status === 'pending').length;
-            const inactive = allusers.filter(m => m.status !== 'Active' && m.status !== 'pending').length;
+            const pending = allusers.filter(m => m.status === 'pending' || m.status === 'Pending').length;
+            const inactive = total - active - pending;
             
             document.getElementById('totalusers').textContent = total;
             document.getElementById('activeusers').textContent = active;

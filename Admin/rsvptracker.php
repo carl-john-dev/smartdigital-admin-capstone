@@ -1017,15 +1017,15 @@ RSVP Tracker Help:
                 // Update event details display
                 updateEventDisplay();
                 
-                updateTable();
-                updateCounts();
+                // updateTable();
+                // updateCounts();
                 updateLastUpdated();
                 
                 // Event listener for search
-                searchInput.addEventListener('input', () => {
-                    currentSearch = searchInput.value.toLowerCase();
-                    updateTable();
-                });
+                // searchInput.addEventListener('input', () => {
+                //     currentSearch = searchInput.value.toLowerCase();
+                //     updateTable();
+                // });
                 
                 // Event listeners for filtering
                 filterButtons.forEach(button => {
@@ -1041,7 +1041,7 @@ RSVP Tracker Help:
                 });
                 
                 // Event listeners for modals
-                addRSVPBtn.addEventListener('click', openAddModal);
+                // addRSVPBtn.addEventListener('click', openAddModal);
                 
                 // Event listeners for editable event details
                 editEventDateElement.addEventListener('click', () => {
@@ -1065,11 +1065,11 @@ RSVP Tracker Help:
                 });
                 
                 // Event listeners for export buttons
-                exportCSVBtn.addEventListener('click', exportToCSV);
-                exportJSONBtn.addEventListener('click', exportToJSON);
+                // exportCSVBtn.addEventListener('click', exportToCSV);
+                // exportJSONBtn.addEventListener('click', exportToJSON);
                 
                 // Event listener for reset button
-                resetDataBtn.addEventListener('click', resetData);
+                // resetDataBtn.addEventListener('click', resetData);
                 
                 // Initialize plus one name field
                 plusOneNameInput.disabled = true;
@@ -1082,86 +1082,86 @@ RSVP Tracker Help:
             }
             
             // Update the RSVP table with filtered data
-            function updateTable() {
-                // Clear the table body
-                tableBody.innerHTML = '';
+            // function updateTable() {
+            //     // Clear the table body
+            //     tableBody.innerHTML = '';
                 
-                // Filter data based on current filter and search
-                let filteredData = rsvpData.filter(item => {
-                    // Apply search filter
-                    const matchesSearch = currentSearch === '' || 
-                        item.name.toLowerCase().includes(currentSearch) || 
-                        item.email.toLowerCase().includes(currentSearch);
+            //     // Filter data based on current filter and search
+            //     let filteredData = rsvpData.filter(item => {
+            //         // Apply search filter
+            //         const matchesSearch = currentSearch === '' || 
+            //             item.name.toLowerCase().includes(currentSearch) || 
+            //             item.email.toLowerCase().includes(currentSearch);
                     
-                    // Apply status filter
-                    let matchesFilter = true;
-                    if (currentFilter !== 'all') {
-                        if (currentFilter === 'plusOne') {
-                            matchesFilter = item.plusOne === 'yes';
-                        } else {
-                            matchesFilter = item.confirmation === currentFilter;
-                        }
-                    }
+            //         // Apply status filter
+            //         let matchesFilter = true;
+            //         if (currentFilter !== 'all') {
+            //             if (currentFilter === 'plusOne') {
+            //                 matchesFilter = item.plusOne === 'yes';
+            //             } else {
+            //                 matchesFilter = item.confirmation === currentFilter;
+            //             }
+            //         }
                     
-                    return matchesSearch && matchesFilter;
-                });
+            //         return matchesSearch && matchesFilter;
+            //     });
                 
-                // If no results, show a message
-                if (filteredData.length === 0) {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="5" class="text-center py-4">
-                                <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
-                                <p class="text-muted">No RSVPs found. Try adjusting your search or filter.</p>
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
+            //     // If no results, show a message
+            //     if (filteredData.length === 0) {
+            //         tableBody.innerHTML = `
+            //             <tr>
+            //                 <td colspan="5" class="text-center py-4">
+            //                     <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+            //                     <p class="text-muted">No RSVPs found. Try adjusting your search or filter.</p>
+            //                 </td>
+            //             </tr>
+            //         `;
+            //         return;
+            //     }
                 
-                // Populate table with filtered data
-                filteredData.forEach(item => {
-                    const row = document.createElement('tr');
+            //     // Populate table with filtered data
+            //     filteredData.forEach(item => {
+            //         const row = document.createElement('tr');
                     
-                    // Determine status class and display text
-                    let statusClass = item.confirmation;
-                    let statusText = item.confirmation.charAt(0).toUpperCase() + item.confirmation.slice(1);
+            //         // Determine status class and display text
+            //         let statusClass = item.confirmation;
+            //         let statusText = item.confirmation.charAt(0).toUpperCase() + item.confirmation.slice(1);
                     
-                    row.innerHTML = `
-                        <td>${item.name}</td>
-                        <td>${item.email}</td>
-                        <td><span class="status status-${statusClass}">${statusText}</span></td>
-                        <td>${item.plusOne === 'yes' ? 'Yes' + (item.plusOneName ? ` (${item.plusOneName})` : '') : 'No'}</td>
-                        <td>
-                            <div class="action-btns">
-                                <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${item.id}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${item.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    `;
+            //         row.innerHTML = `
+            //             <td>${item.name}</td>
+            //             <td>${item.email}</td>
+            //             <td><span class="status status-${statusClass}">${statusText}</span></td>
+            //             <td>${item.plusOne === 'yes' ? 'Yes' + (item.plusOneName ? ` (${item.plusOneName})` : '') : 'No'}</td>
+            //             <td>
+            //                 <div class="action-btns">
+            //                     <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${item.id}">
+            //                         <i class="fas fa-edit"></i>
+            //                     </button>
+            //                     <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${item.id}">
+            //                         <i class="fas fa-trash"></i>
+            //                     </button>
+            //                 </div>
+            //             </td>
+            //         `;
                     
-                    tableBody.appendChild(row);
-                });
+            //         tableBody.appendChild(row);
+            //     });
                 
-                // Add event listeners to action buttons
-                document.querySelectorAll('.edit-btn').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const id = parseInt(button.getAttribute('data-id'));
-                        openEditModal(id);
-                    });
-                });
+            //     // Add event listeners to action buttons
+            //     document.querySelectorAll('.edit-btn').forEach(button => {
+            //         button.addEventListener('click', () => {
+            //             const id = parseInt(button.getAttribute('data-id'));
+            //             openEditModal(id);
+            //         });
+            //     });
                 
-                document.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const id = parseInt(button.getAttribute('data-id'));
-                        deleteRSVP(id);
-                    });
-                });
-            }
+            //     document.querySelectorAll('.delete-btn').forEach(button => {
+            //         button.addEventListener('click', () => {
+            //             const id = parseInt(button.getAttribute('data-id'));
+            //             deleteRSVP(id);
+            //         });
+            //     });
+            // }
             
             // Update the counts in the dashboard
             // function updateCounts() {

@@ -561,16 +561,16 @@
         <!-- Stats Section -->
         <div class="stats-container">
             <div class="stat-card">
-                <div class="stat-number">800+</div>
+                <div class="stat-number" id="memberCount">0</div>
                 <div class="stat-label">Members</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">5</div>
+                <div class="stat-number" id="calendarCount">0</div>
                 <div class="stat-label">Calendar</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">45</div>
-                <div class="stat-label">Request</div>
+                <div class="stat-number" id="approvalCount">0</div>
+                <div class="stat-label">Approval Requests</div>
             </div>
         </div>
 
@@ -698,7 +698,7 @@
     <!-- JavaScript for Interactive Elements -->
     <script type="module">
         import { db, storage } from './Firebase/firebase_conn.js';
-        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -943,10 +943,101 @@
             }
         }
 
+        // MEMBERS (approved users)
+        async function loadMemberCount() {
+            const membersQuery = query(
+                collection(db, "users"),
+                where("approved", "==", true)
+            );
+
+            onSnapshot(membersQuery, (snapshot) => {
+                document.getElementById("memberCount").textContent = snapshot.size;
+            });
+        }
+
+        // CALENDAR (approved OR admin + future date)
+        async function loadCalendarCount() {
+            onSnapshot(collection(db, "events"), (snapshot) => {
+                const now = new Date();
+                let count = 0;
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+
+                    let eventDate = data.date;
+
+                    // Handle Timestamp or string
+                    if (eventDate?.toDate) {
+                        eventDate = eventDate.toDate();
+                    } else {
+                        eventDate = new Date(eventDate);
+                    }
+
+                    const isFuture = eventDate >= now;
+                    const isApproved = data.approved === true;
+                    const isAdmin = data.createdBy === "Admin";
+
+                    if ((isApproved || isAdmin) && isFuture) {
+                        count++;
+                    }
+                });
+
+                document.getElementById("calendarCount").textContent = count;
+            });
+        }
+
+        // APPROVAL REQUESTS
+        async function loadApprovalCount() {
+            let pendingUsers = 0;
+            let pendingEvents = 0;
+            let pendingBusinesses = 0;
+
+            function updateApprovalUI() {
+                const total = pendingUsers + pendingEvents + pendingBusinesses;
+                document.getElementById("approvalCount").textContent = total;
+            }
+
+            // USERS (approved: false)
+            onSnapshot(
+                query(collection(db, "users"), where("approved", "==", false)),
+                (snapshot) => {
+                    pendingUsers = snapshot.size;
+                    updateApprovalUI();
+                }
+            );
+
+            // EVENTS (approved: false)
+            onSnapshot(
+                query(collection(db, "events"), where("approved", "==", false)),
+                (snapshot) => {
+                    pendingEvents = snapshot.size;
+                    updateApprovalUI();
+                }
+            );
+
+            // BUSINESSES (status: pending)
+            onSnapshot(
+                query(collection(db, "businesses"), where("status", "==", "pending")),
+                (snapshot) => {
+                    pendingBusinesses = snapshot.size;
+                    updateApprovalUI();
+                }
+            );
+        }
+
+        async function loadStats() {
+            await Promise.all([
+                loadMemberCount(),
+                loadCalendarCount(),
+                loadApprovalCount()
+            ]);
+        }
+
         // Run on page load
         loadUpcomingEvents();
         loadRecentUsers();
         renderNewMembers();
+        loadStats();
     </script>
 </body>
 </html>

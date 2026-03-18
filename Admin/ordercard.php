@@ -27,7 +27,7 @@
     })();
     </script>
     <script>
-        console.log("The auto-email sender only works if the receiver E-mail is valid.\nOtherwise, it returns an error.\n\n  -Arjon");
+        console.log("The auto-email sender only works if the receiver E-mail is a valid existing E-mail.\nOtherwise, it returns an error.\n\n  -Arjon");
     </script>
 </head>
 <style>
