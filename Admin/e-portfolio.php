@@ -1059,7 +1059,7 @@
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="#" class="active"><i class="fas fa-id-card"></i><span>E-Portfolio</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i><span>Calendar</span></a></li>
-            <li><a href="rsvptracker.php"><i class="fas fa-calendar-check"></i><span>RSVP Tracker</span></a></li>
+            <li><a href="rsvp.php"><i class="fas fa-calendar-check"></i><span>RSVP Tracker</span></a></li>
             <li><a href="request.php"><i class="fas fa-clipboard-list"></i><span>Approvals</span></a></li>
             <li><a href="ordercard.php"><i class="fas fa-shopping-cart"></i><span>NFC Card</span></a></li>
             <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>

@@ -539,9 +539,9 @@
 
         /* ----- Slideshow Carousel ----- */
         .carousel-container {
-            max-width: 1200px;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 2rem 3% 3rem 3%;
+            padding: 0 15px 3rem 15px;
             position: relative;
             width: 100%;
             background: white;
