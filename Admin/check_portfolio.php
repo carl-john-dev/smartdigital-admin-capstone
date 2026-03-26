@@ -1094,6 +1094,19 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- QR Code (positioned inside card, bottom-right) -->
+                <!--
+                    qrCode div: populated by loadPortfolio() below.
+                    src = qrCodeURL from Firestore (Firebase Storage URL)
+                    If no stored URL yet, getOrCreateQR() auto-generates and saves it.
+                -->
+                <div class="qr-code" id="qrCode" title="Scan to open this portfolio">
+                    <!-- Placeholder spinner while QR loads -->
+                    <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-spinner fa-spin" style="color:#4361ee;font-size:1.4rem;"></i>
+                    </div>
+                </div>
             </div>
 
             <!-- Control Panel -->
@@ -1119,10 +1132,19 @@
         import { db } from "./Firebase/firebase_conn.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
+        // ─── Import QR helper ────────────────────────────────────────────────────────
+        // getOrCreateQR:
+        //   • Checks Firestore users/{uid}.qrCodeURL first.
+        //   • If found → returns the stored Firebase Storage URL immediately (no API call).
+        //   • If missing → calls goqr.me, uploads the PNG to Firebase Storage,
+        //     writes the URL back to Firestore, then returns it.
+        // This means the QR is only ever generated ONCE per user and reused after that.
+        import { getOrCreateQR } from "./Firebase/qr_generator.js";
+
         const uid = "<?php echo htmlspecialchars($uid); ?>";
 
         async function loadPortfolio() {
-            const ref = doc(db, "users", uid);
+            const ref  = doc(db, "users", uid);
             const snap = await getDoc(ref);
 
             if (!snap.exists()) {
@@ -1137,18 +1159,18 @@
                 return;
             }
 
-            // Populate UI
-            document.getElementById("userName").textContent = data.name;
-            document.getElementById("userTitle").textContent = data.professionalTitle;
-            document.getElementById("userCompany").innerHTML =
+            // ── Populate profile UI ──────────────────────────────────────────────────
+            document.getElementById("userName").textContent    = data.name;
+            document.getElementById("userTitle").textContent   = data.professionalTitle;
+            document.getElementById("userCompany").innerHTML   =
                 `<i class="fas fa-building"></i> ${data.businessName}`;
 
-            document.getElementById("emailText").textContent = data.email;
-            document.getElementById("phoneText").textContent = data.phone;
+            document.getElementById("emailText").textContent    = data.email;
+            document.getElementById("phoneText").textContent    = data.phone;
             document.getElementById("locationText").textContent = data.location;
-            document.getElementById("addressText").textContent = data.address;
+            document.getElementById("addressText").textContent  = data.address;
 
-            // Avatar initials
+            // Avatar initials — first letter of each word, max 2 chars
             const initials = data.name
                 .split(" ")
                 .map(n => n[0])
@@ -1158,9 +1180,22 @@
 
             document.getElementById("userAvatar").textContent = initials;
 
-            // QR code auto-update
-            document.getElementById("qrCode").innerHTML =
-                `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}">`;
+            // ── QR Code: load from DB or auto-generate ───────────────────────────────
+            // getOrCreateQR() handles the "first time" case transparently.
+            // On subsequent visits the stored Firebase Storage URL is used directly.
+            try {
+                const qrURL = await getOrCreateQR(uid);
+                document.getElementById("qrCode").innerHTML =
+                    `<img src="${qrURL}" alt="Portfolio QR Code">`;
+            } catch (err) {
+                // Fallback: generate on-the-fly without saving (e.g. Storage write failed)
+                console.warn("[check_portfolio] QR storage failed, using live fallback:", err);
+                const fallbackURL =
+                    `https://api.qrserver.com/v1/create-qr-code/?size=150x150` +
+                    `&data=${encodeURIComponent(window.location.href)}`;
+                document.getElementById("qrCode").innerHTML =
+                    `<img src="${fallbackURL}" alt="Portfolio QR Code">`;
+            }
         }
 
         loadPortfolio();
@@ -1168,7 +1203,7 @@
 
     <script>
         function downloadCard() {
-            const card = document.getElementById("nfcCard");
+            const card     = document.getElementById("nfcCard");
             const userName = document.getElementById("userName");
 
             // FORCE browser paint
