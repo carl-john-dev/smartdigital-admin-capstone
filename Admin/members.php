@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Users Management - CBOC</title>
+    <title>Member Management - CBOC</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -159,6 +159,179 @@
         .form-control.is-valid {
             border-color: #198754;
         }
+        
+        /* Configuration Panel Styles */
+        .config-panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .config-panel h4 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .config-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .config-toggle:last-child {
+            border-bottom: none;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .config-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+        }
+        
+        .config-save-btn {
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .field-required-badge {
+            background: #dc3545;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+        
+        .field-optional-badge {
+            background: #6c757d;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+        
+        /* Member Status Styles */
+        .member-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .member-active {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .member-inactive {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .member-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .attendance-badge {
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-right: 5px;
+        }
+        
+        .attendance-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .status-update-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .status-update-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .attendance-summary {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+        
+        .member-card {
+            transition: all 0.3s ease;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -172,7 +345,7 @@
         </div>
         <ul class="sidebar-menu">
             <li><a href="dashboard.php"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-            <li><a href="#" class="active"><i class="fas fa-users"></i><span>Users</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-users"></i><span>Members</span></a></li>
             <li><a href="location.php"><i class="fas fa-map-marked-alt"></i><span>Location</span></a></li>
             <li><a href="e-portfolio.php"><i class="fas fa-id-card"></i><span>E-Portfolio</span></a></li>
             <li><a href="calendar.php"><i class="fas fa-calendar"></i><span>Calendar</span></a></li>
@@ -187,7 +360,7 @@
     <div class="main-content fade-in">
         <!-- Top Bar with Three Dots Menu -->
         <div class="top-bar">
-            <h1>Users Management</h1>
+            <h1>Member Management</h1>
             <div class="d-flex align-items-center">
                 <!-- Three Dots Menu -->
                 <div class="three-dots-menu">
@@ -203,7 +376,7 @@
                         </a>
                         <div class="dropdown-divider"></div>
                         <button class="dropdown-item" onclick="exportUsers()">
-                            <i class="fas fa-download"></i> Export Users
+                            <i class="fas fa-download"></i> Export Members
                         </button>
                         <button class="dropdown-item" onclick="printUsers()">
                             <i class="fas fa-print"></i> Print List
@@ -227,23 +400,26 @@
             </div>
         </div>
 
-        <!-- Stats Section -->
+        <!-- Stats Section with Member Status -->
         <div class="stats-container stagger-animation" id="statsContainer">
             <div class="stat-card">
                 <div class="stat-number" id="totalusers">0</div>
-                <div class="stat-label">Total Users</div>
+                <div class="stat-label">Total Members</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="background: linear-gradient(135deg, #d4edda, #c3e6cb);">
                 <div class="stat-number" id="activeusers">0</div>
-                <div class="stat-label">Active Users</div>
+                <div class="stat-label">Active Members</div>
+                <small>≥ 3 events attended</small>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="background: linear-gradient(135deg, #fff3cd, #ffeeba);">
                 <div class="stat-number" id="pendingusers">0</div>
                 <div class="stat-label">Pending</div>
+                <small>1-2 events attended</small>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" style="background: linear-gradient(135deg, #f8d7da, #f5c6cb);">
                 <div class="stat-number" id="inactiveusers">0</div>
                 <div class="stat-label">Inactive</div>
+                <small>0 events attended</small>
             </div>
         </div>
 
@@ -252,19 +428,22 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addusersModal">
-                        <i class="fas fa-plus me-1"></i> Add Users
+                        <i class="fas fa-user-plus me-1"></i> Add Member
                     </button>
-                    <button class="btn btn-outline-secondary" onclick="refreshusers()">
+                    <button class="btn btn-outline-secondary me-2" onclick="refreshusers()">
                         <i class="fas fa-sync-alt me-1"></i> Refresh
+                    </button>
+                    <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#configModal">
+                        <i class="fas fa-sliders-h me-1"></i> Configure Fields
                     </button>
                 </div>
                 <div class="d-flex gap-2">
-                    <input type="text" class="form-control" id="searchInput" placeholder="Search Users..." style="width: 250px;">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search Members..." style="width: 250px;">
                     <select class="form-select" id="statusFilter" style="width: 150px;" onchange="filterusers()">
                         <option value="all">All Status</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                        <option value="Pending">Pending</option>
+                        <option value="Active">Active (≥3 events)</option>
+                        <option value="Pending">Pending (1-2 events)</option>
+                        <option value="Inactive">Inactive (0 events)</option>
                     </select>
                 </div>
             </div>
@@ -273,14 +452,13 @@
         <div class="row">
             <!-- Left Column -->
             <div class="col-lg-8">
-                <!-- users Table Section -->
+                <!-- Members Table Section -->
                 <div class="dashboard-section">
-                    <h3 class="section-title"><i class="fas fa-users"></i> All Users</h3>
+                    <h3 class="section-title"><i class="fas fa-users"></i> Member Directory</h3>
                     <div id="usersTableContainer">
-                        <!-- users will be loaded here -->
                         <div class="loading-spinner">
                             <i class="fas fa-circle-notch"></i>
-                            <p class="mt-2">Loading Users...</p>
+                            <p class="mt-2">Loading Members...</p>
                         </div>
                     </div>
                 </div>
@@ -288,10 +466,10 @@
 
             <!-- Right Column -->
             <div class="col-lg-4">
-                <!-- Recent Activity Section -->
+                <!-- Attendance Tracking Section -->
                 <div class="dashboard-section">
-                    <h3 class="section-title"><i class="fas fa-clock"></i> Recent Activity</h3>
-                    <div class="calendar-list" id="recentActivity">
+                    <h3 class="section-title"><i class="fas fa-calendar-check"></i> Attendance Tracking</h3>
+                    <div id="attendanceTracker">
                         <div class="text-center py-3">
                             <i class="fas fa-circle-notch fa-spin"></i> Loading...
                         </div>
@@ -300,10 +478,10 @@
                 
                 <!-- Quick Stats -->
                 <div class="dashboard-section mt-3">
-                    <h3 class="section-title"><i class="fas fa-chart-pie"></i> Users Distribution</h3>
+                    <h3 class="section-title"><i class="fas fa-chart-pie"></i> Member Distribution</h3>
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Active</span>
+                            <span><i class="fas fa-check-circle text-success"></i> Active (≥3 events)</span>
                             <span class="badge bg-success" id="activePercent">0%</span>
                         </div>
                         <div class="progress mb-3">
@@ -311,7 +489,7 @@
                         </div>
                         
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Pending</span>
+                            <span><i class="fas fa-hourglass-half text-warning"></i> Pending (1-2 events)</span>
                             <span class="badge bg-warning" id="pendingPercent">0%</span>
                         </div>
                         <div class="progress mb-3">
@@ -319,78 +497,112 @@
                         </div>
                         
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Inactive</span>
+                            <span><i class="fas fa-user-slash text-danger"></i> Inactive (0 events)</span>
                             <span class="badge bg-danger" id="inactivePercent">0%</span>
                         </div>
                         <div class="progress mb-3">
                             <div class="progress-bar bg-danger" id="inactiveBar" style="width: 0%"></div>
                         </div>
                     </div>
+                    
+                    <!-- Status Criteria Info -->
+                    <div class="alert alert-info mt-2">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Member Status Rules:</strong><br>
+                        • <strong>Active:</strong> Attended 3 or more events<br>
+                        • <strong>Pending:</strong> Attended 1-2 events<br>
+                        • <strong>Inactive:</strong> No event attendance
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add users Modal -->
+    <!-- Configuration Modal -->
+    <div class="modal fade" id="configModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-sliders-h me-2"></i>Configure Add Member Form Fields</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted mb-3">Customize which fields appear in the Add Member form and set required status.</p>
+                    <div id="configFieldsContainer"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveFieldConfig()">Save Configuration</button>
+                    <button type="button" class="btn btn-outline-danger" onclick="resetFieldConfig()">Reset to Default</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Member Modal -->
     <div class="modal fade" id="addusersModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add New Users</h5>
+                    <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add New Member</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="addusersForm">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">First Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="firstName" required>
-                                <div class="invalid-feedback">First name must contain only letters (A-Z, a-z) and no numbers</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Last Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="lastName" required>
-                                <div class="invalid-feedback">Last name must contain only letters (A-Z, a-z) and no numbers</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" id="email" required>
-                                <div class="invalid-feedback">Email must be @gmail.com or @yahoo.com domain only</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                <input type="tel" class="form-control" id="phone">
-                                <div class="invalid-feedback">Phone number already exists in the system</div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Company</label>
-                                <input type="text" class="form-control" id="company">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Status</label>
-                                <select class="form-select" id="status">
-                                    <option value="Active">Active</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Inactive">Inactive</option>
-                                </select>
-                            </div>
-                        </div>
+                        <div class="row" id="dynamicFormFields"></div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="addusers()">Add Users</button>
+                    <button type="button" class="btn btn-primary" onclick="addusers()">Add Member</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Edit users Modal -->
+    <!-- Record Attendance Modal -->
+    <div class="modal fade" id="attendanceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-calendar-check me-2"></i>Record Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="attendanceMemberInfo"></div>
+                    <div class="mb-3">
+                        <label class="form-label">Event Name</label>
+                        <input type="text" class="form-control" id="eventName" placeholder="e.g., Monthly Meeting, Workshop, etc.">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Event Date</label>
+                        <input type="date" class="form-control" id="eventDate">
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="markAttendance" checked>
+                        <label class="form-check-label">
+                            Mark as Attended
+                        </label>
+                    </div>
+                    <div id="attendanceHistory" class="mt-3">
+                        <h6>Attendance History:</h6>
+                        <div id="historyList" class="attendance-list"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveAttendance()">Record Attendance</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Member Modal -->
     <div class="modal fade" id="editusersModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Users</h5>
+                    <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Member</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -400,57 +612,47 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">First Name</label>
                                 <input type="text" class="form-control" id="editFirstName" required>
-                                <div class="invalid-feedback">First name must contain only letters (A-Z, a-z) and no numbers</div>
+                                <div class="invalid-feedback">First name must contain only letters</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Last Name</label>
                                 <input type="text" class="form-control" id="editLastName" required>
-                                <div class="invalid-feedback">Last name must contain only letters (A-Z, a-z) and no numbers</div>
+                                <div class="invalid-feedback">Last name must contain only letters</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Email</label>
                                 <input type="email" class="form-control" id="editEmail" required>
-                                <div class="invalid-feedback">Email must be @gmail.com or @yahoo.com domain only</div>
+                                <div class="invalid-feedback">Email must be @gmail.com or @yahoo.com</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Phone</label>
                                 <input type="tel" class="form-control" id="editPhone">
-                                <div class="invalid-feedback">Phone number already exists in the system</div>
+                                <div class="invalid-feedback">Phone number already exists</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Company</label>
                                 <input type="text" class="form-control" id="editCompany">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Status</label>
-                                <select class="form-select" id="editStatus">
-                                    <option value="Active">Active</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Inactive">Inactive</option>
-                                </select>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="updateusers()">Update Users</button>
+                    <button type="button" class="btn btn-primary" onclick="updateusers()">Update Member</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- View users Modal -->
+    <!-- View Member Modal -->
     <div class="modal fade" id="viewusersModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-user me-2"></i>Users Details</h5>
+                    <h5 class="modal-title"><i class="fas fa-user me-2"></i>Member Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center" id="viewusersContent">
-                    <!-- Content will be populated dynamically -->
-                </div>
+                <div class="modal-body text-center" id="viewusersContent"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" onclick="editFromView()">Edit</button>
@@ -467,14 +669,10 @@
                     <h5 class="modal-title text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center" id="deleteusersContent">
-                    <i class="fas fa-trash text-danger fa-3x mb-3"></i>
-                    <p>Are you sure you want to delete this user?</p>
-                    <p class="text-danger"><small>This action cannot be undone.</small></p>
-                </div>
+                <div class="modal-body text-center" id="deleteusersContent"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Users</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Member</button>
                 </div>
             </div>
         </div>
@@ -490,662 +688,455 @@
     
     <script type="module">
         import { db, storage } from './Firebase/firebase_conn.js';
-        import { collection, query, where, doc, getDocs, getFirestore, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { collection, query, where, doc, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         
-        // Validation functions
-        function isOnlyLetters(str) {
-            return /^[A-Za-z]+$/.test(str);
-        }
-        
-        function isValidEmailDomain(email) {
-            const allowedDomains = ['gmail.com', 'yahoo.com'];
-            const domain = email.split('@')[1];
-            return domain && allowedDomains.includes(domain.toLowerCase());
-        }
-        
-        function validateNameInput(input, errorElement) {
-            const value = input.value.trim();
-            if (value === '') {
-                input.classList.add('is-invalid');
-                return false;
-            }
-            if (!isOnlyLetters(value)) {
-                input.classList.add('is-invalid');
-                return false;
-            }
-            input.classList.remove('is-invalid');
-            input.classList.add('is-valid');
-            return true;
-        }
-        
-        function validateEmailInput(input, errorElement) {
-            const value = input.value.trim();
-            if (value === '') {
-                input.classList.add('is-invalid');
-                return false;
-            }
-            if (!isValidEmailDomain(value)) {
-                input.classList.add('is-invalid');
-                return false;
-            }
-            input.classList.remove('is-invalid');
-            input.classList.add('is-valid');
-            return true;
-        }
-        
-        // Check duplicate name (first name + last name combination)
-        function isDuplicateName(firstName, lastName, excludeId = null) {
-            const fullName = (firstName + " " + lastName).toLowerCase().trim();
-            return allusers.some(user => {
-                const userFullName = (user.firstName + " " + user.lastName).toLowerCase().trim();
-                if (excludeId && user.id === excludeId) return false;
-                return userFullName === fullName;
-            });
-        }
-        
-        // Check duplicate phone number
-        function isDuplicatePhone(phone, excludeId = null) {
-            if (!phone || phone.trim() === '') return false;
-            const phoneTrimmed = phone.trim();
-            return allusers.some(user => {
-                if (excludeId && user.id === excludeId) return false;
-                return user.phone && user.phone.trim() === phoneTrimmed;
-            });
-        }
+        // Field Configuration
+        const fieldConfigs = {
+            firstName: { label: 'First Name', enabled: true, required: true, validation: 'letters' },
+            lastName: { label: 'Last Name', enabled: true, required: true, validation: 'letters' },
+            email: { label: 'Email', enabled: true, required: true, validation: 'email' },
+            phone: { label: 'Phone', enabled: true, required: false, validation: 'unique' },
+            company: { label: 'Company', enabled: true, required: false, validation: 'none' }
+        };
         
         // Global variables
         let allusers = [];
         let currentusersId = null;
-        let currentViewusers = null;
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Dark Mode Toggle
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const darkModeIcon = document.getElementById('darkModeIcon');
-            const body = document.body;
-            
-            const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
-            if (isDarkMode) {
-                body.classList.add('dark-mode');
-                darkModeIcon.classList.remove('fa-moon');
-                darkModeIcon.classList.add('fa-sun');
+        let currentAttendanceMember = null;
+        
+        // Calculate member status based on attendance count
+        function calculateMemberStatus(attendanceCount) {
+            if (attendanceCount >= 3) return 'Active';
+            if (attendanceCount >= 1) return 'Pending';
+            return 'Inactive';
+        }
+        
+        // Load field config from localStorage
+        function loadFieldConfig() {
+            const saved = localStorage.getItem('addUserFieldConfig');
+            if (saved) {
+                const savedConfig = JSON.parse(saved);
+                Object.keys(savedConfig).forEach(key => {
+                    if (fieldConfigs[key]) fieldConfigs[key] = { ...fieldConfigs[key], ...savedConfig[key] };
+                });
             }
-            
-            darkModeToggle.addEventListener('click', function() {
-                body.classList.toggle('dark-mode');
-                if (body.classList.contains('dark-mode')) {
-                    darkModeIcon.classList.remove('fa-moon');
-                    darkModeIcon.classList.add('fa-sun');
-                    localStorage.setItem('darkMode', 'enabled');
-                } else {
-                    darkModeIcon.classList.remove('fa-sun');
-                    darkModeIcon.classList.add('fa-moon');
-                    localStorage.setItem('darkMode', 'disabled');
-                }
-            });
-
-            // Three Dots Menu Toggle
-            const dotsMenuBtn = document.getElementById('dotsMenuBtn');
-            const dotsDropdown = document.getElementById('dotsDropdown');
-
-            dotsMenuBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                dotsDropdown.classList.toggle('show');
-            });
-
-            document.addEventListener('click', function() {
-                dotsDropdown.classList.remove('show');
-            });
-
-            // Add validation listeners for add modal
-            const firstNameInput = document.getElementById('firstName');
-            const lastNameInput = document.getElementById('lastName');
-            const emailInput = document.getElementById('email');
-            const phoneInput = document.getElementById('phone');
-            
-            firstNameInput.addEventListener('input', () => validateNameInput(firstNameInput, null));
-            lastNameInput.addEventListener('input', () => validateNameInput(lastNameInput, null));
-            emailInput.addEventListener('input', () => validateEmailInput(emailInput, null));
-            
-            // Real-time duplicate checking for phone
-            phoneInput.addEventListener('input', function() {
-                const phone = this.value.trim();
-                if (phone && isDuplicatePhone(phone)) {
-                    this.classList.add('is-invalid');
-                } else {
-                    this.classList.remove('is-invalid');
-                    if (phone) this.classList.add('is-valid');
-                    else this.classList.remove('is-valid');
-                }
-            });
-            
-            // Load users
-            loadusers();
-            
-            // Search functionality
-            document.getElementById('searchInput').addEventListener('input', filterusers);
-        });
-
-        // Three Dots Menu Functions
-        window.exportUsers = function() {
-            if (allusers.length === 0) {
-                showToast('No users to export', 'warning');
-                return;
+            return fieldConfigs;
+        }
+        
+        function saveFieldConfigToLocal() {
+            localStorage.setItem('addUserFieldConfig', JSON.stringify(fieldConfigs));
+            showToast('Configuration saved!', 'success');
+        }
+        
+        function renderConfigModal() {
+            const container = document.getElementById('configFieldsContainer');
+            let html = '';
+            for (const [key, config] of Object.entries(fieldConfigs)) {
+                html += `
+                    <div class="config-toggle">
+                        <div><strong>${config.label}</strong> ${config.required ? '<span class="field-required-badge">Required</span>' : '<span class="field-optional-badge">Optional</span>'}</div>
+                        <div class="d-flex align-items-center gap-3">
+                            <label class="toggle-switch">
+                                <input type="checkbox" class="config-enabled" data-field="${key}" ${config.enabled ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <label><input type="checkbox" class="config-required" data-field="${key}" ${config.required ? 'checked' : ''} ${!config.enabled ? 'disabled' : ''}> Required</label>
+                        </div>
+                    </div>
+                `;
             }
-            
-            const dataStr = JSON.stringify(allusers, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            const exportFileDefaultName = 'cboc-users-export.json';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            showToast('Users exported successfully!', 'success');
+            container.innerHTML = html;
+            document.querySelectorAll('.config-enabled').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const field = this.dataset.field;
+                    const requiredCb = document.querySelector(`.config-required[data-field="${field}"]`);
+                    if (requiredCb) { requiredCb.disabled = !this.checked; if (!this.checked) requiredCb.checked = false; }
+                });
+            });
         }
-
-        window.printUsers = function() {
-            window.print();
+        
+        window.saveFieldConfig = function() {
+            document.querySelectorAll('.config-enabled').forEach(cb => { if (fieldConfigs[cb.dataset.field]) fieldConfigs[cb.dataset.field].enabled = cb.checked; });
+            document.querySelectorAll('.config-required').forEach(cb => { if (fieldConfigs[cb.dataset.field] && !cb.disabled) fieldConfigs[cb.dataset.field].required = cb.checked; });
+            saveFieldConfigToLocal();
+            renderDynamicForm();
+            bootstrap.Modal.getInstance(document.getElementById('configModal')).hide();
+            showToast('Form configuration updated!', 'success');
+        };
+        
+        window.resetFieldConfig = function() {
+            Object.assign(fieldConfigs, {
+                firstName: { label: 'First Name', enabled: true, required: true, validation: 'letters' },
+                lastName: { label: 'Last Name', enabled: true, required: true, validation: 'letters' },
+                email: { label: 'Email', enabled: true, required: true, validation: 'email' },
+                phone: { label: 'Phone', enabled: true, required: false, validation: 'unique' },
+                company: { label: 'Company', enabled: true, required: false, validation: 'none' }
+            });
+            saveFieldConfigToLocal();
+            renderConfigModal();
+            renderDynamicForm();
+            showToast('Configuration reset to default!', 'success');
+        };
+        
+        function renderDynamicForm() {
+            const container = document.getElementById('dynamicFormFields');
+            let html = '';
+            for (const [key, config] of Object.entries(fieldConfigs)) {
+                if (!config.enabled) continue;
+                const requiredMark = config.required ? '<span class="text-danger">*</span>' : '';
+                if (key === 'firstName' || key === 'lastName') {
+                    html += `<div class="col-md-6 mb-3"><label class="form-label">${config.label} ${requiredMark}</label><input type="text" class="form-control" id="${key}" ${config.required ? 'required' : ''}><div class="invalid-feedback">${config.label} must contain only letters</div></div>`;
+                } else if (key === 'email') {
+                    html += `<div class="col-md-6 mb-3"><label class="form-label">${config.label} ${requiredMark}</label><input type="email" class="form-control" id="${key}" ${config.required ? 'required' : ''}><div class="invalid-feedback">Email must be @gmail.com or @yahoo.com</div></div>`;
+                } else if (key === 'phone') {
+                    html += `<div class="col-md-6 mb-3"><label class="form-label">${config.label}</label><input type="tel" class="form-control" id="${key}"><div class="invalid-feedback">Phone number already exists</div></div>`;
+                } else if (key === 'company') {
+                    html += `<div class="col-md-6 mb-3"><label class="form-label">${config.label}</label><input type="text" class="form-control" id="${key}"></div>`;
+                }
+            }
+            container.innerHTML = html;
         }
-
-        window.showHelp = function() {
-            alert(`Users Management Help:
-- First Name and Last Name: Only letters (A-Z, a-z) are allowed, no numbers
-- Email: Only @gmail.com or @yahoo.com domains are accepted
-- Phone Number: Must be unique - no duplicate phone numbers allowed
-- Member Name: Full name (First + Last) must be unique - no duplicate names allowed
-- Click "Add users" to create new users
-- Use search bar to filter users
-- Click on avatar to view details
-- Use status filter to sort by status
-- Click edit/delete buttons to modify users`);
-        }
-
-        // Load users from Firebase
+        
+        // Validation functions
+        function isOnlyLetters(str) { return /^[A-Za-z]+$/.test(str); }
+        function isValidEmailDomain(email) { const allowedDomains = ['gmail.com', 'yahoo.com']; const domain = email.split('@')[1]; return domain && allowedDomains.includes(domain.toLowerCase()); }
+        function isDuplicateName(firstName, lastName, excludeId = null) { const fullName = (firstName + " " + lastName).toLowerCase().trim(); return allusers.some(user => { const userFullName = (user.firstName + " " + user.lastName).toLowerCase().trim(); if (excludeId && user.id === excludeId) return false; return userFullName === fullName; }); }
+        function isDuplicatePhone(phone, excludeId = null) { if (!phone || phone.trim() === '') return false; const phoneTrimmed = phone.trim(); return allusers.some(user => { if (excludeId && user.id === excludeId) return false; return user.phone && user.phone.trim() === phoneTrimmed; }); }
+        
+        // Load members from Firebase
         async function loadusers() {
             try {
                 const querySnapshot = await getDocs(collection(db, "users"));
-
                 allusers = [];
-
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-
-                    // Split name into first and last
+                for (const docSnap of querySnapshot.docs) {
+                    const data = docSnap.data();
                     const fullName = data.name || "";
                     const nameParts = fullName.trim().split(" ");
-
                     const firstName = nameParts[0] || "???";
                     const lastName = nameParts.slice(1).join(" ") || "";
-
-                    allusers.push({
-                        id: doc.id,
-                        ...data,
-                        firstName: firstName,
-                        lastName: lastName
-                    });
-                });
-
+                    const attendance = data.attendance || [];
+                    const attendanceCount = attendance.length;
+                    const status = data.status || calculateMemberStatus(attendanceCount);
+                    allusers.push({ id: docSnap.id, ...data, firstName, lastName, attendance, attendanceCount, status });
+                }
                 displayusers(allusers);
                 updateStats();
-                updateRecentActivity();
-
-            } catch (error) {
-                console.error("Error loading users:", error);
-                showToast("Error loading users", "error");
-                document.getElementById("usersTableContainer").innerHTML =
-                    `<div class="empty-state">
-                        <p class="text-danger">Error: ${error.message}</p>
-                    </div>`;
-            }
+                updateAttendanceTracker();
+            } catch (error) { console.error("Error loading members:", error); showToast("Error loading members", "error"); }
         }
-
-        // Display users in table
+        
         function displayusers(users) {
             const container = document.getElementById('usersTableContainer');
-            
-            if (users.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-users-slash"></i>
-                        <h5>No users Found</h5>
-                        <p>Click "Add Users" to create your first users.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = `
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Users</th>
-                            <th>Contact</th>
-                            <th>Role</th>
-                            <th>Join Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            users.forEach(users => {
-                const initials = getInitials(users.firstName, users.lastName);
-                const joinDate = users.createdAt ? new Date(users.createdAt.toDate()).toLocaleDateString() : 'N/A';
-                
-                html += `
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="users-avatar" style="width: 40px; height: 40px; font-size: 0.9rem;" 
-                                     onclick="viewusers('${users.id}')">
-                                    ${initials}
-                                </div>
-                                <div class="ms-3">
-                                    <div class="fw-bold">${escapeHtml(users.firstName)} ${escapeHtml(users.lastName)}</div>
-                                    <small class="text-muted">${escapeHtml(users.company || 'No Company')}</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div>${escapeHtml(users.email)}</div>
-                            <small class="text-muted">${escapeHtml(users.phone || 'No phone')}</small>
-                        </td>
-                        <td><span class="status status-resolve">${escapeHtml(users.role || 'User')}</span></td>
-                        <td>${joinDate}</td>
-                        <td><span class="status ${users.status === 'Active' ? 'status-resolve' : (users.status === 'Pending' ? 'status-pending' : '')}">${users.status || 'Pending'}</span></td>
-                        <td class="action-buttons">
-                            <button class="btn btn-sm btn-outline-primary me-1" onclick="viewusers('${users.id}')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-warning me-1" onclick="editusers('${users.id}')">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteusers('${users.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
+            if (users.length === 0) { container.innerHTML = `<div class="empty-state"><i class="fas fa-users-slash"></i><h5>No Members Found</h5><p>Click "Add Member" to create your first member.</p></div>`; return; }
+            let html = `<table class="table table-hover"><thead><tr><th>Member</th><th>Contact</th><th>Events Attended</th><th>Member Status</th><th>Actions</th></tr></thead><tbody>`;
+            users.forEach(member => {
+                const initials = (member.firstName ? member.firstName[0] : '') + (member.lastName ? member.lastName[0] : '');
+                const joinDate = member.createdAt ? new Date(member.createdAt.toDate()).toLocaleDateString() : 'N/A';
+                let statusClass = '', statusIcon = '';
+                if (member.status === 'Active') { statusClass = 'member-active'; statusIcon = '<i class="fas fa-check-circle"></i>'; }
+                else if (member.status === 'Pending') { statusClass = 'member-pending'; statusIcon = '<i class="fas fa-hourglass-half"></i>'; }
+                else { statusClass = 'member-inactive'; statusIcon = '<i class="fas fa-user-slash"></i>'; }
+                html += `<tr>
+                    <td><div class="d-flex align-items-center"><div class="users-avatar" style="width:40px;height:40px;font-size:0.9rem;" onclick="viewusers('${member.id}')">${initials}</div><div class="ms-3"><div class="fw-bold">${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</div><small class="text-muted">${escapeHtml(member.company || 'No Company')}</small></div></div></td>
+                    <td><div>${escapeHtml(member.email)}</div><small class="text-muted">${escapeHtml(member.phone || 'No phone')}</small></td>
+                    <td><span class="badge bg-primary">${member.attendanceCount || 0}</span> events<br><small class="text-muted">Joined: ${joinDate}</small></td>
+                    <td><span class="member-status ${statusClass}">${statusIcon} ${member.status || 'Pending'}</span></td>
+                    <td class="action-buttons">
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="recordAttendance('${member.id}')" title="Record Attendance"><i class="fas fa-calendar-check"></i></button>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="viewusers('${member.id}')"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editusers('${member.id}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteusers('${member.id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
             });
-            
             html += '</tbody></table>';
             container.innerHTML = html;
         }
         
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
+        
+        function updateStats() {
+            const total = allusers.length;
+            const active = allusers.filter(m => m.status === 'Active').length;
+            const pending = allusers.filter(m => m.status === 'Pending').length;
+            const inactive = allusers.filter(m => m.status === 'Inactive').length;
+            document.getElementById('totalusers').textContent = total;
+            document.getElementById('activeusers').textContent = active;
+            document.getElementById('pendingusers').textContent = pending;
+            document.getElementById('inactiveusers').textContent = inactive;
+            if (total > 0) {
+                const activePercent = Math.round((active / total) * 100);
+                const pendingPercent = Math.round((pending / total) * 100);
+                const inactivePercent = Math.round((inactive / total) * 100);
+                document.getElementById('activePercent').textContent = activePercent + '%';
+                document.getElementById('pendingPercent').textContent = pendingPercent + '%';
+                document.getElementById('inactivePercent').textContent = inactivePercent + '%';
+                document.getElementById('activeBar').style.width = activePercent + '%';
+                document.getElementById('pendingBar').style.width = pendingPercent + '%';
+                document.getElementById('inactiveBar').style.width = inactivePercent + '%';
+            }
         }
-
-        // Get initials from name
-        function getInitials(first, last) {
-            return (first ? first[0] : '') + (last ? last[0] : '');
-        }
-
-        // Add new users with validation
-        window.addusers = async function () {
-            const firstName = document.getElementById('firstName').value.trim();
-            const lastName = document.getElementById('lastName').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const company = document.getElementById('company').value;
-            const status = document.getElementById('status').value;
-            
-            // Validate inputs
-            let isValid = true;
-            
-            if (!isOnlyLetters(firstName)) {
-                document.getElementById('firstName').classList.add('is-invalid');
-                isValid = false;
-            } else {
-                document.getElementById('firstName').classList.remove('is-invalid');
-            }
-            
-            if (!isOnlyLetters(lastName)) {
-                document.getElementById('lastName').classList.add('is-invalid');
-                isValid = false;
-            } else {
-                document.getElementById('lastName').classList.remove('is-invalid');
-            }
-            
-            if (!isValidEmailDomain(email)) {
-                document.getElementById('email').classList.add('is-invalid');
-                isValid = false;
-            } else {
-                document.getElementById('email').classList.remove('is-invalid');
-            }
-            
-            // Check duplicate name
-            if (isDuplicateName(firstName, lastName)) {
-                showToast('A user with this name already exists!', 'warning');
-                document.getElementById('firstName').classList.add('is-invalid');
-                document.getElementById('lastName').classList.add('is-invalid');
-                isValid = false;
-            }
-            
-            // Check duplicate phone
-            if (phone && isDuplicatePhone(phone)) {
-                document.getElementById('phone').classList.add('is-invalid');
-                showToast('This phone number is already registered!', 'warning');
-                isValid = false;
-            }
-            
-            if (!isValid) {
-                showToast('Please fix the validation errors', 'warning');
+        
+        function updateAttendanceTracker() {
+            const container = document.getElementById('attendanceTracker');
+            const recentAttendees = [...allusers].filter(m => m.attendance && m.attendance.length > 0).sort((a, b) => (b.attendance?.length || 0) - (a.attendance?.length || 0)).slice(0, 5);
+            if (recentAttendees.length === 0) {
+                container.innerHTML = '<div class="text-center py-3 text-muted"><i class="fas fa-calendar-times"></i><br>No attendance records yet</div>';
                 return;
             }
-            
-            const name = firstName + " " + lastName;
-            
-            const usersData = {
-                name,
-                email,
-                phone: phone || null,
-                company,
-                role: 'User',
-                status,
-                createdAt: serverTimestamp(),
-                approved: status === 'Active'
+            let html = '<div class="attendance-list">';
+            recentAttendees.forEach(member => {
+                const lastEvent = member.attendance && member.attendance.length > 0 ? member.attendance[member.attendance.length - 1] : null;
+                html += `<div class="member-card p-2 mb-2 border rounded">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div><strong>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</strong><br><small class="text-muted">${member.attendanceCount} events attended</small></div>
+                        <span class="member-status ${member.status === 'Active' ? 'member-active' : (member.status === 'Pending' ? 'member-pending' : 'member-inactive')}">${member.status}</span>
+                    </div>
+                    ${lastEvent ? `<div class="attendance-summary mt-1"><i class="fas fa-clock"></i> Last event: ${lastEvent.eventName || 'Event'} (${lastEvent.date || 'N/A'})</div>` : ''}
+                </div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        // Record Attendance
+        window.recordAttendance = async function(id) {
+            const member = allusers.find(m => m.id === id);
+            if (!member) return;
+            currentAttendanceMember = member;
+            document.getElementById('attendanceMemberInfo').innerHTML = `<h5>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</h5><p class="text-muted">Current events attended: <strong>${member.attendanceCount || 0}</strong></p>`;
+            document.getElementById('eventName').value = '';
+            document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+            let historyHtml = '';
+            if (member.attendance && member.attendance.length > 0) {
+                member.attendance.forEach((event, idx) => {
+                    historyHtml += `<div class="attendance-badge"><i class="fas fa-calendar-alt"></i> ${event.eventName || 'Event'} - ${event.date || 'N/A'}</div>`;
+                });
+            } else {
+                historyHtml = '<p class="text-muted">No attendance records yet</p>';
+            }
+            document.getElementById('historyList').innerHTML = historyHtml;
+            new bootstrap.Modal(document.getElementById('attendanceModal')).show();
+        };
+        
+        window.saveAttendance = async function() {
+            if (!currentAttendanceMember) return;
+            const eventName = document.getElementById('eventName').value.trim();
+            const eventDate = document.getElementById('eventDate').value;
+            if (!eventName) { showToast('Please enter event name', 'warning'); return; }
+            const newAttendance = {
+                eventName: eventName,
+                date: eventDate,
+                recordedAt: new Date().toISOString()
             };
-            
+            const currentAttendance = currentAttendanceMember.attendance || [];
+            const updatedAttendance = [...currentAttendance, newAttendance];
+            const newAttendanceCount = updatedAttendance.length;
+            const newStatus = calculateMemberStatus(newAttendanceCount);
             try {
-                await addDoc(collection(db, "users"), usersData);
-                showToast('User added successfully!', 'success');
+                const userRef = doc(db, "users", currentAttendanceMember.id);
+                await updateDoc(userRef, {
+                    attendance: updatedAttendance,
+                    attendanceCount: newAttendanceCount,
+                    status: newStatus,
+                    lastAttendanceDate: eventDate,
+                    updatedAt: serverTimestamp()
+                });
+                showToast(`Attendance recorded! Member status updated to ${newStatus}`, 'success');
+                bootstrap.Modal.getInstance(document.getElementById('attendanceModal')).hide();
+                loadusers();
+            } catch (error) { console.error('Error recording attendance:', error); showToast('Error recording attendance', 'error'); }
+        };
+        
+        // Add new member
+        window.addusers = async function() {
+            const userData = {};
+            let isValid = true;
+            for (const [key, config] of Object.entries(fieldConfigs)) {
+                if (!config.enabled) continue;
+                const input = document.getElementById(key);
+                if (input) userData[key] = input.value.trim();
+                if (config.required && (!userData[key] || userData[key] === '')) { showToast(`${config.label} is required!`, 'warning'); isValid = false; }
+            }
+            if (!isValid) return;
+            if (fieldConfigs.firstName.enabled && !isOnlyLetters(userData.firstName)) { showToast('First name must contain only letters!', 'warning'); isValid = false; }
+            if (fieldConfigs.lastName.enabled && !isOnlyLetters(userData.lastName)) { showToast('Last name must contain only letters!', 'warning'); isValid = false; }
+            if (fieldConfigs.email.enabled && !isValidEmailDomain(userData.email)) { showToast('Email must be @gmail.com or @yahoo.com!', 'warning'); isValid = false; }
+            if (fieldConfigs.firstName.enabled && fieldConfigs.lastName.enabled && isDuplicateName(userData.firstName, userData.lastName)) { showToast('A member with this name already exists!', 'warning'); isValid = false; }
+            if (fieldConfigs.phone.enabled && userData.phone && isDuplicatePhone(userData.phone)) { showToast('This phone number is already registered!', 'warning'); isValid = false; }
+            if (!isValid) return;
+            const name = (userData.firstName || '') + ' ' + (userData.lastName || '');
+            const memberData = {
+                name: name.trim(),
+                email: userData.email || null,
+                phone: userData.phone || null,
+                company: userData.company || null,
+                role: 'Member',
+                status: 'Inactive',
+                attendance: [],
+                attendanceCount: 0,
+                createdAt: serverTimestamp(),
+                approved: false
+            };
+            try {
+                await addDoc(collection(db, "users"), memberData);
+                showToast('Member added successfully!', 'success');
                 bootstrap.Modal.getInstance(document.getElementById('addusersModal')).hide();
                 document.getElementById('addusersForm').reset();
-                document.getElementById('firstName').classList.remove('is-invalid', 'is-valid');
-                document.getElementById('lastName').classList.remove('is-invalid', 'is-valid');
-                document.getElementById('email').classList.remove('is-invalid', 'is-valid');
-                document.getElementById('phone').classList.remove('is-invalid', 'is-valid');
                 loadusers();
-            } catch (error) {
-                console.error('Error adding user:', error);
-                showToast('Error adding user', 'error');
-            }
-        }
-
-        // View users details
-        window.viewusers = async function (id) {
-            const users = allusers.find(m => m.id === id);
-            if (!users) return;
-            
-            currentViewusers = users;
+            } catch (error) { console.error('Error adding member:', error); showToast('Error adding member', 'error'); }
+        };
+        
+        // View, Edit, Delete functions
+        window.viewusers = async function(id) {
+            const member = allusers.find(m => m.id === id);
+            if (!member) return;
             currentusersId = id;
-            
-            const initials = getInitials(users.firstName, users.lastName);
-            const joinDate = users.createdAt ? new Date(users.createdAt.toDate()).toLocaleDateString() : 'N/A';
-            
-            const content = `
-                <div class="users-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 1.5rem;">${initials}</div>
-                <h5>${escapeHtml(users.firstName)} ${escapeHtml(users.lastName)}</h5>
-                <span class="status ${users.status === 'Active' ? 'status-resolve' : (users.status === 'Pending' ? 'status-pending' : '')}">${users.status || 'Pending'}</span>
-                
+            const initials = (member.firstName ? member.firstName[0] : '') + (member.lastName ? member.lastName[0] : '');
+            const joinDate = member.createdAt ? new Date(member.createdAt.toDate()).toLocaleDateString() : 'N/A';
+            let attendanceHtml = '<div class="attendance-list">';
+            if (member.attendance && member.attendance.length > 0) {
+                member.attendance.forEach(event => { attendanceHtml += `<div class="attendance-badge"><i class="fas fa-calendar-alt"></i> ${escapeHtml(event.eventName)} - ${event.date}</div>`; });
+            } else { attendanceHtml += '<p class="text-muted">No attendance records</p>'; }
+            attendanceHtml += '</div>';
+            const content = `<div class="users-avatar mx-auto mb-3" style="width:80px;height:80px;font-size:1.5rem;">${initials}</div>
+                <h5>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</h5>
+                <span class="member-status ${member.status === 'Active' ? 'member-active' : (member.status === 'Pending' ? 'member-pending' : 'member-inactive')}">${member.status || 'Pending'}</span>
                 <div class="mt-4 text-start">
-                    <p><strong>Email:</strong> ${escapeHtml(users.email)}</p>
-                    <p><strong>Phone:</strong> ${escapeHtml(users.phone || 'N/A')}</p>
-                    <p><strong>Role:</strong> <span class="status status-resolve">${escapeHtml(users.role || 'User')}</span></p>
+                    <p><strong>Email:</strong> ${escapeHtml(member.email)}</p>
+                    <p><strong>Phone:</strong> ${escapeHtml(member.phone || 'N/A')}</p>
+                    <p><strong>Company:</strong> ${escapeHtml(member.company || 'N/A')}</p>
                     <p><strong>Join Date:</strong> ${joinDate}</p>
-                    <p><strong>Company:</strong> ${escapeHtml(users.company || 'N/A')}</p>
-                </div>
-            `;
-            
+                    <p><strong>Events Attended:</strong> <span class="badge bg-primary">${member.attendanceCount || 0}</span></p>
+                    <p><strong>Attendance History:</strong></p>
+                    ${attendanceHtml}
+                </div>`;
             document.getElementById('viewusersContent').innerHTML = content;
             new bootstrap.Modal(document.getElementById('viewusersModal')).show();
-        }
-
-        // Edit users
-        window.editusers = async function (id) {
-            const users = allusers.find(m => m.id === id);
-            if (!users) return;
-            
+        };
+        
+        window.editusers = async function(id) {
+            const member = allusers.find(m => m.id === id);
+            if (!member) return;
             currentusersId = id;
-            
             document.getElementById('editusersId').value = id;
-            document.getElementById('editFirstName').value = users.firstName || '';
-            document.getElementById('editLastName').value = users.lastName || '';
-            document.getElementById('editEmail').value = users.email || '';
-            document.getElementById('editPhone').value = users.phone || '';
-            document.getElementById('editCompany').value = users.company || '';
-            document.getElementById('editStatus').value = users.status || 'Pending';
-            
+            document.getElementById('editFirstName').value = member.firstName || '';
+            document.getElementById('editLastName').value = member.lastName || '';
+            document.getElementById('editEmail').value = member.email || '';
+            document.getElementById('editPhone').value = member.phone || '';
+            document.getElementById('editCompany').value = member.company || '';
             new bootstrap.Modal(document.getElementById('editusersModal')).show();
-        }
-
-        // Update users with validation
-        window.updateusers = async function () {
+        };
+        
+        window.updateusers = async function() {
             const id = document.getElementById('editusersId').value;
             const firstName = document.getElementById('editFirstName').value.trim();
             const lastName = document.getElementById('editLastName').value.trim();
             const email = document.getElementById('editEmail').value.trim();
             const phone = document.getElementById('editPhone').value.trim();
             const company = document.getElementById('editCompany').value;
-            const status = document.getElementById('editStatus').value;
-            
             let isValid = true;
-            
-            if (!isOnlyLetters(firstName)) {
-                document.getElementById('editFirstName').classList.add('is-invalid');
-                isValid = false;
-            } else {
-                document.getElementById('editFirstName').classList.remove('is-invalid');
-            }
-            
-            if (!isOnlyLetters(lastName)) {
-                document.getElementById('editLastName').classList.add('is-invalid');
-                isValid = false;
-            } else {
-                document.getElementById('editLastName').classList.remove('is-invalid');
-            }
-            
-            if (!isValidEmailDomain(email)) {
-                document.getElementById('editEmail').classList.add('is-invalid');
-                isValid = false;
-            } else {
-                document.getElementById('editEmail').classList.remove('is-invalid');
-            }
-            
-            // Check duplicate name (excluding current user)
-            if (isDuplicateName(firstName, lastName, id)) {
-                showToast('A user with this name already exists!', 'warning');
-                document.getElementById('editFirstName').classList.add('is-invalid');
-                document.getElementById('editLastName').classList.add('is-invalid');
-                isValid = false;
-            }
-            
-            // Check duplicate phone (excluding current user)
-            if (phone && isDuplicatePhone(phone, id)) {
-                document.getElementById('editPhone').classList.add('is-invalid');
-                showToast('This phone number is already registered!', 'warning');
-                isValid = false;
-            }
-            
-            if (!isValid) {
-                showToast('Please fix the validation errors', 'warning');
-                return;
-            }
-
+            if (!isOnlyLetters(firstName)) { document.getElementById('editFirstName').classList.add('is-invalid'); isValid = false; }
+            else document.getElementById('editFirstName').classList.remove('is-invalid');
+            if (!isOnlyLetters(lastName)) { document.getElementById('editLastName').classList.add('is-invalid'); isValid = false; }
+            else document.getElementById('editLastName').classList.remove('is-invalid');
+            if (!isValidEmailDomain(email)) { document.getElementById('editEmail').classList.add('is-invalid'); isValid = false; }
+            else document.getElementById('editEmail').classList.remove('is-invalid');
+            if (isDuplicateName(firstName, lastName, id)) { showToast('A member with this name already exists!', 'warning'); isValid = false; }
+            if (phone && isDuplicatePhone(phone, id)) { document.getElementById('editPhone').classList.add('is-invalid'); showToast('This phone number is already registered!', 'warning'); isValid = false; }
+            if (!isValid) return;
             const name = firstName + " " + lastName;
-            
-            const usersData = {
-                name,
-                email,
-                phone: phone || null,
-                company,
-                status,
-                updatedAt: serverTimestamp(),
-                approved: status === 'Active'
-            };
-            
             try {
-                const userRef = doc(db, "users", id);
-                await updateDoc(userRef, usersData);
-                showToast('User updated successfully!', 'success');
+                await updateDoc(doc(db, "users", id), { name, email, phone: phone || null, company, updatedAt: serverTimestamp() });
+                showToast('Member updated successfully!', 'success');
                 bootstrap.Modal.getInstance(document.getElementById('editusersModal')).hide();
                 loadusers();
-            } catch (error) {
-                console.error("Error updating user:", error);
-                showToast('Error updating user', 'error');
-            }
-        }
-
-        // Delete users
-        window.deleteusers = async function (id) {
-            const users = allusers.find(m => m.id === id);
-            if (!users) return;
-            
+            } catch (error) { showToast('Error updating member', 'error'); }
+        };
+        
+        window.deleteusers = async function(id) {
+            const member = allusers.find(m => m.id === id);
+            if (!member) return;
             currentusersId = id;
-            
-            document.getElementById('deleteusersContent').innerHTML = `
-                <i class="fas fa-trash text-danger fa-3x mb-3"></i>
-                <p>Are you sure you want to delete <strong>${escapeHtml(users.firstName)} ${escapeHtml(users.lastName)}</strong>?</p>
-                <p class="text-danger"><small>This action cannot be undone.</small></p>
-            `;
-            
+            document.getElementById('deleteusersContent').innerHTML = `<i class="fas fa-trash text-danger fa-3x mb-3"></i><p>Are you sure you want to delete <strong>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</strong>?</p><p class="text-danger"><small>This action cannot be undone. Attendance records will be lost.</small></p>`;
             new bootstrap.Modal(document.getElementById('deleteusersModal')).show();
-        }
-
-        // Confirm delete
+        };
+        
         document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
             if (!currentusersId) return;
-            try {
-                await deleteDoc(doc(db, "users", currentusersId));
-                showToast('User deleted successfully!', 'success');
-                bootstrap.Modal.getInstance(document.getElementById('deleteusersModal')).hide();
-                loadusers();
-            } catch (error) {
-                console.error('Error deleting user:', error);
-                showToast('Error deleting user', 'error');
-            }
+            try { await deleteDoc(doc(db, "users", currentusersId)); showToast('Member deleted successfully!', 'success'); bootstrap.Modal.getInstance(document.getElementById('deleteusersModal')).hide(); loadusers(); } 
+            catch (error) { showToast('Error deleting member', 'error'); }
         });
-
-        // Edit from view modal
-        window.editFromView = async function () {
-            bootstrap.Modal.getInstance(document.getElementById('viewusersModal')).hide();
-            setTimeout(() => {
-                editusers(currentusersId);
-            }, 500);
-        }
-
-        // Filter users
-        window.filterusers = function () {
+        
+        window.editFromView = async function() { bootstrap.Modal.getInstance(document.getElementById('viewusersModal')).hide(); setTimeout(() => { editusers(currentusersId); }, 500); };
+        window.filterusers = function() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             let statusFilter = document.getElementById('statusFilter').value;
-            
-            const filtered = allusers.filter(users => {
-                const matchesSearch = 
-                    (users.firstName?.toLowerCase() || '').includes(searchTerm) ||
-                    (users.lastName?.toLowerCase() || '').includes(searchTerm) ||
-                    (users.email?.toLowerCase() || '').includes(searchTerm) ||
-                    (users.company?.toLowerCase() || '').includes(searchTerm);
-                
-                const matchesStatus = statusFilter === 'all' || users.status === statusFilter;
-                
+            const filtered = allusers.filter(member => {
+                const matchesSearch = (member.firstName?.toLowerCase() || '').includes(searchTerm) || (member.lastName?.toLowerCase() || '').includes(searchTerm) || (member.email?.toLowerCase() || '').includes(searchTerm) || (member.company?.toLowerCase() || '').includes(searchTerm);
+                const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
                 return matchesSearch && matchesStatus;
             });
-            
             displayusers(filtered);
-        }
-
-        // Update statistics
-        function updateStats() {
-            const total = allusers.length;
-            const active = allusers.filter(m => m.status === 'Active').length;
-            const pending = allusers.filter(m => m.status === 'Pending').length;
-            const inactive = total - active - pending;
-            
-            document.getElementById('totalusers').textContent = total;
-            document.getElementById('activeusers').textContent = active;
-            document.getElementById('pendingusers').textContent = pending;
-            document.getElementById('inactiveusers').textContent = inactive;
-            
-            if (total > 0) {
-                const activePercent = Math.round((active / total) * 100);
-                const pendingPercent = Math.round((pending / total) * 100);
-                const inactivePercent = Math.round((inactive / total) * 100);
-                
-                document.getElementById('activePercent').textContent = activePercent + '%';
-                document.getElementById('pendingPercent').textContent = pendingPercent + '%';
-                document.getElementById('inactivePercent').textContent = inactivePercent + '%';
-                
-                document.getElementById('activeBar').style.width = activePercent + '%';
-                document.getElementById('pendingBar').style.width = pendingPercent + '%';
-                document.getElementById('inactiveBar').style.width = inactivePercent + '%';
-            }
-        }
-
-        // Update recent activity
-        function updateRecentActivity() {
-            const recent = allusers.slice(0, 5);
-            let html = '<div class="calendar-list">';
-            
-            recent.forEach(users => {
-                const date = users.createdAt ? new Date(users.createdAt.toDate()).toLocaleDateString() : 'Just now';
-                html += `
-                    <li>
-                        <strong>${escapeHtml(users.firstName)} ${escapeHtml(users.lastName)}</strong> - 
-                        ${users.status === 'Active' ? 'Active Member' : 'Pending Registration'} 
-                        <small class="text-muted">(${date})</small>
-                    </li>
-                `;
-            });
-            
-            html += '</div>';
-            document.getElementById('recentActivity').innerHTML = html;
-        }
-
-        // Show toast notification
+        };
+        
         function showToast(message, type) {
             const toastContainer = document.getElementById('toastContainer');
-            const toastId = 'toast-' + Date.now();
-            
-            const bgColor = type === 'success' ? 'bg-success' : 
-                           type === 'warning' ? 'bg-warning' : 'bg-danger';
-            
-            const icon = type === 'success' ? 'fa-check-circle' :
-                        type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle';
-            
+            const bgColor = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle';
             const toast = document.createElement('div');
-            toast.id = toastId;
             toast.className = `toast show align-items-center text-white ${bgColor} border-0`;
             toast.setAttribute('role', 'alert');
-            toast.setAttribute('aria-live', 'assertive');
-            toast.setAttribute('aria-atomic', 'true');
-            
-            toast.innerHTML = `
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <i class="fas ${icon} me-2"></i>
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                </div>
-            `;
-            
+            toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas ${icon} me-2"></i>${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
             toastContainer.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+            setTimeout(() => toast.remove(), 3000);
         }
-
-        // Refresh users
-        window.refreshusers = async function () {
-            document.getElementById('usersTableContainer').innerHTML = `
-                <div class="loading-spinner">
-                    <i class="fas fa-circle-notch"></i>
-                    <p class="mt-2">Refreshing...</p>
-                </div>
-            `;
+        
+        window.exportUsers = function() {
+            if (allusers.length === 0) { showToast('No members to export', 'warning'); return; }
+            const dataStr = JSON.stringify(allusers, null, 2);
+            const link = document.createElement('a');
+            link.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr));
+            link.setAttribute('download', 'cboc-members-export.json');
+            link.click();
+            showToast('Members exported successfully!', 'success');
+        };
+        
+        window.printUsers = function() { window.print(); };
+        window.showHelp = function() {
+            alert(`Member Management Help:
+- Member status is AUTOMATICALLY updated based on event attendance:
+  • ACTIVE: Attended 3 or more events
+  • PENDING: Attended 1-2 events  
+  • INACTIVE: No event attendance
+- Click the calendar button (📅) to record attendance for a member
+- Each attendance record includes event name and date
+- Status updates in real-time as attendance is recorded`);
+        };
+        window.refreshusers = async function() { loadusers(); };
+        
+        // Initialize
+        loadFieldConfig();
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const darkModeIcon = document.getElementById('darkModeIcon');
+            const body = document.body;
+            const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
+            if (isDarkMode) { body.classList.add('dark-mode'); darkModeIcon.classList.remove('fa-moon'); darkModeIcon.classList.add('fa-sun'); }
+            darkModeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                if (body.classList.contains('dark-mode')) { darkModeIcon.classList.remove('fa-moon'); darkModeIcon.classList.add('fa-sun'); localStorage.setItem('darkMode', 'enabled'); }
+                else { darkModeIcon.classList.remove('fa-sun'); darkModeIcon.classList.add('fa-moon'); localStorage.setItem('darkMode', 'disabled'); }
+            });
+            const dotsMenuBtn = document.getElementById('dotsMenuBtn');
+            const dotsDropdown = document.getElementById('dotsDropdown');
+            dotsMenuBtn.addEventListener('click', function(e) { e.stopPropagation(); dotsDropdown.classList.toggle('show'); });
+            document.addEventListener('click', function() { dotsDropdown.classList.remove('show'); });
+            document.getElementById('configModal').addEventListener('show.bs.modal', renderConfigModal);
+            document.getElementById('searchInput').addEventListener('input', filterusers);
             loadusers();
-        }
+            renderDynamicForm();
+        });
     </script>
 </body>
 </html>
