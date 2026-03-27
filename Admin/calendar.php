@@ -850,6 +850,32 @@
                 order: 3;
             }
         }
+        .calendar-day.past-date {
+    background-color: rgba(108, 117, 125, 0.2);
+    opacity: 0.7;
+    position: relative;
+}
+
+.calendar-day.past-date::after {
+    content: "🔒";
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+.date-warning {
+    color: #f72585;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.form-date-limit {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-top: 5px;
+}
     </style>
 </head>
 <body>
@@ -1110,6 +1136,10 @@
                             <div class="col-md-6">
                                 <label for="eventDate" class="form-label">Date *</label>
                                 <input type="date" class="form-control" id="eventDate" required>
+                                <div id="dateWarning" class="date-warning"></div>
+                                <div class="form-date-limit">
+                                 <i class="fas fa-info-circle"></i> Past dates are disabled. Maximum 5 months ahead.
+                                </div>
                             </div>
                             <div class="col-md-3">
                                 <label for="startTime" class="form-label">Start Time</label>
@@ -1279,6 +1309,7 @@ Calendar Help:
         };
 
         document.addEventListener('DOMContentLoaded', function() {
+            validateAndSetDateInput();
             // Three Dots Menu Toggle
             const dotsMenuBtn = document.getElementById('dotsMenuBtn');
             const dotsDropdown = document.getElementById('dotsDropdown');
@@ -1692,6 +1723,15 @@ Calendar Help:
             }
             
             // Create a day element
+            const checkDate = new Date(year, month, dayNumber);
+            checkDate.setHours(0,0,0,0);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const isPast = checkDate < today;
+
+            if(isPast && !isOtherMonth) {
+             dayDiv.classList.add('past-date');
+}
             async function createDayElement(dayNumber, isOtherMonth, currentDate) {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
@@ -1891,7 +1931,11 @@ Calendar Help:
                     publishedEventsContainer.innerHTML = `<p class="text-danger">Failed to load events.</p>`;
                 }
             }
-            
+            const selectedDate = document.getElementById('eventDate').value;
+            if(!isDateAllowed(selectedDate)) {
+            alert("Cannot create event for past dates or dates beyond 5 months!");
+            return;
+}
             // Save event function
             function saveEvent(publish) {
                 const title = document.getElementById('eventTitle').value;
@@ -2152,6 +2196,54 @@ Calendar Help:
                 resetForm();
             });
         });
+        // Date restriction helpers
+function getMinDate() {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    return today;
+}
+
+function getMaxDate() {
+    const max = new Date();
+    max.setMonth(max.getMonth() + 5);
+    max.setHours(23,59,59,999);
+    return max;
+}
+
+function isDateAllowed(dateStr) {
+    if(!dateStr) return false;
+    const selected = new Date(dateStr);
+    selected.setHours(0,0,0,0);
+    const min = getMinDate();
+    const max = getMaxDate();
+    return selected >= min && selected <= max;
+}
+
+function validateAndSetDateInput() {
+    const dateInput = document.getElementById('eventDate');
+    if(!dateInput) return;
+    
+    const today = new Date().toISOString().split('T')[0];
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() + 5);
+    const maxDateStr = maxDate.toISOString().split('T')[0];
+    
+    dateInput.setAttribute('min', today);
+    dateInput.setAttribute('max', maxDateStr);
+    
+    const warningDiv = document.getElementById('dateWarning');
+    if(warningDiv) {
+        dateInput.addEventListener('change', function() {
+            if(this.value && !isDateAllowed(this.value)) {
+                warningDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Invalid date! Select a date within next 5 months.';
+                this.classList.add('is-invalid');
+            } else {
+                warningDiv.innerHTML = '';
+                this.classList.remove('is-invalid');
+            }
+        });
+    }
+}
     </script>
 </body>
 </html>

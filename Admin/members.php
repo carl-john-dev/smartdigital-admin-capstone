@@ -145,6 +145,20 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Validation error styles */
+        .invalid-feedback {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+        
+        .form-control.is-valid {
+            border-color: #198754;
+        }
     </style>
 </head>
 <body>
@@ -331,30 +345,27 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">First Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="firstName" required>
+                                <div class="invalid-feedback">First name must contain only letters (A-Z, a-z) and no numbers</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Last Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="lastName" required>
+                                <div class="invalid-feedback">Last name must contain only letters (A-Z, a-z) and no numbers</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Email <span class="text-danger">*</span></label>
                                 <input type="email" class="form-control" id="email" required>
+                                <div class="invalid-feedback">Email must be @gmail.com or @yahoo.com domain only</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Phone</label>
+                                <label class="form-label">Phone <span class="text-danger">*</span></label>
                                 <input type="tel" class="form-control" id="phone">
+                                <div class="invalid-feedback">Phone number already exists in the system</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Company</label>
                                 <input type="text" class="form-control" id="company">
                             </div>
-                            <!-- <div class="col-md-6 mb-3">
-                                <label class="form-label">Role</label>
-                                <select class="form-select" id="role">
-                                    <option value="User">User</option>
-                                    <option value="Admin">Admin</option>
-                                </select>
-                            </div> -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Status</label>
                                 <select class="form-select" id="status">
@@ -389,31 +400,27 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">First Name</label>
                                 <input type="text" class="form-control" id="editFirstName" required>
+                                <div class="invalid-feedback">First name must contain only letters (A-Z, a-z) and no numbers</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Last Name</label>
                                 <input type="text" class="form-control" id="editLastName" required>
+                                <div class="invalid-feedback">Last name must contain only letters (A-Z, a-z) and no numbers</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Email</label>
                                 <input type="email" class="form-control" id="editEmail" required>
+                                <div class="invalid-feedback">Email must be @gmail.com or @yahoo.com domain only</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Phone</label>
                                 <input type="tel" class="form-control" id="editPhone">
+                                <div class="invalid-feedback">Phone number already exists in the system</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Company</label>
                                 <input type="text" class="form-control" id="editCompany">
                             </div>
-                            <!-- <div class="col-md-6 mb-3">
-                                <label class="form-label">Role</label>
-                                <select class="form-select" id="editRole">
-                                    <option value="User">User</option>
-                                    <option value="Moderator">Moderator</option>
-                                    <option value="Admin">Admin</option>
-                                </select>
-                            </div> -->
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Status</label>
                                 <select class="form-select" id="editStatus">
@@ -485,6 +492,67 @@
         import { db, storage } from './Firebase/firebase_conn.js';
         import { collection, query, where, doc, getDocs, getFirestore, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         
+        // Validation functions
+        function isOnlyLetters(str) {
+            return /^[A-Za-z]+$/.test(str);
+        }
+        
+        function isValidEmailDomain(email) {
+            const allowedDomains = ['gmail.com', 'yahoo.com'];
+            const domain = email.split('@')[1];
+            return domain && allowedDomains.includes(domain.toLowerCase());
+        }
+        
+        function validateNameInput(input, errorElement) {
+            const value = input.value.trim();
+            if (value === '') {
+                input.classList.add('is-invalid');
+                return false;
+            }
+            if (!isOnlyLetters(value)) {
+                input.classList.add('is-invalid');
+                return false;
+            }
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+            return true;
+        }
+        
+        function validateEmailInput(input, errorElement) {
+            const value = input.value.trim();
+            if (value === '') {
+                input.classList.add('is-invalid');
+                return false;
+            }
+            if (!isValidEmailDomain(value)) {
+                input.classList.add('is-invalid');
+                return false;
+            }
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+            return true;
+        }
+        
+        // Check duplicate name (first name + last name combination)
+        function isDuplicateName(firstName, lastName, excludeId = null) {
+            const fullName = (firstName + " " + lastName).toLowerCase().trim();
+            return allusers.some(user => {
+                const userFullName = (user.firstName + " " + user.lastName).toLowerCase().trim();
+                if (excludeId && user.id === excludeId) return false;
+                return userFullName === fullName;
+            });
+        }
+        
+        // Check duplicate phone number
+        function isDuplicatePhone(phone, excludeId = null) {
+            if (!phone || phone.trim() === '') return false;
+            const phoneTrimmed = phone.trim();
+            return allusers.some(user => {
+                if (excludeId && user.id === excludeId) return false;
+                return user.phone && user.phone.trim() === phoneTrimmed;
+            });
+        }
+        
         // Global variables
         let allusers = [];
         let currentusersId = null;
@@ -529,6 +597,28 @@
                 dotsDropdown.classList.remove('show');
             });
 
+            // Add validation listeners for add modal
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            
+            firstNameInput.addEventListener('input', () => validateNameInput(firstNameInput, null));
+            lastNameInput.addEventListener('input', () => validateNameInput(lastNameInput, null));
+            emailInput.addEventListener('input', () => validateEmailInput(emailInput, null));
+            
+            // Real-time duplicate checking for phone
+            phoneInput.addEventListener('input', function() {
+                const phone = this.value.trim();
+                if (phone && isDuplicatePhone(phone)) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                    if (phone) this.classList.add('is-valid');
+                    else this.classList.remove('is-valid');
+                }
+            });
+            
             // Load users
             loadusers();
             
@@ -537,7 +627,7 @@
         });
 
         // Three Dots Menu Functions
-        function exportUsers() {
+        window.exportUsers = function() {
             if (allusers.length === 0) {
                 showToast('No users to export', 'warning');
                 return;
@@ -555,19 +645,21 @@
             showToast('Users exported successfully!', 'success');
         }
 
-        function printUsers() {
+        window.printUsers = function() {
             window.print();
         }
 
-        function showHelp() {
-            alert(`
-Users Management Help:
+        window.showHelp = function() {
+            alert(`Users Management Help:
+- First Name and Last Name: Only letters (A-Z, a-z) are allowed, no numbers
+- Email: Only @gmail.com or @yahoo.com domains are accepted
+- Phone Number: Must be unique - no duplicate phone numbers allowed
+- Member Name: Full name (First + Last) must be unique - no duplicate names allowed
 - Click "Add users" to create new users
 - Use search bar to filter users
 - Click on avatar to view details
 - Use status filter to sort by status
-- Click edit/delete buttons to modify users
-            `);
+- Click edit/delete buttons to modify users`);
         }
 
         // Load users from Firebase
@@ -601,9 +693,7 @@ Users Management Help:
 
             } catch (error) {
                 console.error("Error loading users:", error);
-
                 showToast("Error loading users", "error");
-
                 document.getElementById("usersTableContainer").innerHTML =
                     `<div class="empty-state">
                         <p class="text-danger">Error: ${error.message}</p>
@@ -627,7 +717,7 @@ Users Management Help:
             }
             
             let html = `
-                <table>
+                <table class="table table-hover">
                     <thead>
                         <tr>
                             <th>Users</th>
@@ -644,8 +734,6 @@ Users Management Help:
             users.forEach(users => {
                 const initials = getInitials(users.firstName, users.lastName);
                 const joinDate = users.createdAt ? new Date(users.createdAt.toDate()).toLocaleDateString() : 'N/A';
-                const statusClass = users.status === 'Active' ? 'status-resolve' : 
-                                   (users.status === 'Pending' ? 'status-pending' : '');
                 
                 html += `
                     <tr>
@@ -656,18 +744,18 @@ Users Management Help:
                                     ${initials}
                                 </div>
                                 <div class="ms-3">
-                                    <div class="fw-bold">${users.firstName} ${users.lastName}</div>
-                                    <small class="text-muted">${users.company || 'No Company'}</small>
+                                    <div class="fw-bold">${escapeHtml(users.firstName)} ${escapeHtml(users.lastName)}</div>
+                                    <small class="text-muted">${escapeHtml(users.company || 'No Company')}</small>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <div>${users.email}</div>
-                            <small class="text-muted">${users.phone || 'No phone'}</small>
+                            <div>${escapeHtml(users.email)}</div>
+                            <small class="text-muted">${escapeHtml(users.phone || 'No phone')}</small>
                         </td>
-                        <td><span class="status status-resolve">${users.role || 'User'}</span></td>
+                        <td><span class="status status-resolve">${escapeHtml(users.role || 'User')}</span></td>
                         <td>${joinDate}</td>
-                        <td><span class="status ${users.approved ? "status-resolve" : "status-pending"}">${users.approved ? 'Resolved' : 'Pending'}</span></td>
+                        <td><span class="status ${users.status === 'Active' ? 'status-resolve' : (users.status === 'Pending' ? 'status-pending' : '')}">${users.status || 'Pending'}</span></td>
                         <td class="action-buttons">
                             <button class="btn btn-sm btn-outline-primary me-1" onclick="viewusers('${users.id}')">
                                 <i class="fas fa-eye"></i>
@@ -686,48 +774,98 @@ Users Management Help:
             html += '</tbody></table>';
             container.innerHTML = html;
         }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
 
         // Get initials from name
         function getInitials(first, last) {
             return (first ? first[0] : '') + (last ? last[0] : '');
         }
 
-        // Add new users
+        // Add new users with validation
         window.addusers = async function () {
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
             const company = document.getElementById('company').value;
-            const role = document.getElementById('role')?.value || 'User';
             const status = document.getElementById('status').value;
-
-            const name = firstName + " " + lastName;
             
-            if (!firstName || !lastName || !email) {
-                showToast('Please fill in all required fields', 'warning');
+            // Validate inputs
+            let isValid = true;
+            
+            if (!isOnlyLetters(firstName)) {
+                document.getElementById('firstName').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('firstName').classList.remove('is-invalid');
+            }
+            
+            if (!isOnlyLetters(lastName)) {
+                document.getElementById('lastName').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('lastName').classList.remove('is-invalid');
+            }
+            
+            if (!isValidEmailDomain(email)) {
+                document.getElementById('email').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('email').classList.remove('is-invalid');
+            }
+            
+            // Check duplicate name
+            if (isDuplicateName(firstName, lastName)) {
+                showToast('A user with this name already exists!', 'warning');
+                document.getElementById('firstName').classList.add('is-invalid');
+                document.getElementById('lastName').classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            // Check duplicate phone
+            if (phone && isDuplicatePhone(phone)) {
+                document.getElementById('phone').classList.add('is-invalid');
+                showToast('This phone number is already registered!', 'warning');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                showToast('Please fix the validation errors', 'warning');
                 return;
             }
+            
+            const name = firstName + " " + lastName;
             
             const usersData = {
                 name,
                 email,
-                phone,
+                phone: phone || null,
                 company,
-                role,
+                role: 'User',
                 status,
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                approved: status === 'Active'
             };
             
             try {
                 await addDoc(collection(db, "users"), usersData);
                 showToast('User added successfully!', 'success');
-                bootstrap.Modal
-                    .getInstance(document.getElementById('addusersModal'))
-                    .hide();
+                bootstrap.Modal.getInstance(document.getElementById('addusersModal')).hide();
                 document.getElementById('addusersForm').reset();
+                document.getElementById('firstName').classList.remove('is-invalid', 'is-valid');
+                document.getElementById('lastName').classList.remove('is-invalid', 'is-valid');
+                document.getElementById('email').classList.remove('is-invalid', 'is-valid');
+                document.getElementById('phone').classList.remove('is-invalid', 'is-valid');
                 loadusers();
-
             } catch (error) {
                 console.error('Error adding user:', error);
                 showToast('Error adding user', 'error');
@@ -744,20 +882,18 @@ Users Management Help:
             
             const initials = getInitials(users.firstName, users.lastName);
             const joinDate = users.createdAt ? new Date(users.createdAt.toDate()).toLocaleDateString() : 'N/A';
-            const statusClass = users.status === 'Active' ? 'status-resolve' : 
-                               (users.status === 'Pending' ? 'status-pending' : '');
             
             const content = `
                 <div class="users-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 1.5rem;">${initials}</div>
-                <h5>${users.firstName} ${users.lastName}</h5>
-                <span class="status ${statusClass}">${users.status || 'Pending'}</span>
+                <h5>${escapeHtml(users.firstName)} ${escapeHtml(users.lastName)}</h5>
+                <span class="status ${users.status === 'Active' ? 'status-resolve' : (users.status === 'Pending' ? 'status-pending' : '')}">${users.status || 'Pending'}</span>
                 
                 <div class="mt-4 text-start">
-                    <p><strong>Email:</strong> ${users.email}</p>
-                    <p><strong>Phone:</strong> ${users.phone || 'N/A'}</p>
-                    <p><strong>Role:</strong> <span class="status status-resolve">${users.role || 'User'}</span></p>
+                    <p><strong>Email:</strong> ${escapeHtml(users.email)}</p>
+                    <p><strong>Phone:</strong> ${escapeHtml(users.phone || 'N/A')}</p>
+                    <p><strong>Role:</strong> <span class="status status-resolve">${escapeHtml(users.role || 'User')}</span></p>
                     <p><strong>Join Date:</strong> ${joinDate}</p>
-                    <p><strong>Company:</strong> ${users.company || 'N/A'}</p>
+                    <p><strong>Company:</strong> ${escapeHtml(users.company || 'N/A')}</p>
                 </div>
             `;
             
@@ -783,43 +919,77 @@ Users Management Help:
             new bootstrap.Modal(document.getElementById('editusersModal')).show();
         }
 
-        // Update users
+        // Update users with validation
         window.updateusers = async function () {
             const id = document.getElementById('editusersId').value;
-            const firstName = document.getElementById('editFirstName').value;
-            const lastName = document.getElementById('editLastName').value;
-            const email = document.getElementById('editEmail').value;
-            const phone = document.getElementById('editPhone').value;
+            const firstName = document.getElementById('editFirstName').value.trim();
+            const lastName = document.getElementById('editLastName').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            const phone = document.getElementById('editPhone').value.trim();
             const company = document.getElementById('editCompany').value;
             const status = document.getElementById('editStatus').value;
-
-            const name = firstName + " " + lastName;
             
-            if (!firstName || !lastName || !email) {
-                showToast('Please fill in all required fields', 'warning');
+            let isValid = true;
+            
+            if (!isOnlyLetters(firstName)) {
+                document.getElementById('editFirstName').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('editFirstName').classList.remove('is-invalid');
+            }
+            
+            if (!isOnlyLetters(lastName)) {
+                document.getElementById('editLastName').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('editLastName').classList.remove('is-invalid');
+            }
+            
+            if (!isValidEmailDomain(email)) {
+                document.getElementById('editEmail').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('editEmail').classList.remove('is-invalid');
+            }
+            
+            // Check duplicate name (excluding current user)
+            if (isDuplicateName(firstName, lastName, id)) {
+                showToast('A user with this name already exists!', 'warning');
+                document.getElementById('editFirstName').classList.add('is-invalid');
+                document.getElementById('editLastName').classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            // Check duplicate phone (excluding current user)
+            if (phone && isDuplicatePhone(phone, id)) {
+                document.getElementById('editPhone').classList.add('is-invalid');
+                showToast('This phone number is already registered!', 'warning');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                showToast('Please fix the validation errors', 'warning');
                 return;
             }
+
+            const name = firstName + " " + lastName;
             
             const usersData = {
                 name,
                 email,
-                phone,
+                phone: phone || null,
                 company,
                 status,
-                updatedAt: serverTimestamp()
+                updatedAt: serverTimestamp(),
+                approved: status === 'Active'
             };
             
             try {
                 const userRef = doc(db, "users", id);
                 await updateDoc(userRef, usersData);
                 showToast('User updated successfully!', 'success');
-
-                bootstrap.Modal
-                    .getInstance(document.getElementById('editusersModal'))
-                    .hide();
-
+                bootstrap.Modal.getInstance(document.getElementById('editusersModal')).hide();
                 loadusers();
-
             } catch (error) {
                 console.error("Error updating user:", error);
                 showToast('Error updating user', 'error');
@@ -835,7 +1005,7 @@ Users Management Help:
             
             document.getElementById('deleteusersContent').innerHTML = `
                 <i class="fas fa-trash text-danger fa-3x mb-3"></i>
-                <p>Are you sure you want to delete <strong>${users.firstName} ${users.lastName}</strong>?</p>
+                <p>Are you sure you want to delete <strong>${escapeHtml(users.firstName)} ${escapeHtml(users.lastName)}</strong>?</p>
                 <p class="text-danger"><small>This action cannot be undone.</small></p>
             `;
             
@@ -845,15 +1015,11 @@ Users Management Help:
         // Confirm delete
         document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
             if (!currentusersId) return;
-
             try {
                 await deleteDoc(doc(db, "users", currentusersId));
                 showToast('User deleted successfully!', 'success');
-                bootstrap.Modal
-                    .getInstance(document.getElementById('deleteusersModal'))
-                    .hide();
+                bootstrap.Modal.getInstance(document.getElementById('deleteusersModal')).hide();
                 loadusers();
-
             } catch (error) {
                 console.error('Error deleting user:', error);
                 showToast('Error deleting user', 'error');
@@ -872,10 +1038,6 @@ Users Management Help:
         window.filterusers = function () {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             let statusFilter = document.getElementById('statusFilter').value;
-
-            if (statusFilter == "Pending") {
-                statusFilter = "pending";
-            }
             
             const filtered = allusers.filter(users => {
                 const matchesSearch = 
@@ -896,7 +1058,7 @@ Users Management Help:
         function updateStats() {
             const total = allusers.length;
             const active = allusers.filter(m => m.status === 'Active').length;
-            const pending = allusers.filter(m => m.status === 'pending' || m.status === 'Pending').length;
+            const pending = allusers.filter(m => m.status === 'Pending').length;
             const inactive = total - active - pending;
             
             document.getElementById('totalusers').textContent = total;
@@ -904,7 +1066,6 @@ Users Management Help:
             document.getElementById('pendingusers').textContent = pending;
             document.getElementById('inactiveusers').textContent = inactive;
             
-            // Update percentages
             if (total > 0) {
                 const activePercent = Math.round((active / total) * 100);
                 const pendingPercent = Math.round((pending / total) * 100);
@@ -929,8 +1090,8 @@ Users Management Help:
                 const date = users.createdAt ? new Date(users.createdAt.toDate()).toLocaleDateString() : 'Just now';
                 html += `
                     <li>
-                        <strong>${users.firstName} ${users.lastName}</strong> - 
-                        ${users.approved === true ? 'Joined' : 'Pending'} 
+                        <strong>${escapeHtml(users.firstName)} ${escapeHtml(users.lastName)}</strong> - 
+                        ${users.status === 'Active' ? 'Active Member' : 'Pending Registration'} 
                         <small class="text-muted">(${date})</small>
                     </li>
                 `;

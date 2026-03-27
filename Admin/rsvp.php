@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSVP Event Tracker - CBOC Admin</title>
+    <title>RSVP Event Tracker - CBOC Admin with Aggregate Attendance</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -233,6 +233,79 @@
             font-size: 0.9rem;
         }
         
+        /* Aggregate Attendance Card - NEW STYLES */
+        .aggregate-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .aggregate-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .aggregate-stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .aggregate-stat-number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .aggregate-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .aggregate-total {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.05);
+        }
+        
+        .walkin-badge {
+            background: #ffc107;
+            color: #856404;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .rsvp-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        /* Walk-in Modal Styles */
+        .walkin-section {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
         /* Controls styling */
         .rsvp-controls {
             display: flex;
@@ -334,7 +407,8 @@
         
         .dark-mode .top-bar,
         .dark-mode .dashboard-section,
-        .dark-mode .stat-card-mini {
+        .dark-mode .stat-card-mini,
+        .dark-mode .aggregate-card {
             background: #2d2d2d;
             color: white;
         }
@@ -396,6 +470,10 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
+            .aggregate-stats {
+                flex-direction: column;
+            }
+            
             .search-box {
                 min-width: 100%;
             }
@@ -437,13 +515,24 @@
             z-index: 1001;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+        
+        .btn-walkin {
+            background: #ffc107;
+            color: #856404;
+            border: none;
+        }
+        
+        .btn-walkin:hover {
+            background: #e0a800;
+            color: #856404;
+        }
     </style>
 </head>
 <body>
     <!-- Sidebar (SAME AS YOUR DASHBOARD) -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h3><i class="fas fa-tachometer-alt"> </i>CBOC</h3>
+            <h3><i class="fas fa-tachometer-alt"></i> CBOC</h3>
         </div>
         <ul class="sidebar-menu">
             <li><a href="dashboard.php"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
@@ -464,7 +553,7 @@
         <div class="top-bar">
             <div>
                 <h1><i class="fas fa-calendar-check"></i> RSVP Event Tracker</h1>
-                <p class="text-muted mb-0">Manage event invitations and guest responses</p>
+                <p class="text-muted mb-0">Manage event invitations, walk-ins, and track aggregate attendance</p>
             </div>
             <div class="d-flex align-items-center">
                 <!-- Three Dots Menu -->
@@ -509,8 +598,10 @@
         <div class="card mt-3 mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-calendar"></i> Upcoming Events</h5>
+                <button class="btn btn-sm btn-primary" onclick="addSampleEvent()">
+                    <i class="fas fa-plus"></i> Add Sample Event
+                </button>
             </div>
-
             <div class="card-body" id="eventsListContainer">
                 <div class="text-muted text-center py-3">
                     Loading upcoming events...
@@ -521,9 +612,9 @@
         <div id="eventContent" style="display:none;">
             <!-- Event Details Card -->
             <div class="event-details-card">
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
-                        <h4 class="mb-2">CBOC Event</h4>
+                        <h4 class="mb-2" id="eventTitleDisplay">CBOC Event</h4>
                         <p class="mb-0">
                             <i class="fas fa-calendar-alt"></i> 
                             <span class="editable-event" id="editEventDate" title="Click to edit">
@@ -536,67 +627,61 @@
                             </span>
                         </p>
                     </div>
-                    <button class="btn btn-light" onclick="addRSVPBtn()">
-                        <i class="fas fa-plus"></i> Add RSVP
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light" onclick="addRSVPBtn()">
+                            <i class="fas fa-plus"></i> Add RSVP
+                        </button>
+                        <button class="btn btn-warning" onclick="addWalkinBtn()">
+                            <i class="fas fa-person-walking-arrow-right"></i> Add Walk-in
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Stats Section -->
-            <!-- <div class="rsvp-stats">
-                <div class="stat-card-mini">
-                    <div class="stat-number text-success" id="confirmedCount">0</div>
-                    <div class="stat-label">Confirmed</div>
-                    <i class="fas fa-check-circle mt-2 text-success"></i>
+            <!-- AGGREGATE ATTENDANCE CARD - NEW! -->
+            <div class="aggregate-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Aggregate Attendance Summary</h5>
+                    <i class="fas fa-users fa-2x"></i>
                 </div>
-                <div class="stat-card-mini">
-                    <div class="stat-number text-warning" id="pendingCount">0</div>
-                    <div class="stat-label">Pending</div>
-                    <i class="fas fa-clock mt-2 text-warning"></i>
+                <div class="aggregate-stats">
+                    <div class="aggregate-stat-item">
+                        <div class="aggregate-stat-number" id="aggregateRSVPCount">0</div>
+                        <div class="aggregate-stat-label"><i class="fas fa-calendar-check"></i> RSVPs</div>
+                    </div>
+                    <div class="aggregate-stat-item">
+                        <div class="aggregate-stat-number" id="aggregateWalkinCount">0</div>
+                        <div class="aggregate-stat-label"><i class="fas fa-person-walking-arrow-right"></i> Walk-ins</div>
+                    </div>
+                    <div class="aggregate-stat-item aggregate-total">
+                        <div class="aggregate-stat-number" id="aggregateTotalCount">0</div>
+                        <div class="aggregate-stat-label"><i class="fas fa-users"></i> TOTAL ATTENDEES</div>
+                    </div>
                 </div>
-                <div class="stat-card-mini">
-                    <div class="stat-number text-danger" id="declinedCount">0</div>
-                    <div class="stat-label">Declined</div>
-                    <i class="fas fa-times-circle mt-2 text-danger"></i>
+                <div class="text-center mt-3 small">
+                    <i class="fas fa-info-circle"></i> Total attendance = RSVP confirmed guests + Walk-in attendees
                 </div>
-                <div class="stat-card-mini">
-                    <div class="stat-number text-info" id="plusOneCount">0</div>
-                    <div class="stat-label">Plus One</div>
-                    <i class="fas fa-user-plus mt-2 text-info"></i>
-                </div>
-            </div> -->
+            </div>
 
-            <!-- Search and Controls -->
+            <!-- List of Attendees Section -->
             <div class="dashboard-section">
-                <!-- <div class="rsvp-controls">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Search by name or email...">
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-outline-primary filter-btn active" data-filter="all">All</button>
-                        <button class="btn btn-outline-success filter-btn" data-filter="confirmed">Confirmed</button>
-                        <button class="btn btn-outline-warning filter-btn" data-filter="pending">Pending</button>
-                        <button class="btn btn-outline-danger filter-btn" data-filter="declined">Declined</button>
-                        <button class="btn btn-outline-info filter-btn" data-filter="plusOne">Plus One</button>
-                    </div>
-                </div> -->
-
-                <h2>List of Attendees</h2>
-                <!-- RSVP Table -->
+                <h2><i class="fas fa-list"></i> List of Attendees</h2>
+                <p class="text-muted mb-3">Showing all RSVP guests and walk-in attendees combined</p>
+                
+                <!-- Table -->
                 <div class="table-responsive mt-4">
                     <table class="rsvp-table">
                         <thead>
                             <tr>
-                                <th>Attendees</th>
-                                <th>Email</th>
-                                <!-- <th>Status</th> -->
-                                <th>Plus One</th>
+                                <th>Attendee Name</th>
+                                <th>Email / Contact</th>
+                                <th>Type</th>
+                                <th>Plus One / Notes</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <!-- RSVP data will be loaded here -->
+                            <tr><td colspan="5" class="text-center text-muted">Select an event to view attendees</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -607,11 +692,8 @@
                         <i class="fas fa-file-csv"></i> Export CSV
                     </button>
                     <button class="btn btn-outline-secondary" onclick="exportPDF()">
-                        <i class="fas fa-file-code"></i> Export PDF
+                        <i class="fas fa-file-pdf"></i> Export PDF
                     </button>
-                    <!-- <button class="btn btn-outline-danger" id="resetDataBtn">
-                        <i class="fas fa-trash"></i> Reset Data
-                    </button> -->
                 </div>
 
                 <!-- Footer Info -->
@@ -625,13 +707,13 @@
         </div>
     </div>
 
-    <!-- Modals (using Bootstrap 5) -->
+    <!-- Modals -->
     <!-- RSVP Modal -->
     <div class="modal fade" id="rsvpModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Add New RSVP</h5>
+                    <h5 class="modal-title">Add New RSVP</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="rsvpForm">
@@ -644,30 +726,46 @@
                             <label for="email" class="form-label">Email Address *</label>
                             <input type="email" class="form-control" id="email" required>
                         </div>
-                        <!-- <div class="mb-3">
-                            <label for="confirmation" class="form-label">Confirmation Status *</label>
-                            <select class="form-select" id="confirmation" required>
-                                <option value="">Select Status</option>
-                                <option value="confirmed">Confirmed</option>
-                                <option value="pending">Pending</option>
-                                <option value="declined">Declined</option>
-                            </select>
-                        </div> -->
-                        <div class="mb-3">
-                            <label for="plusOne" class="form-label">Plus One</label>
-                            <select class="form-select" id="plusOne">
-                                <option value="no">No</option>
-                                <option value="yes">Yes</option>
-                            </select>
-                        </div>
                         <div class="mb-3">
                             <label for="plusOneName" class="form-label">Plus One Name (if applicable)</label>
-                            <input type="text" class="form-control" id="plusOneName" placeholder="Enter name of plus one" disabled>
+                            <input type="text" class="form-control" id="plusOneName" placeholder="Enter name of plus one">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save RSVP</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Walk-in Modal -->
+    <div class="modal fade" id="walkinModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-person-walking-arrow-right"></i> Add Walk-in Attendee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="walkinForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="walkinName" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="walkinName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="walkinContact" class="form-label">Contact / Email</label>
+                            <input type="text" class="form-control" id="walkinContact" placeholder="Email or phone number">
+                        </div>
+                        <div class="mb-3">
+                            <label for="walkinNotes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="walkinNotes" rows="2" placeholder="Optional notes about this walk-in"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">Add Walk-in</button>
                     </div>
                 </form>
             </div>
@@ -730,866 +828,131 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- RSVP Tracker JavaScript -->
+    <!-- Firebase Import -->
     <script type="module">
-        import { db, storage } from './Firebase/firebase_conn.js';
-        import { collection, query, where, doc, getDocs, getFirestore, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { db } from './Firebase/firebase_conn.js';
+        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-        // Initialization
+        // Global variables
         let selectedEventId = null;
-        let upcomingEvents = []; 
+        let upcomingEvents = [];
+        let currentRSVPs = [];
+        let currentWalkins = [];
 
-        // RSVP Tracker Implementation
-        document.addEventListener('DOMContentLoaded', function() {
-            // Three Dots Menu Functions
-            window.exportRSVPs = function() {
-                if (rsvpData.length === 0) {
-                    showNotification('No RSVPs to export', 'warning');
-                    return;
-                }
-                
-                const dataStr = JSON.stringify(rsvpData, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                const exportFileDefaultName = 'cboc-rsvp-export.json';
-                
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
-                
-                showNotification('RSVPs exported successfully!', 'success');
-            };
+        // Three Dots Menu Functions
+        window.exportRSVPs = function() {
+            showNotification('Export feature available in the export buttons below', 'info');
+        };
 
-            window.printRSVPList = function() {
-                window.print();
-            };
+        window.printRSVPList = function() {
+            window.print();
+        };
 
-            window.refreshRSVPs = function() {
-                location.reload();
-            };
+        window.refreshRSVPs = function() {
+            location.reload();
+        };
 
-            window.showRSVPHelp = function() {
-                alert(`
+        window.showRSVPHelp = function() {
+            alert(`
 RSVP Tracker Help:
 - Add RSVPs using the "Add RSVP" button
-- Edit or delete RSVPs using action buttons
+- Add Walk-ins using the "Add Walk-in" button
+- Aggregate attendance automatically combines RSVPs + Walk-ins
 - Click on event date/venue to edit
-- Use search bar to find guests
-- Filter by status using the filter buttons
-- Export data as CSV or JSON
-- Statistics show guest counts in real-time
-                `);
-            };
+- Export data as CSV or PDF
+- Total attendance shows the combined count
+            `);
+        };
 
-            // Three Dots Menu Toggle
-            const dotsMenuBtn = document.getElementById('dotsMenuBtn');
-            const dotsDropdown = document.getElementById('dotsDropdown');
-
-            dotsMenuBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                dotsDropdown.classList.toggle('show');
-            });
-
-            document.addEventListener('click', function() {
-                dotsDropdown.classList.remove('show');
-            });
-
-            // DARK MODE TOGGLE (MUST MATCH YOUR DASHBOARD)
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const darkModeIcon = document.getElementById('darkModeIcon');
-            const body = document.body;
-            
-            // Check for saved dark mode preference
-            const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
-            
-            // Apply dark mode if previously enabled
-            if (isDarkMode) {
-                body.classList.add('dark-mode');
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const body = document.body;
+        
+        const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            darkModeIcon.classList.remove('fa-moon');
+            darkModeIcon.classList.add('fa-sun');
+        }
+        
+        darkModeToggle.addEventListener('click', function() {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
                 darkModeIcon.classList.remove('fa-moon');
                 darkModeIcon.classList.add('fa-sun');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                darkModeIcon.classList.remove('fa-sun');
+                darkModeIcon.classList.add('fa-moon');
+                localStorage.setItem('darkMode', 'disabled');
             }
-            
-            // Toggle dark mode
-            darkModeToggle.addEventListener('click', function() {
-                body.classList.toggle('dark-mode');
-                
-                // Update icon
-                if (body.classList.contains('dark-mode')) {
-                    darkModeIcon.classList.remove('fa-moon');
-                    darkModeIcon.classList.add('fa-sun');
-                    localStorage.setItem('darkMode', 'enabled');
-                } else {
-                    darkModeIcon.classList.remove('fa-sun');
-                    darkModeIcon.classList.add('fa-moon');
-                    localStorage.setItem('darkMode', 'disabled');
-                }
-            });
+        });
 
-            // Key for localStorage
-            const STORAGE_KEY = 'cboc_rsvp_data';
-            const EVENT_STORAGE_KEY = 'cboc_event_details';
-            
-            // Sample initial RSVP data
-            const sampleData = [
-                { id: 1, name: "Maria Santos", email: "maria.santos@example.com", confirmation: "confirmed", plusOne: "yes", plusOneName: "Juan Santos" },
-                { id: 2, name: "John Cruz", email: "john.cruz@example.com", confirmation: "pending", plusOne: "no", plusOneName: "" },
-                { id: 3, name: "Andrea Reyes", email: "andrea.reyes@example.com", confirmation: "confirmed", plusOne: "yes", plusOneName: "Michael Reyes" },
-                { id: 4, name: "Robert Lim", email: "robert.lim@example.com", confirmation: "declined", plusOne: "no", plusOneName: "" },
-                { id: 5, name: "Sofia Tan", email: "sofia.tan@example.com", confirmation: "confirmed", plusOne: "no", plusOneName: "" }
-            ];
+        // Three Dots Menu Toggle
+        const dotsMenuBtn = document.getElementById('dotsMenuBtn');
+        const dotsDropdown = document.getElementById('dotsDropdown');
 
-            // Default event details
-            const defaultEventDetails = {
-                date: "June 15, 2023",
-                venue: "Grand Ballroom",
-                rawDate: "2023-06-15"
-            };
+        dotsMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dotsDropdown.classList.toggle('show');
+        });
 
-            // Load data from localStorage or use sample data
-            function loadData() {
-                const storedData = localStorage.getItem(STORAGE_KEY);
-                if (storedData) {
-                    return JSON.parse(storedData);
-                } else {
-                    // Save sample data to localStorage for first time use
-                    saveData(sampleData);
-                    return sampleData;
-                }
-            }
+        document.addEventListener('click', function() {
+            dotsDropdown.classList.remove('show');
+        });
 
-            // Load RSVP data from Firebase
-            async function loadRSVPsForEvent(eventId) {
-                const tableBody = document.getElementById("tableBody");
-                const totalGuestsEl = document.getElementById("totalGuests");
+        // Load events from Firestore
+        async function loadUpcomingEvents() {
+            const container = document.getElementById("eventsListContainer");
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            upcomingEvents = [];
 
-                tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Loading RSVPs...</td></tr>`;
-                totalGuestsEl.textContent = "0";
-
-                if (!eventId) {
-                    tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Select an event to see RSVPs.</td></tr>`;
-                    return;
-                }
-
-                try {
-                    const rsvpRef = collection(db, "events", eventId, "rsvp");
-                    const snapshot = await getDocs(rsvpRef);
-
-                    if (snapshot.empty) {
-                        tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No RSVPs yet for this event.</td></tr>`;
-                        return;
-                    }
-
-                    let rowsHtml = "";
-                    let totalGuests = 0;
-
-                    snapshot.forEach(doc => {
-                        const rsvp = doc.data();
-                        const name = rsvp.name || "Unnamed";
-                        const email = rsvp.email || "-";
-                        const plusOne = rsvp.plusOne ? "Yes" : "No";
-
-                        let plusOneDisplay = "No";
-
-                        if (rsvp.plusOne) {
-                            plusOneDisplay = `Yes - (${rsvp.plusOne || "Unnamed"})`;
-                        }
-
-                        rowsHtml += `
-                            <tr>
-                                <td>${name}</td>
-                                <td>${email}</td>
-                                <td>${plusOneDisplay}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary edit-btn" onclick="editRSVP('${doc.id}')">Edit</button>
-                                    <button class="btn btn-sm btn-outline-danger delete-btn" onclick="deleteRSVP('${doc.id}')">Delete</button>
-                                </td>
-                            </tr>
-                        `;
-
-                        totalGuests += 1 + (rsvp.plusOne ? 1 : 0); // count plus ones
-                    });
-
-                    tableBody.innerHTML = rowsHtml;
-                    totalGuestsEl.textContent = totalGuests;
-
-                } catch (error) {
-                    console.error("Error loading RSVPs:", error);
-                    tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error loading RSVPs</td></tr>`;
-                }
-            }
-
-            // Load event details from localStorage or use default
-            function loadEventDetails() {
-                const storedEvent = localStorage.getItem(EVENT_STORAGE_KEY);
-                if (storedEvent) {
-                    return JSON.parse(storedEvent);
-                } else {
-                    // Save default event details to localStorage for first time use
-                    saveEventDetails(defaultEventDetails);
-                    return defaultEventDetails;
-                }
-            }
-
-            // Save data to localStorage
-            function saveData(data) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            }
-
-            // Save event details to localStorage
-            function saveEventDetails(eventDetails) {
-                localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(eventDetails));
-            }
-
-            // Get next ID
-            function getNextId(data) {
-                if (data.length === 0) return 1;
-                return Math.max(...data.map(item => item.id)) + 1;
-            }
-
-            // Format date for display
-            function formatDateForDisplay(dateString) {
-                const date = new Date(dateString);
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                return date.toLocaleDateString('en-US', options);
-            }
-
-            // Initialize data from localStorage
-            // let rsvpData = loadData();
-            let eventDetails = loadEventDetails();
-            // let nextId = getNextId(rsvpData);
-
-            // DOM Elements
-            const tableBody = document.getElementById('tableBody');
-            const searchInput = document.getElementById('searchInput');
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const addRSVPBtn = document.getElementById('addRSVPBtn');
-            const rsvpForm = document.getElementById('rsvpForm');
-            const modalTitle = document.getElementById('modalTitle');
-            const exportCSVBtn = document.getElementById('exportCSVBtn');
-            const exportJSONBtn = document.getElementById('exportJSONBtn');
-            const resetDataBtn = document.getElementById('resetDataBtn');
-            
-            // Event elements
-            const editEventDateElement = document.getElementById('editEventDate');
-            const editVenueElement = document.getElementById('editVenue');
-            const eventDateDisplayElement = document.getElementById('eventDateDisplay');
-            const venueDisplayElement = document.getElementById('venueDisplay');
-            
-            // Event form elements
-            const eventDateInput = document.getElementById('eventDateInput');
-            const venueInput = document.getElementById('venueInput');
-            const eventDateForm = document.getElementById('eventDateForm');
-            const venueForm = document.getElementById('venueForm');
-            
-            // Count elements
-            const confirmedCount = document.getElementById('confirmedCount');
-            const pendingCount = document.getElementById('pendingCount');
-            const declinedCount = document.getElementById('declinedCount');
-            const plusOneCount = document.getElementById('plusOneCount');
-            const totalGuests = document.getElementById('totalGuests');
-            const lastUpdated = document.getElementById('lastUpdated');
-            
-            // RSVP form elements
-            const nameInput = document.getElementById('name');
-            const emailInput = document.getElementById('email');
-            const confirmationInput = document.getElementById('confirmation');
-            const plusOneInput = document.getElementById('plusOne');
-            const plusOneNameInput = document.getElementById('plusOneName');
-            
-            // State variables
-            let currentFilter = 'all';
-            let currentSearch = '';
-            let editingId = null;
-            
-            // Initialize the RSVP Tracker
-            function init() {
-                // Update event details display
-                updateEventDisplay();
-                
-                // updateTable();
-                // updateCounts();
-                updateLastUpdated();
-                
-                // Event listener for search
-                // searchInput.addEventListener('input', () => {
-                //     currentSearch = searchInput.value.toLowerCase();
-                //     updateTable();
-                // });
-                
-                // Event listeners for filtering
-                filterButtons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        // Remove active class from all buttons
-                        filterButtons.forEach(btn => btn.classList.remove('active'));
-                        // Add active class to clicked button
-                        button.classList.add('active');
-                        // Set current filter
-                        currentFilter = button.getAttribute('data-filter');
-                        updateTable();
-                    });
-                });
-                
-                // Event listeners for modals
-                // addRSVPBtn.addEventListener('click', openAddModal);
-                
-                // Event listeners for editable event details
-                editEventDateElement.addEventListener('click', () => {
-                    eventDateInput.value = eventDetails.rawDate;
-                    new bootstrap.Modal(document.getElementById('eventDateModal')).show();
-                });
-                
-                editVenueElement.addEventListener('click', () => {
-                    venueInput.value = eventDetails.venue;
-                    new bootstrap.Modal(document.getElementById('venueModal')).show();
-                });
-                
-                // Event listener for form submissions
-                rsvpForm.addEventListener('submit', saveRSVP);
-                eventDateForm.addEventListener('submit', saveEventDate);
-                venueForm.addEventListener('submit', saveVenue);
-                
-                // Event listener for plus one toggle
-                plusOneInput.addEventListener('change', function() {
-                    plusOneNameInput.disabled = this.value !== 'yes';
-                });
-                
-                // Event listeners for export buttons
-                // exportCSVBtn.addEventListener('click', exportToCSV);
-                // exportJSONBtn.addEventListener('click', exportToJSON);
-                
-                // Event listener for reset button
-                // resetDataBtn.addEventListener('click', resetData);
-                
-                // Initialize plus one name field
-                plusOneNameInput.disabled = true;
-            }
-            
-            // Update event details display
-            function updateEventDisplay() {
-                eventDateDisplayElement.textContent = eventDetails.date;
-                venueDisplayElement.textContent = eventDetails.venue;
-            }
-            
-            // Update the RSVP table with filtered data
-            // function updateTable() {
-            //     // Clear the table body
-            //     tableBody.innerHTML = '';
-                
-            //     // Filter data based on current filter and search
-            //     let filteredData = rsvpData.filter(item => {
-            //         // Apply search filter
-            //         const matchesSearch = currentSearch === '' || 
-            //             item.name.toLowerCase().includes(currentSearch) || 
-            //             item.email.toLowerCase().includes(currentSearch);
-                    
-            //         // Apply status filter
-            //         let matchesFilter = true;
-            //         if (currentFilter !== 'all') {
-            //             if (currentFilter === 'plusOne') {
-            //                 matchesFilter = item.plusOne === 'yes';
-            //             } else {
-            //                 matchesFilter = item.confirmation === currentFilter;
-            //             }
-            //         }
-                    
-            //         return matchesSearch && matchesFilter;
-            //     });
-                
-            //     // If no results, show a message
-            //     if (filteredData.length === 0) {
-            //         tableBody.innerHTML = `
-            //             <tr>
-            //                 <td colspan="5" class="text-center py-4">
-            //                     <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
-            //                     <p class="text-muted">No RSVPs found. Try adjusting your search or filter.</p>
-            //                 </td>
-            //             </tr>
-            //         `;
-            //         return;
-            //     }
-                
-            //     // Populate table with filtered data
-            //     filteredData.forEach(item => {
-            //         const row = document.createElement('tr');
-                    
-            //         // Determine status class and display text
-            //         let statusClass = item.confirmation;
-            //         let statusText = item.confirmation.charAt(0).toUpperCase() + item.confirmation.slice(1);
-                    
-            //         row.innerHTML = `
-            //             <td>${item.name}</td>
-            //             <td>${item.email}</td>
-            //             <td><span class="status status-${statusClass}">${statusText}</span></td>
-            //             <td>${item.plusOne === 'yes' ? 'Yes' + (item.plusOneName ? ` (${item.plusOneName})` : '') : 'No'}</td>
-            //             <td>
-            //                 <div class="action-btns">
-            //                     <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${item.id}">
-            //                         <i class="fas fa-edit"></i>
-            //                     </button>
-            //                     <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${item.id}">
-            //                         <i class="fas fa-trash"></i>
-            //                     </button>
-            //                 </div>
-            //             </td>
-            //         `;
-                    
-            //         tableBody.appendChild(row);
-            //     });
-                
-            //     // Add event listeners to action buttons
-            //     document.querySelectorAll('.edit-btn').forEach(button => {
-            //         button.addEventListener('click', () => {
-            //             const id = parseInt(button.getAttribute('data-id'));
-            //             openEditModal(id);
-            //         });
-            //     });
-                
-            //     document.querySelectorAll('.delete-btn').forEach(button => {
-            //         button.addEventListener('click', () => {
-            //             const id = parseInt(button.getAttribute('data-id'));
-            //             deleteRSVP(id);
-            //         });
-            //     });
-            // }
-            
-            // Update the counts in the dashboard
-            // function updateCounts() {
-            //     const confirmed = rsvpData.filter(item => item.confirmation === 'confirmed').length;
-            //     const pending = rsvpData.filter(item => item.confirmation === 'pending').length;
-            //     const declined = rsvpData.filter(item => item.confirmation === 'declined').length;
-            //     const plusOne = rsvpData.filter(item => item.plusOne === 'yes').length;
-            //     const total = rsvpData.length;
-                
-            //     confirmedCount.textContent = confirmed;
-            //     pendingCount.textContent = pending;
-            //     declinedCount.textContent = declined;
-            //     plusOneCount.textContent = plusOne;
-            //     totalGuests.textContent = total + plusOne; // Include plus ones in total guests
-            // }
-            
-            // Update last updated timestamp
-            async function updateLastUpdated() {
-                if (!selectedEventId) return;
-                const lastUpdatedEl = document.getElementById("lastUpdated");
-
-                try {
-                    const eventRef = doc(db, "events", selectedEventId);
-                    const snapshot = await getDoc(eventRef);
-                    if (!snapshot.exists()) {
-                        lastUpdatedEl.textContent = "-";
-                        return;
-                    }
-
-                    const data = snapshot.data();
-                    if (!data.updatedAt) {
-                        lastUpdatedEl.textContent = "-";
-                        return;
-                    }
-
-                    const updatedDate = data.updatedAt.toDate();
-                    const options = { 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    };
-                    lastUpdatedEl.textContent = updatedDate.toLocaleDateString('en-US', options);
-
-                } catch (error) {
-                    console.error("Error getting updatedAt:", error);
-                    lastUpdatedEl.textContent = "-";
-                }
-            }
-            
-            // Open modal for adding a new RSVP
-            function openAddModal() {
-                editingId = null;
-                modalTitle.textContent = 'Add New RSVP';
-                rsvpForm.reset();
-                plusOneNameInput.disabled = true;
-                new bootstrap.Modal(document.getElementById('rsvpModal')).show();
-            }
-            
-            // Open modal for editing an existing RSVP
-            function openEditModal(id) {
-                const rsvp = rsvpData.find(item => item.id === id);
-                if (!rsvp) return;
-                
-                editingId = id;
-                modalTitle.textContent = 'Edit RSVP';
-                
-                // Fill form with RSVP data
-                nameInput.value = rsvp.name;
-                emailInput.value = rsvp.email;
-                confirmationInput.value = rsvp.confirmation;
-                plusOneInput.value = rsvp.plusOne;
-                plusOneNameInput.value = rsvp.plusOneName || '';
-                plusOneNameInput.disabled = rsvp.plusOne !== 'yes';
-                
-                new bootstrap.Modal(document.getElementById('rsvpModal')).show();
-            }
-            
-            // Save RSVP (both new and edit)
-            function saveRSVP(e) {
-                e.preventDefault();
-                
-                // Validate required fields
-                if (!nameInput.value.trim() || !emailInput.value.trim() || !confirmationInput.value) {
-                    alert('Please fill in all required fields (Name, Email, and Confirmation Status)');
-                    return;
-                }
-                
-                // Create RSVP object
-                const rsvp = {
-                    id: editingId || nextId,
-                    name: nameInput.value.trim(),
-                    email: emailInput.value.trim(),
-                    confirmation: confirmationInput.value,
-                    plusOne: plusOneInput.value,
-                    plusOneName: plusOneInput.value === 'yes' ? plusOneNameInput.value.trim() : ''
-                };
-                
-                if (editingId) {
-                    // Update existing RSVP
-                    const index = rsvpData.findIndex(item => item.id === editingId);
-                    if (index !== -1) {
-                        rsvpData[index] = rsvp;
-                    }
-                } else {
-                    // Add new RSVP
-                    rsvpData.push(rsvp);
-                    nextId++;
-                }
-                
-                // Save to localStorage
-                saveData(rsvpData);
-                
-                // Update UI
-                updateTable();
-                updateCounts();
-                updateLastUpdated();
-                
-                // Close modal
-                bootstrap.Modal.getInstance(document.getElementById('rsvpModal')).hide();
-                
-                // Show confirmation message
-                showNotification(`RSVP ${editingId ? 'updated' : 'added'} successfully!`);
-            }
-            
-            // Save event date
-            function saveEventDate(e) {
-                e.preventDefault();
-                
-                // Validate required field
-                if (!eventDateInput.value) {
-                    alert('Please select an event date');
-                    return;
-                }
-                
-                // Format date for display
-                const formattedDate = formatDateForDisplay(eventDateInput.value);
-                
-                // Update event details
-                eventDetails.date = formattedDate;
-                eventDetails.rawDate = eventDateInput.value;
-                
-                // Save to localStorage
-                saveEventDetails(eventDetails);
-                
-                // Update display
-                updateEventDisplay();
-                
-                // Close modal
-                bootstrap.Modal.getInstance(document.getElementById('eventDateModal')).hide();
-                
-                // Show confirmation message
-                showNotification('Event date updated successfully!');
-            }
-            
-            // Save venue
-            function saveVenue(e) {
-                e.preventDefault();
-                
-                // Validate required field
-                if (!venueInput.value.trim()) {
-                    alert('Please enter a venue');
-                    return;
-                }
-                
-                // Update event details
-                eventDetails.venue = venueInput.value.trim();
-                
-                // Save to localStorage
-                saveEventDetails(eventDetails);
-                
-                // Update display
-                updateEventDisplay();
-                
-                // Close modal
-                bootstrap.Modal.getInstance(document.getElementById('venueModal')).hide();
-                
-                // Show confirmation message
-                showNotification('Venue updated successfully!');
-            }
-            
-            // Delete an RSVP
-            function deleteRSVP(id) {
-                if (!confirm('Are you sure you want to delete this RSVP?')) {
-                    return;
-                }
-                
-                const index = rsvpData.findIndex(item => item.id === id);
-                if (index !== -1) {
-                    const name = rsvpData[index].name;
-                    rsvpData.splice(index, 1);
-                    
-                    // Save to localStorage
-                    saveData(rsvpData);
-                    
-                    // Update nextId
-                    nextId = getNextId(rsvpData);
-                    
-                    // Update UI
-                    updateTable();
-                    updateCounts();
-                    updateLastUpdated();
-                    
-                    // Show notification
-                    showNotification(`RSVP for ${name} deleted successfully!`);
-                }
-            }
-            
-            // Reset data to sample data
-            function resetData() {
-                if (!confirm('Are you sure you want to reset all data? This will delete all your current RSVPs and restore the sample data.')) {
-                    return;
-                }
-                
-                rsvpData = [...sampleData];
-                nextId = getNextId(rsvpData);
-                eventDetails = { ...defaultEventDetails };
-                
-                // Save to localStorage
-                saveData(rsvpData);
-                saveEventDetails(eventDetails);
-                
-                // Reset search and filter
-                searchInput.value = '';
-                currentSearch = '';
-                
-                // Reset filter buttons
-                filterButtons.forEach(btn => {
-                    if (btn.getAttribute('data-filter') === 'all') {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-                currentFilter = 'all';
-                
-                // Update UI
-                updateEventDisplay();
-                updateTable();
-                updateCounts();
-                updateLastUpdated();
-                
-                showNotification('Data reset to sample data successfully!');
-            }
-            
-            // Export data to CSV
-            function exportToCSV() {
-                if (rsvpData.length === 0) {
-                    alert('No data to export.');
-                    return;
-                }
-                
-                // Include event details in CSV
-                const eventInfo = `Event Date: ${eventDetails.date}\nVenue: ${eventDetails.venue}\nExported from CBOC Admin\n\n`;
-                
-                // Define CSV headers
-                const headers = ['Name', 'Email', 'Confirmation', 'Plus One', 'Plus One Name'];
-                
-                // Convert data to CSV rows
-                const csvRows = [
-                    eventInfo,
-                    headers.join(','), // Header row
-                    ...rsvpData.map(item => [
-                        `"${item.name}"`,
-                        `"${item.email}"`,
-                        `"${item.confirmation}"`,
-                        `"${item.plusOne}"`,
-                        `"${item.plusOneName || ''}"`
-                    ].join(','))
-                ];
-                
-                // Create CSV string
-                const csvString = csvRows.join('\n');
-                
-                // Create download link
-                const blob = new Blob([csvString], { type: 'text/csv' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `cboc-rsvp-data-${new Date().toISOString().slice(0, 10)}.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showNotification('CSV exported successfully!');
-            }
-            
-            // Export data to JSON
-            function exportToJSON() {
-                if (rsvpData.length === 0) {
-                    alert('No data to export.');
-                    return;
-                }
-                
-                // Create data object with event details and RSVPs
-                const exportData = {
-                    event: eventDetails,
-                    rsvps: rsvpData,
-                    exportedAt: new Date().toISOString()
-                };
-                
-                // Create JSON string
-                const jsonString = JSON.stringify(exportData, null, 2);
-                
-                // Create download link
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `cboc-rsvp-data-${new Date().toISOString().slice(0, 10)}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showNotification('JSON exported successfully!');
-            }
-            
-            // Show a temporary notification
-            function showNotification(message, type = 'success') {
-                const icons = { 
-                    success: 'fa-check-circle', 
-                    error: 'fa-exclamation-circle', 
-                    warning: 'fa-exclamation-triangle', 
-                    info: 'fa-info-circle' 
-                };
-                
-                // Remove existing notification if present
-                const existingNotification = document.querySelector('.notification');
-                if (existingNotification) {
-                    existingNotification.remove();
-                }
-                
-                // Create notification element
-                const notification = document.createElement('div');
-                notification.className = `notification ${type}`;
-                notification.innerHTML = `<i class="fas ${icons[type]}"></i><span>${message}</span>`;
-                
-                document.body.appendChild(notification);
-                
-                // Remove after 3 seconds
-                setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.remove();
-                        }
-                    }, 300);
-                }, 3000);
-            }
-
-            // Add notification styles if not already present
-            if (!document.querySelector('#notification-styles')) {
-                const notificationStyle = document.createElement('style');
-                notificationStyle.id = 'notification-styles';
-                notificationStyle.textContent = `
-                    .notification {
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        z-index: 9999;
-                        min-width: 300px;
-                        animation: slideIn 0.3s ease;
-                        border-radius: 8px;
-                        padding: 15px 20px;
-                        color: white;
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                    }
-                    .notification.success { background: linear-gradient(135deg, #10b981, #059669); }
-                    .notification.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
-                    .notification.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-                    .notification.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
-                    
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                    
-                    @keyframes slideOut {
-                        from { transform: translateX(0); opacity: 1; }
-                        to { transform: translateX(100%); opacity: 0; }
-                    }
-                `;
-                document.head.appendChild(notificationStyle);
-            }
-
-            // Load events from DB
-            async function loadUpcomingEvents() {
-                console.log("loadUpcomingEvents");
-                const container = document.getElementById("eventsListContainer");
-                const today = new Date();
-                today.setHours(0,0,0,0);
-
-                // ❗ Get ALL events (no where filter)
-                const q = query(collection(db, "events"));
+            try {
+                const q = query(collection(db, "events"), orderBy("date", "asc"));
                 const snapshot = await getDocs(q);
 
                 snapshot.forEach(doc => {
                     const event = doc.data();
                     let eventDate;
 
-                    // Handle Timestamp
                     if (event.date?.toDate) {
                         eventDate = event.date.toDate();
-                    }
-
-                    // Handle YYYY-MM-DD string
-                    else if (typeof event.date === "string") {
+                    } else if (typeof event.date === "string") {
                         eventDate = new Date(event.date);
                     }
 
-                    if (!eventDate) return;
-
-                    eventDate.setHours(0,0,0,0);
-
-                    if (eventDate >= today) {
+                    if (eventDate) {
+                        eventDate.setHours(0,0,0,0);
+                        if (eventDate >= today || eventDate.getTime() === today.getTime()) {
+                            upcomingEvents.push({
+                                id: doc.id,
+                                ...event,
+                                parsedDate: eventDate
+                            });
+                        }
+                    } else {
                         upcomingEvents.push({
                             id: doc.id,
                             ...event,
-                            parsedDate: eventDate
+                            parsedDate: null
                         });
                     }
-
                 });
 
-                // Sort events by date
-                upcomingEvents.sort((a,b) => a.parsedDate - b.parsedDate);
+                upcomingEvents.sort((a,b) => {
+                    if (!a.parsedDate) return 1;
+                    if (!b.parsedDate) return -1;
+                    return a.parsedDate - b.parsedDate;
+                });
 
                 if (upcomingEvents.length === 0) {
                     container.innerHTML = `
                         <div class="text-center text-muted py-4">
                             <i class="fas fa-calendar-times fa-2x mb-2"></i>
                             <div>No upcoming events found.</div>
-                            <small>Create an event first to start tracking RSVPs.</small>
+                            <small>Create an event first to start tracking RSVPs and walk-ins.</small>
                         </div>
                     `;
                     return;
@@ -1597,201 +960,399 @@ RSVP Tracker Help:
 
                 let html = `<div class="list-group">`;
                 upcomingEvents.forEach(event => {
-                    const eventId = event.id;
-                    const date = event.parsedDate.toLocaleDateString();
+                    const dateStr = event.parsedDate ? event.parsedDate.toLocaleDateString() : 'Date TBD';
                     html += `
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center event-item ${selectedEventId === event.id ? 'active' : ''}" 
+                         onclick="selectEventForRSVP('${event.id}')" style="cursor:pointer;">
                         <div>
                             <strong>${event.title || "Untitled Event"}</strong>
                             <div class="text-muted small">
-                                <i class="fas fa-calendar-alt"></i> ${date}
+                                <i class="fas fa-calendar-alt"></i> ${dateStr}
                                 ${event.venue ? `<span class="mx-2">|</span> <i class="fas fa-map-marker-alt"></i> ${event.venue}` : ""}
                             </div>
                         </div>
-
-                        <button class="btn btn-sm btn-primary"
-                            onclick="selectEventForRSVP('${eventId}')">
-                            Check RSVP
+                        <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); selectEventForRSVP('${event.id}')">
+                            View Attendance
                         </button>
                     </div>
                     `;
                 });
                 html += `</div>`;
                 container.innerHTML = html;
+            } catch (error) {
+                console.error("Error loading events:", error);
+                container.innerHTML = `<div class="text-center text-danger py-3">Error loading events</div>`;
             }
+        }
 
-            // Display RSVP for an event
-            window.selectEventForRSVP = function (eventId) {
-                selectedEventId = eventId;
-                updateEventVisibility();
-                updateEventDetailsCard();
-                console.log("Selected Event:", selectedEventId);
-                loadRSVPsForEvent(selectedEventId);
-            }
+        // Load RSVPs and Walk-ins for selected event
+        async function loadRSVPsAndWalkins(eventId) {
+            if (!eventId) return;
 
-            // Display table when Checking for RSVP
-            window.updateEventVisibility = function () {
-                const eventContent = document.getElementById("eventContent");
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Loading attendees...</td></tr>`;
 
-                if (selectedEventId === null) {
-                    eventContent.style.display = "none";
-                } else {
-                    eventContent.style.display = "block";
-                }
-            }
-
-            // Update contents of Event Details Card
-            window.updateEventDetailsCard = function () {
-                if (!selectedEventId) return;
-
-                const event = upcomingEvents.find(ev => ev.id === selectedEventId);
-                if (!event) return;
-
-                // DOM elements
-                const titleEl = document.querySelector(".event-details-card h4");
-                const dateEl = document.getElementById("eventDateDisplay");
-                const venueEl = document.getElementById("venueDisplay");
-
-                // Fill them
-                titleEl.textContent = event.title || "Untitled Event";
-
-                // Format date as YYYY-MM-DD or nicer
-                const dateStr = event.parsedDate
-                    ? event.parsedDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
-                    : "Unknown Date";
-                dateEl.textContent = dateStr;
-
-                venueEl.textContent = event.venue || "Unknown Venue";
-            }
-
-            // Export CSV Function
-            window.exportCSV = function () {
-                const table = document.querySelector(".rsvp-table tbody");
-                if (!table) return;
-
-                let csv = "Attendees,Email,Plus One\n";
-
-                table.querySelectorAll("tr").forEach(row => {
-                    const cells = row.querySelectorAll("td");
-                    if (cells.length < 3) return; // skip placeholders
-                    const rowData = [
-                        cells[0].textContent.trim(),
-                        cells[1].textContent.trim(),
-                        cells[2].textContent.trim()
-                    ];
-                    csv += rowData.join(",") + "\n";
+            try {
+                // Load RSVPs
+                const rsvpRef = collection(db, "events", eventId, "rsvp");
+                const rsvpSnapshot = await getDocs(rsvpRef);
+                currentRSVPs = [];
+                rsvpSnapshot.forEach(doc => {
+                    currentRSVPs.push({ id: doc.id, ...doc.data(), type: 'rsvp' });
                 });
 
-                const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "RSVP_List.csv";
-                a.click();
-                URL.revokeObjectURL(url);
-            };
-
-            //Export PDF Function
-            window.exportPDF = function () {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                const table = document.querySelector(".rsvp-table tbody");
-                if (!table) return;
-
-                const rows = [];
-                table.querySelectorAll("tr").forEach(row => {
-                    const cells = row.querySelectorAll("td");
-                    if (cells.length < 3) return; // skip placeholders
-                    rows.push([
-                        cells[0].textContent.trim(),
-                        cells[1].textContent.trim(),
-                        cells[2].textContent.trim()
-                    ]);
+                // Load Walk-ins
+                const walkinRef = collection(db, "events", eventId, "walkins");
+                const walkinSnapshot = await getDocs(walkinRef);
+                currentWalkins = [];
+                walkinSnapshot.forEach(doc => {
+                    currentWalkins.push({ id: doc.id, ...doc.data(), type: 'walkin' });
                 });
 
-                doc.setFontSize(16);
-                doc.text("RSVP List", 14, 20);
-                doc.setFontSize(12);
-                doc.autoTable({
-                    head: [["Attendees", "Email", "Plus One"]],
-                    body: rows,
-                    startY: 30
-                });
+                // Update aggregate display
+                updateAggregateDisplay();
+                
+                // Render table
+                renderAttendeesTable();
 
-                doc.save("RSVP_List.pdf");
-            };
+            } catch (error) {
+                console.error("Error loading data:", error);
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error loading attendees</td></tr>`;
+            }
+        }
 
-            // Show Add RSVP Modal
-            window.addRSVPBtn = function () {
-                if (!selectedEventId) {
-                    alert("Please select an event first.");
-                    return;
-                }
+        // Update Aggregate Attendance Counters
+        function updateAggregateDisplay() {
+            const rsvpCount = currentRSVPs.length;
+            const walkinCount = currentWalkins.length;
+            const totalCount = rsvpCount + walkinCount;
+            
+            document.getElementById('aggregateRSVPCount').innerText = rsvpCount;
+            document.getElementById('aggregateWalkinCount').innerText = walkinCount;
+            document.getElementById('aggregateTotalCount').innerText = totalCount;
+            document.getElementById('totalGuests').innerText = totalCount;
+        }
 
-                document.getElementById("rsvpForm").reset();
+        // Render combined attendees table
+        function renderAttendeesTable() {
+            const tableBody = document.getElementById("tableBody");
+            
+            if (currentRSVPs.length === 0 && currentWalkins.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No attendees yet. Add RSVP or walk-in guests.</td></tr>`;
+                return;
+            }
 
-                const modal = new bootstrap.Modal(document.getElementById("rsvpModal"));
-                modal.show();
-            };
-
-            // Add RSVP to Database
-            document.getElementById("rsvpForm").addEventListener("submit", async function(e) {
-                e.preventDefault();
-                if (!selectedEventId) return;
-
-                const name = document.getElementById("name").value.trim();
-                const email = document.getElementById("email").value.trim();
-                const plusOne = document.getElementById("plusOneName").value.trim();
-
-                try {
-                    await addDoc(
-                        collection(db, "events", selectedEventId, "rsvp"),
-                        {
-                            name: name,
-                            email: email,
-                            plusOne: plusOne,
-                            createdAt: new Date()
-                        }
-                    );
-
-                    await updateDoc(
-                        doc(db, "events", selectedEventId),
-                        {
-                            updatedAt: serverTimestamp()
-                        }
-                    )
-
-                    // Close modal
-                    bootstrap.Modal.getInstance(document.getElementById("rsvpModal")).hide();
-
-                    // Reload RSVP table
-                    loadRSVPsForEvent(selectedEventId);
-
-                } catch (error) {
-                    console.error("Error saving RSVP:", error);
-                    alert("Error saving RSVP");
-                }
-
-            });
-
-            // Enable Plus One name input if chosen Yes
-            document.getElementById("plusOne").addEventListener("change", function(){
-                const plusOneName = document.getElementById("plusOneName");
-
-                if (this.value === "yes") {
-                    plusOneName.disabled = false;
-                } else {
-                    plusOneName.disabled = true;
-                    plusOneName.value = "";
-                }
+            let html = '';
+            
+            // Add RSVPs
+            currentRSVPs.forEach(rsvp => {
+                html += `
+                    <tr>
+                        <td><i class="fas fa-envelope text-primary me-2"></i> ${escapeHtml(rsvp.name || 'Unnamed')}</td>
+                        <td>${escapeHtml(rsvp.email || '-')}</td>
+                        <td><span class="rsvp-badge">📧 RSVP</span></td>
+                        <td>${rsvp.plusOne ? `+1: ${escapeHtml(rsvp.plusOne)}` : 'No plus one'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteAttendee('${rsvp.id}', 'rsvp')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
             });
             
-            // Initialize the RSVP tracker
-            loadUpcomingEvents();
-            updateEventVisibility();
-            init();
+            // Add Walk-ins
+            currentWalkins.forEach(walkin => {
+                html += `
+                    <tr>
+                        <td><i class="fas fa-person-walking-arrow-right text-warning me-2"></i> ${escapeHtml(walkin.name || 'Unnamed')}</td>
+                        <td>${escapeHtml(walkin.contact || '-')}</td>
+                        <td><span class="walkin-badge">🚶 Walk-in</span></td>
+                        <td>${escapeHtml(walkin.notes || 'No notes')}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteAttendee('${walkin.id}', 'walkin')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        }
+
+        // Delete attendee
+        window.deleteAttendee = async function(id, type) {
+            if (!confirm(`Are you sure you want to delete this ${type === 'rsvp' ? 'RSVP' : 'walk-in'}?`)) return;
+            
+            try {
+                const collectionName = type === 'rsvp' ? 'rsvp' : 'walkins';
+                await deleteDoc(doc(db, "events", selectedEventId, collectionName, id));
+                
+                await updateDoc(doc(db, "events", selectedEventId), {
+                    updatedAt: serverTimestamp()
+                });
+                
+                showNotification(`${type === 'rsvp' ? 'RSVP' : 'Walk-in'} deleted successfully`, 'success');
+                await loadRSVPsAndWalkins(selectedEventId);
+            } catch (error) {
+                console.error("Error deleting:", error);
+                showNotification('Error deleting attendee', 'error');
+            }
+        };
+
+        // Select event and display
+        window.selectEventForRSVP = async function(eventId) {
+            selectedEventId = eventId;
+            const event = upcomingEvents.find(ev => ev.id === eventId);
+            
+            if (event) {
+                document.getElementById('eventTitleDisplay').innerText = event.title || 'CBOC Event';
+                const dateStr = event.parsedDate ? event.parsedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Date TBD';
+                document.getElementById('eventDateDisplay').innerText = dateStr;
+                document.getElementById('venueDisplay').innerText = event.venue || 'TBD';
+            }
+            
+            document.getElementById('eventContent').style.display = 'block';
+            await loadRSVPsAndWalkins(selectedEventId);
+            loadUpcomingEvents(); // Refresh highlight
+        };
+
+        // Add RSVP
+        window.addRSVPBtn = function() {
+            if (!selectedEventId) {
+                showNotification('Please select an event first', 'warning');
+                return;
+            }
+            document.getElementById('rsvpForm').reset();
+            new bootstrap.Modal(document.getElementById('rsvpModal')).show();
+        };
+
+        // Add Walk-in
+        window.addWalkinBtn = function() {
+            if (!selectedEventId) {
+                showNotification('Please select an event first', 'warning');
+                return;
+            }
+            document.getElementById('walkinForm').reset();
+            new bootstrap.Modal(document.getElementById('walkinModal')).show();
+        };
+
+        // Save RSVP
+        document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!selectedEventId) return;
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const plusOne = document.getElementById('plusOneName').value.trim();
+
+            if (!name || !email) {
+                showNotification('Please fill in name and email', 'warning');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "events", selectedEventId, "rsvp"), {
+                    name: name,
+                    email: email,
+                    plusOne: plusOne || null,
+                    createdAt: new Date()
+                });
+
+                await updateDoc(doc(db, "events", selectedEventId), {
+                    updatedAt: serverTimestamp()
+                });
+
+                bootstrap.Modal.getInstance(document.getElementById('rsvpModal')).hide();
+                showNotification('RSVP added successfully!', 'success');
+                await loadRSVPsAndWalkins(selectedEventId);
+            } catch (error) {
+                console.error("Error saving RSVP:", error);
+                showNotification('Error saving RSVP', 'error');
+            }
         });
+
+        // Save Walk-in
+        document.getElementById('walkinForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!selectedEventId) return;
+
+            const name = document.getElementById('walkinName').value.trim();
+            const contact = document.getElementById('walkinContact').value.trim();
+            const notes = document.getElementById('walkinNotes').value.trim();
+
+            if (!name) {
+                showNotification('Please enter walk-in name', 'warning');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "events", selectedEventId, "walkins"), {
+                    name: name,
+                    contact: contact || null,
+                    notes: notes || null,
+                    createdAt: new Date()
+                });
+
+                await updateDoc(doc(db, "events", selectedEventId), {
+                    updatedAt: serverTimestamp()
+                });
+
+                bootstrap.Modal.getInstance(document.getElementById('walkinModal')).hide();
+                showNotification('Walk-in added successfully!', 'success');
+                await loadRSVPsAndWalkins(selectedEventId);
+            } catch (error) {
+                console.error("Error saving walk-in:", error);
+                showNotification('Error saving walk-in', 'error');
+            }
+        });
+
+        // Add sample event
+        window.addSampleEvent = async function() {
+            try {
+                const sampleEvent = {
+                    title: "CBOC Monthly Gathering",
+                    date: new Date(),
+                    venue: "Main Hall",
+                    createdAt: new Date()
+                };
+                await addDoc(collection(db, "events"), sampleEvent);
+                showNotification('Sample event created!', 'success');
+                await loadUpcomingEvents();
+            } catch (error) {
+                console.error("Error creating event:", error);
+                showNotification('Error creating event', 'error');
+            }
+        };
+
+        // Export CSV
+        window.exportCSV = function() {
+            if (!selectedEventId) {
+                showNotification('Select an event first', 'warning');
+                return;
+            }
+
+            let csv = "Attendee Name,Email/Contact,Type,Plus One/Notes\n";
+            
+            currentRSVPs.forEach(r => {
+                csv += `"${r.name || ''}","${r.email || ''}","RSVP","${r.plusOne || ''}"\n`;
+            });
+            
+            currentWalkins.forEach(w => {
+                csv += `"${w.name || ''}","${w.contact || ''}","Walk-in","${w.notes || ''}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `attendees_${selectedEventId}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('CSV exported!', 'success');
+        };
+
+        // Export PDF
+        window.exportPDF = function() {
+            if (!selectedEventId) {
+                showNotification('Select an event first', 'warning');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const event = upcomingEvents.find(ev => ev.id === selectedEventId);
+            const eventTitle = event ? event.title : 'Event';
+            
+            doc.setFontSize(18);
+            doc.text(`Event: ${eventTitle}`, 14, 20);
+            doc.setFontSize(12);
+            doc.text(`Total Attendance: ${currentRSVPs.length + currentWalkins.length} (RSVP: ${currentRSVPs.length} | Walk-ins: ${currentWalkins.length})`, 14, 30);
+            
+            const tableBody = [];
+            currentRSVPs.forEach(r => {
+                tableBody([r.name || '', r.email || '', 'RSVP', r.plusOne || '']);
+            });
+            currentWalkins.forEach(w => {
+                tableBody([w.name || '', w.contact || '', 'Walk-in', w.notes || '']);
+            });
+            
+            doc.autoTable({
+                head: [['Name', 'Contact', 'Type', 'Details']],
+                body: tableBody,
+                startY: 40,
+                headStyles: { fillColor: [102, 126, 234] }
+            });
+            
+            doc.save(`attendees_${selectedEventId}.pdf`);
+            showNotification('PDF exported!', 'success');
+        };
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function showNotification(message, type = 'success') {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Update last updated timestamp
+        async function updateLastUpdated() {
+            if (!selectedEventId) return;
+            try {
+                const eventRef = doc(db, "events", selectedEventId);
+                const snapshot = await getDoc(eventRef);
+                if (snapshot.exists() && snapshot.data().updatedAt?.toDate) {
+                    const date = snapshot.data().updatedAt.toDate();
+                    document.getElementById('lastUpdated').innerText = date.toLocaleString();
+                } else {
+                    document.getElementById('lastUpdated').innerText = new Date().toLocaleString();
+                }
+            } catch (error) {
+                document.getElementById('lastUpdated').innerText = '-';
+            }
+        }
+
+        // Event details editing
+        document.getElementById('editEventDate').addEventListener('click', () => {
+            document.getElementById('eventDateInput').value = new Date().toISOString().slice(0,10);
+            new bootstrap.Modal(document.getElementById('eventDateModal')).show();
+        });
+        
+        document.getElementById('editVenue').addEventListener('click', () => {
+            document.getElementById('venueInput').value = document.getElementById('venueDisplay').innerText;
+            new bootstrap.Modal(document.getElementById('venueModal')).show();
+        });
+
+        // Initialize
+        loadUpcomingEvents();
+        setInterval(() => updateLastUpdated(), 5000);
+        
+        // Make functions global
+        window.selectEventForRSVP = selectEventForRSVP;
+        window.addRSVPBtn = addRSVPBtn;
+        window.addWalkinBtn = addWalkinBtn;
+        window.exportCSV = exportCSV;
+        window.exportPDF = exportPDF;
     </script>
 </body>
 </html>
