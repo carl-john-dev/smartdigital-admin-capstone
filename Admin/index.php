@@ -1427,24 +1427,11 @@
 
         <div style="max-width: 1200px; margin: 0 auto;">
 
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
+            <!-- BACKGROUND -->
             <div style="max-width: 1000px; margin: 0 auto 3rem auto; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); padding: 2rem 2.5rem; border-radius: 15px; text-align: center; box-shadow: var(--shadow);">
-                <p style="font-size: 1.2rem; line-height: 1.6; color: #333;">
-                    Welcome to the CBOC Community! Our community provides a platform for Cavite-based entrepreneurs to network, collaborate, and access resources that will help them streamline their operations, lead their industries, and succeed in their ventures.
-                </p>
-                <p style="font-size: 1.2rem; line-height: 1.6; color: #333; margin-top: 1rem;">
-                    To learn more about our programs and membership, please DM Pres. Rlyn Icnad and VP Jennicel Asuncion Foronda.
-                </p>
+                <p id="backgroundText1" style="font-size: 1.2rem; line-height: 1.6; color: #333;"></p>
+                <p id="backgroundText2" style="font-size: 1.2rem; line-height: 1.6; color: #333; margin-top: 1rem;"></p>
             </div>
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
-            <!-- PLACEHOLDER TEXT AND LOCATION FOR BACKGROUND -->
 
             <!-- ABOUT US -->
             <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 2rem; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 2rem; border: 1px solid rgba(255,255,255,0.2);">
@@ -1454,8 +1441,8 @@
                     </div>
                     <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">ABOUT US</h4>
                 </div>
-                <p style="font-size: 1.1rem; line-height: 1.6; color: #333; margin-bottom: 1rem; font-weight: 400;">The Cavite Business Owners Club (CBOC) is a professional community of entrepreneurs, innovators, and business leaders. It is dedicated to fostering collaboration, growth, and mutual support among Cavite-based business owners.</p>
-                <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">Through shared learning, networking opportunities, and meaningful partnerships, CBOC aims to strengthen local businesses and build a sustainable entrepreneurial ecosystem.</p>
+                <p id="aboutUsText1" style="font-size: 1.1rem; line-height: 1.6; color: #333; margin-bottom: 1rem; font-weight: 400;"></p>
+                <p id="aboutUsText2" style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;"></p>
             </div>
 
             <!-- MISSION & VISION GRID -->
@@ -1468,7 +1455,7 @@
                         </div>
                         <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">MISSION</h4>
                     </div>
-                    <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">To empower business owners through mentorship, collaboration, and networking opportunities, creating value-driven engagement that benefits both businesses and communities.</p>
+                    <p id="missionText" style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;"></p>
                 </div>
 
                 <!-- VISION -->
@@ -1479,7 +1466,7 @@
                         </div>
                         <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">VISION</h4>
                     </div>
-                    <p style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;">To become the leading platform for Cavite entrepreneurs to connect, collaborate, and grow their businesses while uplifting the community and fostering sustainable economic development.</p>
+                    <p id="visionText" style="font-size: 1.1rem; line-height: 1.6; color: #333; font-weight: 400;"></p>
                 </div>
             </div>
 
@@ -1493,7 +1480,7 @@
                         </div>
                         <h4 style="color: #e67e22; font-size: 1.8rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">COMPANY VALUES</h4>
                     </div>
-                    <p style="font-size: 1.1rem; line-height: 1.6; color: #2c3e50; font-weight: 500;">Be an example of a profitable Cavite Business that utilizes the mix of digital and traditional.</p>
+                    <p id="valuesText" style="font-size: 1.1rem; line-height: 1.6; color: #2c3e50; font-weight: 500;"></p>
                 </div>
 
                 <!-- FOUNDED -->
@@ -1501,9 +1488,9 @@
                     <div style="width: 80px; height: 80px; background: var(--aboutus); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 1rem; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">
                         <i class="fas fa-calendar" style="font-size: 2rem;"></i>
                     </div>
-                    <h4 style="color: #e67e22; font-size: 2rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">2025</h4>
+                    <h4 id="foundedYear" style="color: #e67e22; font-size: 2rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);"></h4>
                     <p style="font-size: 1.2rem; color: #333; font-weight: 400;">Founded</p>
-                    <span style="display: inline-block; background: var(--aboutus); color: white; padding: 0.5rem 1.5rem; border-radius: 50px; font-size: 1rem; margin-top: 1rem; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);">Established 2025</span>
+                    <span id="foundedLabel" style="display: inline-block; background: var(--aboutus); color: white; padding: 0.5rem 1.5rem; border-radius: 50px; font-size: 1rem; margin-top: 1rem; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);"></span>
                 </div>
             </div>
         </div>
@@ -1563,7 +1550,36 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <script>
+    <script type="module">
+        import { db, storage } from './Firebase/firebase_conn.js';
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        
+        // Load About Us Content from Firebase DB
+        async function loadAboutContent() {
+            try {
+                const docRef = doc(db, "siteContent", "aboutCBOC");
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) return;
+
+                const data = docSnap.data();
+
+                document.getElementById("backgroundText1").textContent = data.backgroundText1 || "";
+                document.getElementById("backgroundText2").textContent = data.backgroundText2 || "";
+                document.getElementById("aboutUsText1").textContent = data.aboutUsText1 || "";
+                document.getElementById("aboutUsText2").textContent = data.aboutUsText2 || "";
+                document.getElementById("missionText").textContent = data.missionText || "";
+                document.getElementById("visionText").textContent = data.visionText || "";
+                document.getElementById("valuesText").textContent = data.valuesText || "";
+                document.getElementById("foundedYear").textContent = data.foundedYear || "";
+                document.getElementById("foundedLabel").textContent = data.foundedLabel || "";
+
+            } catch (error) {
+                console.error("Error loading About section:", error);
+            }
+        }
+        loadAboutContent();
+
         // Burger Menu Functionality
         const burgerMenu = document.getElementById('burgerMenu');
         const navLinks = document.getElementById('navLinks');

@@ -445,6 +445,17 @@
         .dark-mode-toggle:hover {
             transform: scale(1.1) rotate(15deg);
         }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .toast {
+            min-width: 250px;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -491,6 +502,9 @@
     </style>
 </head>
 <body>
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
@@ -674,6 +688,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- Website Content Editor -->
+        <div class="dashboard-section">
+            <h3 class="section-title">
+                <i class="fas fa-edit"></i> Website Content
+            </h3>
+
+            <p class="text-muted">Edit the public About section of the website.</p>
+
+            <button class="btn btn-primary" onclick="openAboutEditor()">
+                <i class="fas fa-pen"></i> Edit About Section
+            </button>
+        </div>
     </div>
 
     <!-- Dark Mode Toggle Button -->
@@ -681,13 +708,81 @@
         <i class="fas fa-moon" id="darkModeIcon"></i>
     </button>
 
+    <!-- About Section Editor Modal -->
+    <div class="modal fade" id="aboutEditorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit About Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>CBOC Background Text 1</label>
+                        <textarea id="editBackground1" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>CBOC Background Text 2</label>
+                        <textarea id="editBackground2" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>About Us Paragraph 1</label>
+                        <textarea id="editAbout1" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>About Us Paragraph 2</label>
+                        <textarea id="editAbout2" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Mission</label>
+                        <textarea id="editMission" class="form-control"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Vision</label>
+                        <textarea id="editVision" class="form-control"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Company Values</label>
+                        <textarea id="editValues" class="form-control"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Founded Year</label>
+                        <input type="text" id="editYear" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Founded Label</label>
+                        <input type="text" id="editLabel" class="form-control">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success" onclick="saveAboutContent()">Save Changes</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript for Interactive Elements -->
     <script type="module">
         import { db, storage } from './Firebase/firebase_conn.js';
-        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { collection, query, where, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -742,6 +837,53 @@
                 card.style.opacity = '0';
             });
         });
+
+        // Edit About Us Function
+        window.openAboutEditor = async function () {
+            const docRef = doc(db, "siteContent", "aboutCBOC");
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+
+                document.getElementById("editBackground1").value = data.backgroundText1 || "";
+                document.getElementById("editBackground2").value = data.backgroundText2 || "";
+                document.getElementById("editAbout1").value = data.aboutUsText1 || "";
+                document.getElementById("editAbout2").value = data.aboutUsText2 || "";
+                document.getElementById("editMission").value = data.missionText || "";
+                document.getElementById("editVision").value = data.visionText || "";
+                document.getElementById("editValues").value = data.valuesText || "";
+                document.getElementById("editYear").value = data.foundedYear || "";
+                document.getElementById("editLabel").value = data.foundedLabel || "";
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById("aboutEditorModal"));
+            modal.show();
+        }
+        
+        // Save About Us Function
+        window.saveAboutContent = async function () {
+            try {
+                await setDoc(doc(db, "siteContent", "aboutCBOC"), {
+                    backgroundText1: document.getElementById("editBackground1").value,
+                    backgroundText2: document.getElementById("editBackground2").value,
+                    aboutUsText1: document.getElementById("editAbout1").value,
+                    aboutUsText2: document.getElementById("editAbout2").value,
+                    missionText: document.getElementById("editMission").value,
+                    visionText: document.getElementById("editVision").value,
+                    valuesText: document.getElementById("editValues").value,
+                    foundedYear: document.getElementById("editYear").value,
+                    foundedLabel: document.getElementById("editLabel").value
+                });
+
+                showToast("About section updated successfully!", "success");
+                bootstrap.Modal.getInstance(document.getElementById("aboutEditorModal")).hide();
+
+            } catch (error) {
+                console.error(error);
+                showToast("Error saving content", "warning");
+            }
+        }
 
         // Menu functions
         function refreshDashboard() {
@@ -1020,6 +1162,18 @@
                 loadCalendarCount(),
                 loadApprovalCount()
             ]);
+        }
+        
+        function showToast(message, type) {
+            const toastContainer = document.getElementById('toastContainer');
+            const bgColor = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle';
+            const toast = document.createElement('div');
+            toast.className = `toast show align-items-center text-white ${bgColor} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas ${icon} me-2"></i>${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
         // Run on page load

@@ -791,6 +791,36 @@
         </div>
     </div>
 
+    <!-- Review Event Modal -->
+    <div class="modal fade" id="eventReviewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Event Review</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h4 id="reviewTitle"></h4>
+                    <p id="reviewDescription"></p>
+                    <hr>
+                    <p><strong>Date:</strong> <span id="reviewDate"></span></p>
+                    <p><strong>Time:</strong> <span id="reviewTime"></span></p>
+                    <p><strong>Venue:</strong> <span id="reviewVenue"></span></p>
+                    <p><strong>Available Slots:</strong> <span id="reviewSlots"></span></p>
+                    <p><strong>Organizer:</strong> <span id="reviewOrganizer"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" id="rejectEventBtn">
+                        Reject
+                    </button>
+                    <button class="btn btn-success" id="approveEventBtn">
+                        Approve Event
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Dark Mode Toggle Button -->
     <button class="dark-mode-toggle" id="darkModeToggle">
         <i class="fas fa-moon" id="darkModeIcon"></i>
@@ -810,6 +840,7 @@
             updateDoc,
             deleteDoc,
             doc,
+            getDoc,
             onSnapshot
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
@@ -989,7 +1020,7 @@ Approval Management Help:
                         id: docSnap.id,
                         type: "Event Approval",
                         username: docSnap.data().title || "Event",
-                        email: docSnap.data().email,
+                        email: docSnap.data().createdBy || "-",
                         raw: docSnap.data()
                     }));
 
@@ -1023,16 +1054,22 @@ Approval Management Help:
                         row.innerHTML = `
                             <td>${req.username ?? '-'}</td>
                             <td>${req.type}</td>
-                            <td>${req.email ?? '-'}</td>
+                            <td>${req.raw.createdBy ?? '-'}</td>
                             <td>Create</td>
                             <td><span class="request-status status-pending">Pending</span></td>
                             <td>
                                 <!-- <button class="request-action-btn edit" data-id="${req.id}" data-type="${req.type}">
                                     <i class="fas fa-edit"></i>
                                 </button> -->
-                                <button class="request-action-btn accept" data-id="${req.id}" data-type="${req.type}">
-                                    <i class="fas fa-check"></i>
-                                </button>
+                                ${req.type === "Event Approval" ? `
+                                    <button class="request-action-btn review" data-id="${req.id}" data-type="${req.type}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                ` : `
+                                    <button class="request-action-btn accept" data-id="${req.id}" data-type="${req.type}">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                `}
                                 <!-- <button class="request-action-btn delete" data-id="${req.id}" data-type="${req.type}">
                                     <i class="fas fa-trash"></i>
                                 </button> -->
@@ -1057,14 +1094,37 @@ Approval Management Help:
 
                 document.querySelectorAll('.request-action-btn.accept').forEach(btn => {
                     btn.addEventListener('click', async () => {
+
                         const id = btn.dataset.id;
                         const type = btn.dataset.type;
 
                         try {
+                            // 🚨 If Event Approval → open review modal first
+                            if (type === "Event Approval") {
+                                const docRef = doc(db, "events", id);
+                                const snap = await getDoc(docRef);
+
+                                if (!snap.exists()) return;
+
+                                const data = snap.data();
+
+                                document.getElementById("reviewTitle").textContent = data.title || "Untitled Event";
+                                document.getElementById("reviewDescription").textContent = data.description || "";
+                                document.getElementById("reviewDate").textContent = data.date || "";
+                                document.getElementById("reviewLocation").textContent = data.location || "";
+                                document.getElementById("reviewEmail").textContent = data.email || "";
+
+                                document.getElementById("approveEventBtn").dataset.id = id;
+                                document.getElementById("rejectEventBtn").dataset.id = id;
+
+                                new bootstrap.Modal(document.getElementById("eventReviewModal")).show();
+                                return; // ⛔ stop normal approval
+                            }
+
+                            // 🔀 Normal approvals
                             let ref;
                             let updateData = {};
 
-                            // 🔀 Decide which collection to update
                             if (type === "Membership Approval") {
                                 ref = doc(db, "users", id);
                                 updateData = { approved: true };
@@ -1072,21 +1132,49 @@ Approval Management Help:
                             } else if (type === "Business Approval") {
                                 ref = doc(db, "businesses", id);
                                 updateData = { status: "approved" };
-
-                            } else if (type === "Event Approval") {
-                                ref = doc(db, "events", id);
-                                updateData = { approved: true };
                             }
 
                             if (!ref) return;
-
                             await updateDoc(ref, updateData);
-
                             showNotification('Request approved successfully!', 'success');
 
                         } catch (error) {
                             console.error("Approval error:", error);
                             showNotification('Failed to approve request', 'error');
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.request-action-btn.review').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+
+                        try {
+                            const snap = await getDoc(doc(db,"events",id));
+                            if(!snap.exists()) return;
+                            const data = snap.data();
+                            const eventDate = data.date?.toDate().toLocaleDateString() ?? "-";
+                            const startTime = formatTime(data.startHour, data.startMinute);
+                            const endTime = formatTime(data.endHour, data.endMinute);
+
+                            document.getElementById("reviewTitle").textContent = data.title || "Untitled Event";
+                            document.getElementById("reviewDescription").textContent = data.description || "-";
+                            document.getElementById("reviewDate").textContent = eventDate;
+                            document.getElementById("reviewVenue").textContent = data.venue || "-";
+                            document.getElementById("reviewSlots").textContent = data.availableSlots ?? "-";
+                            document.getElementById("reviewOrganizer").textContent = data.createdBy ?? "-";
+                            document.getElementById("reviewTime").textContent = `${startTime} - ${endTime}`;
+
+                            document.getElementById("approveEventBtn").dataset.id = id;
+                            document.getElementById("rejectEventBtn").dataset.id = id;
+
+                            new bootstrap.Modal(
+                                document.getElementById("eventReviewModal")
+                            ).show();
+
+                        } catch(error){
+                            console.error(error);
+                            showNotification("Failed to load event","error");
                         }
                     });
                 });
@@ -1106,6 +1194,32 @@ Approval Management Help:
                     });
                 });
             }
+
+            document.getElementById("approveEventBtn").addEventListener("click", async function(){
+                const id = this.dataset.id;
+
+                await updateDoc(doc(db,"events",id),{
+                    approved:true
+                });
+                showNotification("Event approved","success");
+
+                bootstrap.Modal.getInstance(
+                    document.getElementById("eventReviewModal")
+                ).hide();
+            });
+
+            document.getElementById("approveEventBtn").addEventListener("click", async function(){
+                const id = this.dataset.id;
+
+                await updateDoc(doc(db,"events",id),{
+                    approved:true
+                });
+                showNotification("Event approved","success");
+
+                bootstrap.Modal.getInstance(
+                    document.getElementById("eventReviewModal")
+                ).hide();
+            });
 
             // Update statistics
             let stats = {
@@ -1201,6 +1315,14 @@ Approval Management Help:
                 if (statEls[2]) statEls[2].textContent = approved;
             }
             loadRequestStats();
+
+            // 12 hr format time
+            function formatTime(hour = 0, minute = 0) {
+                const suffix = hour >= 12 ? "PM" : "AM";
+                const hour12 = hour % 12 === 0 ? 12 : hour % 12; // convert 0 or 12 -> 12, others mod 12
+                const minuteStr = String(minute).padStart(2, "0");
+                return `${hour12}:${minuteStr} ${suffix}`;
+            }
 
             // Edit request
             function editRequest(id) {

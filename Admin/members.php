@@ -828,7 +828,19 @@
         function displayusers(users) {
             const container = document.getElementById('usersTableContainer');
             if (users.length === 0) { container.innerHTML = `<div class="empty-state"><i class="fas fa-users-slash"></i><h5>No Members Found</h5><p>Click "Add Member" to create your first member.</p></div>`; return; }
-            let html = `<table class="table table-hover"><thead><tr><th>Member</th><th>Contact</th><th>Events Attended</th><th>Member Status</th><th>Actions</th></tr></thead><tbody>`;
+            let html = `<table class="table table-hover">
+                <thead>
+                <tr>
+                <th>UID</th>
+                <th>Member</th>
+                <th>Contact</th>
+                <th>Events Attended</th>
+                <th>Member Status</th>
+                <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>`
+            ;
             users.forEach(member => {
                 const initials = (member.firstName ? member.firstName[0] : '') + (member.lastName ? member.lastName[0] : '');
                 const joinDate = member.createdAt ? new Date(member.createdAt.toDate()).toLocaleDateString() : 'N/A';
@@ -837,6 +849,11 @@
                 else if (member.status === 'Pending') { statusClass = 'member-pending'; statusIcon = '<i class="fas fa-hourglass-half"></i>'; }
                 else { statusClass = 'member-inactive'; statusIcon = '<i class="fas fa-user-slash"></i>'; }
                 html += `<tr>
+                    <td>
+                        <small class="text-muted" onclick="navigator.clipboard.writeText('${member.id}')" style="cursor:pointer">
+                            ${member.id.substring(0,8)}...
+                        </small>
+                    </td>
                     <td><div class="d-flex align-items-center"><div class="users-avatar" style="width:40px;height:40px;font-size:0.9rem;" onclick="viewusers('${member.id}')">${initials}</div><div class="ms-3"><div class="fw-bold">${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</div><small class="text-muted">${escapeHtml(member.company || 'No Company')}</small></div></div></td>
                     <td><div>${escapeHtml(member.email)}</div><small class="text-muted">${escapeHtml(member.phone || 'No phone')}</small></td>
                     <td><span class="badge bg-primary">${member.attendanceCount || 0}</span> events<br><small class="text-muted">Joined: ${joinDate}</small></td>
@@ -845,7 +862,7 @@
                         <button class="btn btn-sm btn-outline-success me-1" onclick="recordAttendance('${member.id}')" title="Record Attendance"><i class="fas fa-calendar-check"></i></button>
                         <button class="btn btn-sm btn-outline-primary me-1" onclick="viewusers('${member.id}')"><i class="fas fa-eye"></i></button>
                         <button class="btn btn-sm btn-outline-warning me-1" onclick="editusers('${member.id}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteusers('${member.id}')"><i class="fas fa-trash"></i></button>
+                        <!-- <button class="btn btn-sm btn-outline-danger" onclick="deleteusers('${member.id}')"><i class="fas fa-trash"></i></button> -->
                     </td>
                 </tr>`;
             });
