@@ -407,6 +407,24 @@
             font-weight: bold;
         }
 
+        .online {
+            background-color: #28a745;
+        }
+
+        .offline {
+            background-color: #dc3545;
+        }
+
+        .member-card h6 {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .member-card p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: #f0f0f0;
+        }
+
         .see-all {
             text-align: right;
             margin-top: 15px;
@@ -629,10 +647,37 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Website Content Editor -->
+                <div class="dashboard-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-edit"></i> Website Content
+                    </h3>
+
+                    <p class="text-muted">Edit the public About section of the website.</p>
+
+                    <button class="btn btn-primary" onclick="openAboutEditor()">
+                        <i class="fas fa-pen"></i> Edit About Section
+                    </button>
+                </div>
             </div>
 
             <!-- Right Column -->
             <div class="col-lg-4">
+                <!-- Members Online Section -->
+                <div class="dashboard-section">
+                    <h3 class="section-title"><i class="fas fa-user-circle"></i> Members Online</h3>
+
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn btn-sm btn-success" id="showOnlineBtn">Show Online</button>
+                        <button class="btn btn-sm btn-secondary" id="showAllBtn">Show All</button>
+                    </div>
+
+                    <div id="membersOnlineContainer" class="d-flex flex-column gap-2">
+                        <!-- Online/all member cards will be inserted here -->
+                    </div>
+                </div>
+
                 <!-- New Members Section -->
                 <div class="dashboard-section">
                     <h3 class="section-title"><i class="fas fa-user-plus"></i> New Members</h3>
@@ -688,19 +733,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Website Content Editor -->
-        <div class="dashboard-section">
-            <h3 class="section-title">
-                <i class="fas fa-edit"></i> Website Content
-            </h3>
-
-            <p class="text-muted">Edit the public About section of the website.</p>
-
-            <button class="btn btn-primary" onclick="openAboutEditor()">
-                <i class="fas fa-pen"></i> Edit About Section
-            </button>
-        </div>
     </div>
 
     <!-- Dark Mode Toggle Button -->
@@ -719,6 +751,16 @@
                 </div>
 
                 <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label>CBOC Welcome Header (Text inside &lt;span&gt;&lt;/span&gt; wile be higlighted in orange)</label>
+                        <textarea id="editWelcomeHeader" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>CBOC Welcome Text</label>
+                        <textarea id="editWelcomeText" class="form-control" rows="3"></textarea>
+                    </div>
 
                     <div class="mb-3">
                         <label>CBOC Background Text 1</label>
@@ -765,6 +807,21 @@
                         <input type="text" id="editLabel" class="form-control">
                     </div>
 
+                    <div class="mb-3">
+                        <label>Footer Text</label>
+                        <input type="text" id="editFooterText" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Footer Copyright 1 (Can include HTML)</label>
+                        <input type="text" id="editFooterCopyright1" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Footer Copyright 2 (Can include HTML)</label>
+                        <input type="text" id="editFooterCopyright2" class="form-control">
+                    </div>
+
                 </div>
 
                 <div class="modal-footer">
@@ -782,7 +839,24 @@
     <!-- JavaScript for Interactive Elements -->
     <script type="module">
         import { db, storage } from './Firebase/firebase_conn.js';
-        import { collection, query, where, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, and, or, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import {
+            collection,
+            query,
+            where, 
+            doc, 
+            getDocs, 
+            getDoc, 
+            setDoc, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            serverTimestamp, 
+            Timestamp, 
+            and, 
+            or, 
+            orderBy, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -846,6 +920,8 @@
             if (docSnap.exists()) {
                 const data = docSnap.data();
 
+                document.getElementById("editWelcomeHeader").value = data.welcomeHeader || "";
+                document.getElementById("editWelcomeText").value = data.welcomeText || "";
                 document.getElementById("editBackground1").value = data.backgroundText1 || "";
                 document.getElementById("editBackground2").value = data.backgroundText2 || "";
                 document.getElementById("editAbout1").value = data.aboutUsText1 || "";
@@ -855,6 +931,9 @@
                 document.getElementById("editValues").value = data.valuesText || "";
                 document.getElementById("editYear").value = data.foundedYear || "";
                 document.getElementById("editLabel").value = data.foundedLabel || "";
+                document.getElementById("editFooterText").value = data.footerText || "";
+                document.getElementById("editFooterCopyright1").value = data.footerCopyright1 || "";
+                document.getElementById("editFooterCopyright2").value = data.footerCopyright2 || "";
             }
 
             const modal = new bootstrap.Modal(document.getElementById("aboutEditorModal"));
@@ -865,6 +944,8 @@
         window.saveAboutContent = async function () {
             try {
                 await setDoc(doc(db, "siteContent", "aboutCBOC"), {
+                    welcomeHeader: document.getElementById("editWelcomeHeader").value,
+                    welcomeText: document.getElementById("editWelcomeText").value,
                     backgroundText1: document.getElementById("editBackground1").value,
                     backgroundText2: document.getElementById("editBackground2").value,
                     aboutUsText1: document.getElementById("editAbout1").value,
@@ -873,7 +954,10 @@
                     visionText: document.getElementById("editVision").value,
                     valuesText: document.getElementById("editValues").value,
                     foundedYear: document.getElementById("editYear").value,
-                    foundedLabel: document.getElementById("editLabel").value
+                    foundedLabel: document.getElementById("editLabel").value,
+                    footerText: document.getElementById("editFooterText").value,
+                    footerCopyright1: document.getElementById("editFooterCopyright1").value,
+                    footerCopyright2: document.getElementById("editFooterCopyright2").value
                 });
 
                 showToast("About section updated successfully!", "success");
@@ -1015,7 +1099,7 @@
 
                 const card = document.createElement('div');
                 card.className = 'member-card';
-                card.innerHTML = `
+                card.innerHTML = `<span>  </span>
                     <div class="member-avatar">${initials}</div>
                     <div>
                         <h6 class="mb-1">${user.name || 'Unnamed'}</h6>
@@ -1175,6 +1259,133 @@
             toastContainer.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
+
+        const membersOnlineContainer = document.getElementById('membersOnlineContainer');
+        const showOnlineBtn = document.getElementById('showOnlineBtn');
+        const showAllBtn = document.getElementById('showAllBtn');
+
+        function setActiveButton(mode) {
+            if (mode === 'online') {
+                showOnlineBtn.classList.add('btn-success');
+                showOnlineBtn.classList.remove('btn-secondary');
+
+                showAllBtn.classList.add('btn-secondary');
+                showAllBtn.classList.remove('btn-success');
+            } else if (mode === 'all') {
+                showAllBtn.classList.add('btn-success');
+                showAllBtn.classList.remove('btn-secondary');
+
+                showOnlineBtn.classList.add('btn-secondary');
+                showOnlineBtn.classList.remove('btn-success');
+            }
+        }
+
+        let allUsers = []; // cache all users
+        let currentMode = 'online'; // default mode
+
+        // Real-time listener
+        function listenUsers() {
+            const usersRef = collection(db, 'users');
+
+            onSnapshot(usersRef, (snapshot) => {
+                allUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderMembers();
+            }, (error) => {
+                console.error("Error listening to users:", error);
+                membersOnlineContainer.innerHTML = `<p class="text-danger">Failed to load users.</p>`;
+            });
+        }
+
+        // Render members based on currentMode
+        function renderMembers() {
+            membersOnlineContainer.innerHTML = '';
+
+            let usersToShow = [];
+            if (currentMode === 'online') {
+                usersToShow = allUsers.filter(u => u.isOnline === true);
+            } else {
+                usersToShow = allUsers;
+            }
+
+            if (usersToShow.length === 0) {
+                membersOnlineContainer.innerHTML = `<p class="text-muted">No users to show</p>`;
+                return;
+            }
+
+            usersToShow.forEach(user => {
+                const avatarClass = user.isOnline ? 'online' : (currentMode === 'all' ? 'offline' : 'online');
+                const initials = getInitials(user.username || 'U');
+
+                // Calculate last online text
+                let lastOnlineText = '';
+                let lastOnlineClass = 'text-danger'; // default red
+                if (user.isOnline) {
+                    lastOnlineText = 'Currently Online';
+                    lastOnlineClass = 'text-success';
+                } else if (user.lastOnline) {
+                    let lastOnlineDate;
+                    if (typeof user.lastOnline.toDate === 'function') {
+                        // Firestore Timestamp
+                        lastOnlineDate = user.lastOnline.toDate();
+                    } else {
+                        // String or JS Date
+                        lastOnlineDate = new Date(user.lastOnline);
+                    }
+
+                    const now = new Date();
+                    const diffMs = now - lastOnlineDate; // difference in milliseconds
+                    const diffSec = Math.floor(diffMs / 1000);
+                    const diffMin = Math.floor(diffSec / 60);
+                    const diffHrs = Math.floor(diffMin / 60);
+                    const diffDays = Math.floor(diffHrs / 24);
+
+                    if (diffSec < 60) {
+                        lastOnlineText = 'Last Online: Just now';
+                    } else if (diffMin < 60) {
+                        lastOnlineText = `Last Online: ${diffMin} minute${diffMin > 1 ? 's' : ''} ago`;
+                    } else if (diffHrs < 24) {
+                        lastOnlineText = `Last Online: ${diffHrs} hour${diffHrs > 1 ? 's' : ''} ago`;
+                    } else if (diffDays <= 7) {
+                        lastOnlineText = `Last Online: ${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+                    } else {
+                        lastOnlineText = `Last Online: ${lastOnlineDate.toLocaleString()}`;
+                    }
+                } else {
+                    lastOnlineText = 'Last Online: Unknown';
+                }
+
+                const memberCard = document.createElement("div");
+                memberCard.className = `member-card`;
+                memberCard.innerHTML = `<span>  </span>
+                    <div class="member-avatar ${avatarClass}">${initials}</div>
+                    <div>
+                        <h6 class="text-muted">${user.username}</h6>
+                        <p class="mb-0 text-muted small">${user.email || ''}</p>
+                        <p class="mb-0 small ${lastOnlineClass}">${lastOnlineText}</p>
+                    </div>
+                `;
+                membersOnlineContainer.appendChild(memberCard);
+            });
+        }
+
+        // Button events
+        showOnlineBtn.addEventListener('click', () => {
+            currentMode = 'online';
+            setActiveButton('online');
+            renderMembers();
+        });
+
+        showAllBtn.addEventListener('click', () => {
+            currentMode = 'all';
+            setActiveButton('all');
+            renderMembers();
+        });
+
+        // Set default active button on page load
+        setActiveButton(currentMode);
+
+        // Start listening on page load
+        listenUsers();
 
         // Run on page load
         loadUpcomingEvents();

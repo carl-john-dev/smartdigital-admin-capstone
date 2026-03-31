@@ -850,7 +850,7 @@
                 else { statusClass = 'member-inactive'; statusIcon = '<i class="fas fa-user-slash"></i>'; }
                 html += `<tr>
                     <td>
-                        <small class="text-muted" onclick="navigator.clipboard.writeText('${member.id}')" style="cursor:pointer">
+                        <small class="text-muted" onclick="navigator.clipboard.writeText('${member.id}'); showToast('UID: ${member.id} copied to clipboard!', 'success')" style="cursor:pointer">
                             ${member.id.substring(0,8)}...
                         </small>
                     </td>
@@ -1097,7 +1097,7 @@
             displayusers(filtered);
         };
         
-        function showToast(message, type) {
+        window.showToast = function(message, type) {
             const toastContainer = document.getElementById('toastContainer');
             const bgColor = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
             const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle';

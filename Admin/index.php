@@ -1181,8 +1181,8 @@
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-content">
-            <h2>Welcome to <span>Cavite Business Owners Club</span></h2>
-            <p>Streamline your community operations with our comprehensive management system. Efficiently handle announcements, messages, and showcase business portfolios all in one place.</p>
+            <h2 id="welcomeHeader"></h2>
+            <p id="welcomeText"></p>
             
             <div class="cta-buttons">
                 <a href="login.php" class="btn btn-primary btn-pulse">
@@ -1501,7 +1501,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h4>CBOC</h4>
-                <p>Comprehensive management system for Cavite Business Owners Club. Featuring the revolutionary E-Portfolio system for modern business networking.</p>
+                <p id="footerText"></p>
                 <div class="social-links">
                     <a href="https://www.facebook.com/groups/caviteonlinebusiness" class="social-link" target="_blank"><i class="fab fa-facebook-f"></i></a>
                 </div>
@@ -1537,8 +1537,8 @@
         </div>
 
         <div class="copyright">
-            <p>&copy; 2026 Cavite Business Owners Club. All rights reserved.</p>
-            <p>Featuring Advanced E-Portfolio System with NFC Technology</p>
+            <p id="footerCopyright1"></p>
+            <p id="footerCopyright2"></p>
         </div>
     </footer>
 
@@ -1563,7 +1563,9 @@
                 if (!docSnap.exists()) return;
 
                 const data = docSnap.data();
-
+                
+                document.getElementById("welcomeHeader").innerHTML = data.welcomeHeader || "";
+                document.getElementById("welcomeText").textContent = data.welcomeText || "";
                 document.getElementById("backgroundText1").textContent = data.backgroundText1 || "";
                 document.getElementById("backgroundText2").textContent = data.backgroundText2 || "";
                 document.getElementById("aboutUsText1").textContent = data.aboutUsText1 || "";
@@ -1573,6 +1575,9 @@
                 document.getElementById("valuesText").textContent = data.valuesText || "";
                 document.getElementById("foundedYear").textContent = data.foundedYear || "";
                 document.getElementById("foundedLabel").textContent = data.foundedLabel || "";
+                document.getElementById("footerText").textContent = data.footerText || "";
+                document.getElementById("footerCopyright1").innerHTML = data.footerCopyright1 || "";
+                document.getElementById("footerCopyright2").innerHTML = data.footerCopyright2 || "";
 
             } catch (error) {
                 console.error("Error loading About section:", error);

@@ -851,31 +851,31 @@
             }
         }
         .calendar-day.past-date {
-    background-color: rgba(108, 117, 125, 0.2);
-    opacity: 0.7;
-    position: relative;
-}
+            background-color: rgba(108, 117, 125, 0.2);
+            opacity: 0.7;
+            position: relative;
+        }
 
-.calendar-day.past-date::after {
-    content: "🔒";
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    font-size: 12px;
-    opacity: 0.5;
-}
+        .calendar-day.past-date::after {
+            content: "🔒";
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 12px;
+            opacity: 0.5;
+        }
 
-.date-warning {
-    color: #f72585;
-    font-size: 0.8rem;
-    margin-top: 5px;
-}
+        .date-warning {
+            color: #f72585;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
 
-.form-date-limit {
-    font-size: 0.8rem;
-    color: var(--gray);
-    margin-top: 5px;
-}
+        .form-date-limit {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -1253,7 +1253,7 @@
     <!-- JavaScript for Calendar -->
     <script type="module">
         import { db, storage } from './Firebase/firebase_conn.js';
-        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import { collection, query, where, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, Timestamp, or } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
         import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
 
         async function testFirestore() {
@@ -1730,8 +1730,8 @@ Calendar Help:
             const isPast = checkDate < today;
 
             if(isPast && !isOtherMonth) {
-             dayDiv.classList.add('past-date');
-}
+                dayDiv.classList.add('past-date');
+            }
             async function createDayElement(dayNumber, isOtherMonth, currentDate) {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
@@ -1809,7 +1809,13 @@ Calendar Help:
 
                 try {
                     // Query Firestore for events created by Admin
-                    const q = query(collection(db, "events"), where("createdBy", "==", "Admin"));
+                    const q = query(
+                        collection(db, "events"), 
+                        or(
+                            where("createdBy", "==", "Admin"),
+                            where("approved", "==", true)
+                        )
+                    );
                     const querySnapshot = await getDocs(q);
 
                     // Convert snapshot to array of event objects
@@ -1826,7 +1832,9 @@ Calendar Help:
                             venue: data.venue,
                             category: data.category,
                             imageUrl: data.imageUrl || null,
-                            published: data.published || false
+                            published: data.published || false,
+                            createdAt: data.createdAt,
+                            updatedAt: data.updatedAt
                         });
                     });
 
@@ -1851,7 +1859,16 @@ Calendar Help:
                         const eventElement = document.createElement('div');
                         eventElement.className = 'event-card';
 
-                        const eventDate = new Date(event.date);
+                        let eventDate;
+                        // Handle Firestore Timestamp
+                        if (event.date && typeof event.date.toDate === "function") {
+                            eventDate = event.date.toDate();
+                        }
+                        // Handle YYYY-MM-DD string
+                        else if (typeof event.date === "string") {
+                            eventDate = new Date(event.date);
+                        }
+
                         const formattedDate = eventDate.toLocaleDateString('en-US', { 
                             weekday: 'long', 
                             year: 'numeric', 
@@ -1873,7 +1890,7 @@ Calendar Help:
                             </div>`;
 
                         eventElement.innerHTML = `
-                            ${imageHtml}
+                            ${imageHtml || null}
                             <h4 class="event-card-title">${event.title}</h4>
                             <div class="event-card-meta">
                                 <span class="event-meta-item">
@@ -1894,7 +1911,7 @@ Calendar Help:
                                     <span class="status-published">
                                         <i class="fas fa-check-circle"></i> Published
                                     </span>
-                                    <span class="badge bg-${getCategoryColor(event.category)}">${event.category}</span>
+                                    <span class="badge bg-${getCategoryColor(event.category)}">${event.category || "Uncategorized"}</span>
                                 </div>
                                 <div class="event-actions">
                                     <button class="btn btn-sm btn-outline-primary view-event" data-id="${event.id}">
@@ -1915,7 +1932,7 @@ Calendar Help:
                         button.addEventListener('click', function() {
                             const eventId = this.dataset.id;
                             const event = publishedEvents.find(e => e.id === eventId);
-                            if (event) showEventDetails(event);
+                            showEventDetails(event);
                         });
                     });
 
@@ -1931,11 +1948,12 @@ Calendar Help:
                     publishedEventsContainer.innerHTML = `<p class="text-danger">Failed to load events.</p>`;
                 }
             }
+            
             const selectedDate = document.getElementById('eventDate').value;
-            if(!isDateAllowed(selectedDate)) {
-            alert("Cannot create event for past dates or dates beyond 5 months!");
-            return;
-}
+                if(!isDateAllowed(selectedDate)) {
+                alert("Cannot create event for past dates or dates beyond 5 months!");
+                return;
+            }
             // Save event function
             function saveEvent(publish) {
                 const title = document.getElementById('eventTitle').value;
@@ -2056,13 +2074,49 @@ Calendar Help:
                     alert("Failed to load event data.");
                 }
             }
+
+            function formatEventDate(value) {
+                if (!value) return "N/A";
+
+                let date;
+
+                // Firestore Timestamp
+                if (value?.toDate) {
+                    date = value.toDate();
+                }
+                // Timestamp object with seconds
+                else if (value?.seconds) {
+                    date = new Date(value.seconds * 1000);
+                }
+                // String or number
+                else {
+                    date = new Date(value);
+                }
+
+                if (isNaN(date)) return "Invalid Date";
+
+                return date.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
             
             // Show event details
             function showEventDetails(event) {
                 eventToDelete = event;
                 eventToEdit = event;
                 
-                const eventDate = new Date(event.date);
+                let eventDate;
+                // Handle Firestore Timestamp
+                if (event.date && typeof event.date.toDate === "function") {
+                    eventDate = event.date.toDate();
+                }
+                // Handle YYYY-MM-DD string
+                else if (typeof event.date === "string") {
+                    eventDate = new Date(event.date);
+                }
                 const formattedDate = eventDate.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -2096,7 +2150,7 @@ Calendar Help:
                 const eventDetailsContent = document.getElementById('eventDetailsContent');
                 eventDetailsContent.innerHTML = `
                     <div class="text-center mb-3">
-                        <span class="badge bg-${getCategoryColor(event.category)} mb-2">${event.category}</span>
+                        <span class="badge bg-${getCategoryColor(event.category)} mb-2">${event.category || "Uncaregorized"}</span>
                         <h4>${event.title}</h4>
                     </div>
                     ${imagesHtml}
@@ -2111,8 +2165,8 @@ Calendar Help:
                     </div>
                     <div class="text-muted small">
                         <p><strong>Status:</strong> ${event.published ? 'Published' : 'Draft'}</p>
-                        <p><strong>Created:</strong> ${new Date(event.createdAt).toLocaleDateString()}</p>
-                        ${event.updatedAt ? `<p><strong>Last Updated:</strong> ${new Date(event.updatedAt).toLocaleDateString()}</p>` : ''}
+                        <p><strong>Created:</strong> ${formatEventDate(event.createdAt)}</p>
+                        ${event.updatedAt ? `<p><strong>Last Updated:</strong> ${formatEventDate(event.updatedAt)}</p>` : ''}
                     </div>
                 `;
                 
@@ -2197,53 +2251,53 @@ Calendar Help:
             });
         });
         // Date restriction helpers
-function getMinDate() {
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    return today;
-}
+        function getMinDate() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            return today;
+        }
 
-function getMaxDate() {
-    const max = new Date();
-    max.setMonth(max.getMonth() + 5);
-    max.setHours(23,59,59,999);
-    return max;
-}
+        function getMaxDate() {
+            const max = new Date();
+            max.setMonth(max.getMonth() + 5);
+            max.setHours(23,59,59,999);
+            return max;
+        }
 
-function isDateAllowed(dateStr) {
-    if(!dateStr) return false;
-    const selected = new Date(dateStr);
-    selected.setHours(0,0,0,0);
-    const min = getMinDate();
-    const max = getMaxDate();
-    return selected >= min && selected <= max;
-}
+        function isDateAllowed(dateStr) {
+            if(!dateStr) return false;
+            const selected = new Date(dateStr);
+            selected.setHours(0,0,0,0);
+            const min = getMinDate();
+            const max = getMaxDate();
+            return selected >= min && selected <= max;
+        }
 
-function validateAndSetDateInput() {
-    const dateInput = document.getElementById('eventDate');
-    if(!dateInput) return;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const maxDate = new Date();
-    maxDate.setMonth(maxDate.getMonth() + 5);
-    const maxDateStr = maxDate.toISOString().split('T')[0];
-    
-    dateInput.setAttribute('min', today);
-    dateInput.setAttribute('max', maxDateStr);
-    
-    const warningDiv = document.getElementById('dateWarning');
-    if(warningDiv) {
-        dateInput.addEventListener('change', function() {
-            if(this.value && !isDateAllowed(this.value)) {
-                warningDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Invalid date! Select a date within next 5 months.';
-                this.classList.add('is-invalid');
-            } else {
-                warningDiv.innerHTML = '';
-                this.classList.remove('is-invalid');
+        function validateAndSetDateInput() {
+            const dateInput = document.getElementById('eventDate');
+            if(!dateInput) return;
+            
+            const today = new Date().toISOString().split('T')[0];
+            const maxDate = new Date();
+            maxDate.setMonth(maxDate.getMonth() + 5);
+            const maxDateStr = maxDate.toISOString().split('T')[0];
+            
+            dateInput.setAttribute('min', today);
+            dateInput.setAttribute('max', maxDateStr);
+            
+            const warningDiv = document.getElementById('dateWarning');
+            if(warningDiv) {
+                dateInput.addEventListener('change', function() {
+                    if(this.value && !isDateAllowed(this.value)) {
+                        warningDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Invalid date! Select a date within next 5 months.';
+                        this.classList.add('is-invalid');
+                    } else {
+                        warningDiv.innerHTML = '';
+                        this.classList.remove('is-invalid');
+                    }
+                });
             }
-        });
-    }
-}
+        }
     </script>
 </body>
 </html>
