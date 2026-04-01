@@ -1,3 +1,7 @@
+<?php
+    require_once 'auth_guard.php';
+    requireAdmin();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -876,6 +880,20 @@
             color: var(--gray);
             margin-top: 5px;
         }
+
+        #publishedEventsWrapper {
+            transition: all 0.3s ease;
+        }
+
+        .events-collapsed {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .events-expanded {
+            max-height: none;
+            overflow: visible;
+        }
     </style>
 </head>
 <body>
@@ -953,11 +971,18 @@
         <div class="row mb-4">
             <!-- Upcoming Events Section -->
             <div class="col-lg-8">
-                <div class="calendar-container">
-                    <h3 class="section-title"><i class="fas fa-list"></i> Published Events</h3>
-                    <div id="publishedEvents">
-                        <!-- Published events will be populated by JavaScript -->
-                    </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="section-title mb-0">
+                        <i class="fas fa-list"></i> Published Events
+                    </h3>
+
+                    <button id="toggleEventsBtn" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-expand"></i> Expand
+                    </button>
+                </div>
+
+                <div id="publishedEventsWrapper" class="events-collapsed">
+                    <div id="publishedEvents"></div>
                 </div>
             </div>
             
@@ -1625,6 +1650,21 @@ Calendar Help:
             
             // Set today's date as default in the form
             document.getElementById('eventDate').valueAsDate = new Date();
+
+            const toggleBtn = document.getElementById("toggleEventsBtn");
+            const wrapper = document.getElementById("publishedEventsWrapper");
+
+            toggleBtn.addEventListener("click", () => {
+                if (wrapper.classList.contains("events-collapsed")) {
+                    wrapper.classList.remove("events-collapsed");
+                    wrapper.classList.add("events-expanded");
+                    toggleBtn.innerHTML = '<i class="fas fa-compress"></i> Collapse';
+                } else {
+                    wrapper.classList.remove("events-expanded");
+                    wrapper.classList.add("events-collapsed");
+                    toggleBtn.innerHTML = '<i class="fas fa-expand"></i> Expand';
+                }
+            });
             
             // Calendar rendering function
             async function renderCalendar(date) {
@@ -1839,7 +1879,7 @@ Calendar Help:
                     });
 
                     // Sort by date (newest first)
-                    publishedEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    publishedEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
 
                     if (publishedEvents.length === 0) {
                         publishedEventsContainer.innerHTML = `
@@ -1867,6 +1907,13 @@ Calendar Help:
                         // Handle YYYY-MM-DD string
                         else if (typeof event.date === "string") {
                             eventDate = new Date(event.date);
+                        }
+
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+
+                        if (eventDate < today) {
+                            return; // Skip past events
                         }
 
                         const formattedDate = eventDate.toLocaleDateString('en-US', { 

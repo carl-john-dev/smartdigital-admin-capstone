@@ -1,3 +1,7 @@
+<?php
+    require_once 'auth_guard.php';
+    requireAdmin();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,4 +1,6 @@
 <?php
-session_start();
-var_dump($_SESSION);
-session_destroy();
+    session_start();
+    echo "<pre>";
+    var_dump($_SESSION);
+    echo "</pre>";
+    session_destroy();

@@ -1,9 +1,6 @@
 <?php
-    session_start();
-    $error = "";
-    
-    // Check if user was redirected from registration
-    $registered = isset($_GET['registered']) ? true : false;
+    require_once 'auth_guard.php';
+    requireGuest();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,6 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CBOC ADMIN - Login</title>
     <link rel="icon" type="icon" href="CBOC LOGO.jpg"/>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -321,6 +320,21 @@
             animation: float 15s infinite linear;
         }
 
+        .spinner {
+            margin-left: 8px;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .toast {
+            min-width: 250px;
+        }
+
         @keyframes float {
             0% { transform: translateY(0) rotate(0deg); }
             100% { transform: translateY(-1000px) rotate(720deg); }
@@ -338,6 +352,9 @@
     </style>
 </head>
 <body>
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <div class="floating-objects">
         <div class="float" style="width: 50px; height: 50px; left: 10%; animation-duration: 20s;"></div>
         <div class="float" style="width: 30px; height: 30px; left: 25%; animation-duration: 15s; animation-delay: -2s;"></div>
@@ -361,13 +378,13 @@
             
             <div class="form-title">Login</div>
 
-            <?php if ($registered): ?>
+            <!-- <?php if ($registered): ?>
                 <div class="success-message">Registration successful! Please login with your credentials.</div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
                 <div class="error-message"><?= htmlspecialchars($error) ?></div>
-            <?php endif; ?>
+            <?php endif; ?> -->
 
             <form id="loginForm">
                 <div class="form-group">
@@ -386,13 +403,18 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" class="btn" id="loginBtn">
+                    <span class="btn-text">Login</span>
+                    <span class="spinner" style="display:none;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </span>
+                </button>
 
             </form>
         </div>
     </div>
 
-    <script type="module">
+    <script type="module"> 
         import { db, app } from './Firebase/firebase_conn.js';
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
@@ -401,17 +423,25 @@
         document.getElementById("loginForm").addEventListener("submit", async (e) => {
             e.preventDefault();
 
+            const loginBtn = document.getElementById("loginBtn");
+            const btnText = loginBtn.querySelector(".btn-text");
+            const spinner = loginBtn.querySelector(".spinner");
+
+            // Disable button & show spinner
+            loginBtn.disabled = true;
+            btnText.style.display = "none";
+            spinner.style.display = "inline-block";
+
+            const TEST_DOMAIN = "@cboc.test";
             const username = document.getElementById("login-username").value.trim();
             const password = document.getElementById("login-password").value;
 
             // Map username → email (temporary testing logic)
-            const email = username.includes("@") ? username : username + "@cboc.test";
-
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-
-                // Get ID Token
-                const user = auth.currentUser;
+            const email = username.includes("@") ? username : username + TEST_DOMAIN;
+            
+            try { 
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
                 const idToken = await user.getIdToken();
 
                 // Send to PHP
@@ -422,15 +452,37 @@
                     body: JSON.stringify({ token: idToken })
                 });
 
-                const result = await response.text();
-                console.log(result);
+                if (!response.ok) {
+                    showToast("Session setup failed", "warning");
+                    // Re-enable button & hide spinner
+                    loginBtn.disabled = false;
+                    btnText.style.display = "inline";
+                    spinner.style.display = "none";
+                    return;
+                }
 
                 window.location.href = "dashboard.php";
-
-            } catch (error) {
-                alert("Login failed: " + error.message);
-            }
+                
+            } catch (error) { 
+                showToast("Login failed: " + error.message, "warning");
+                // Re-enable button & hide spinner
+                loginBtn.disabled = false;
+                btnText.style.display = "inline";
+                spinner.style.display = "none";
+            } 
         });
+
+        function showToast(message, type) {
+            const toastContainer = document.getElementById('toastContainer');
+            const bgColor = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle';
+            const toast = document.createElement('div');
+            toast.className = `toast show align-items-center text-white ${bgColor} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas ${icon} me-2"></i>${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
     </script>
 </body>
 </html>
