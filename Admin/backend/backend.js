@@ -249,3 +249,32 @@ export async function geocodeAddress(address) {
         return null;
     }
 }
+
+export function showToast(message, type) {
+    const toastContainer = document.getElementById('toastContainer');
+    const bgColor = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
+    const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle';
+    const toast = document.createElement('div');
+    toast.className = `toast show align-items-center text-white ${bgColor} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas ${icon} me-2"></i>${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// ─────────────────────────────────────────────
+// Dashboard JS
+// ─────────────────────────────────────────────
+
+// Menu functions
+export function refreshDashboard() {
+    location.reload();
+}
+
+export function exportDashboard() {
+    alert('Exporting dashboard report...');
+    // Add your export logic here
+}
+
+window.refreshDashboard = refreshDashboard;
+window.exportDashboard = exportDashboard;

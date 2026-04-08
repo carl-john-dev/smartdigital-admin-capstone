@@ -514,3 +514,24 @@
             opacity: 1;
             transform: translateX(0);
         }
+
+        .logout-form {
+            margin: 0;
+        }
+
+        .sidebar-link {
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: inherit;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255,255,255,0.1);
+        }

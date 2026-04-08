@@ -1,6 +1,29 @@
 <?php
+    /* Secure session cookie */
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
+
     require_once 'auth_guard.php';
     requireGuest();
+
+    /* Generate CSRF token */
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    /* Security Headers */
+    header("X-Frame-Options: SAMEORIGIN");
+    header("X-Content-Type-Options: nosniff");
+    header("X-XSS-Protection: 1; mode=block");
+    header("Referrer-Policy: strict-origin-when-cross-origin");
+
+    /* Strict Content Security Policy */
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: https://images.unsplash.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https://www.gstatic.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; frame-ancestors 'self';");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -391,7 +414,14 @@
                     <label for="login-username">Email or Username</label>
                     <div class="input-with-icon">
                         <div class="input-icon"><i class="fas fa-user"></i></div>
-                        <input type="text" id="login-username" name="username" placeholder="Enter your email or username" required>
+                        <input 
+                            type="text" 
+                            id="login-username" 
+                            autocomplete="username"
+                            name="username" 
+                            placeholder="Enter your email or username" 
+                            required
+                        >
                     </div>
                 </div>
 
@@ -399,9 +429,18 @@
                     <label for="login-password">Password</label>
                     <div class="input-with-icon">
                         <div class="input-icon"><i class="fas fa-lock"></i></div>
-                        <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                        <input 
+                            type="password" 
+                            id="login-password" 
+                            autocomplete="current-password" 
+                            name="password" 
+                            placeholder="Enter your password" 
+                            required
+                        >
                     </div>
                 </div>
+
+                <input type="hidden" id="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
                 <button type="submit" class="btn" id="loginBtn">
                     <span class="btn-text">Login</span>
@@ -413,76 +452,6 @@
             </form>
         </div>
     </div>
-
-    <script type="module"> 
-        import { db, app } from './Firebase/firebase_conn.js';
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-
-        const auth = getAuth(app);
-
-        document.getElementById("loginForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const loginBtn = document.getElementById("loginBtn");
-            const btnText = loginBtn.querySelector(".btn-text");
-            const spinner = loginBtn.querySelector(".spinner");
-
-            // Disable button & show spinner
-            loginBtn.disabled = true;
-            btnText.style.display = "none";
-            spinner.style.display = "inline-block";
-
-            const TEST_DOMAIN = "@cboc.test";
-            const username = document.getElementById("login-username").value.trim();
-            const password = document.getElementById("login-password").value;
-
-            // Map username → email (temporary testing logic)
-            const email = username.includes("@") ? username : username + TEST_DOMAIN;
-            
-            try { 
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                const idToken = await user.getIdToken();
-
-                // Send to PHP
-                const response = await fetch("verify_token.php", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: "same-origin",
-                    body: JSON.stringify({ token: idToken })
-                });
-
-                if (!response.ok) {
-                    showToast("Session setup failed", "warning");
-                    // Re-enable button & hide spinner
-                    loginBtn.disabled = false;
-                    btnText.style.display = "inline";
-                    spinner.style.display = "none";
-                    return;
-                }
-
-                window.location.href = "dashboard.php";
-                
-            } catch (error) { 
-                showToast("Login failed: " + error.message, "warning");
-                // Re-enable button & hide spinner
-                loginBtn.disabled = false;
-                btnText.style.display = "inline";
-                spinner.style.display = "none";
-            } 
-        });
-
-        function showToast(message, type) {
-            const toastContainer = document.getElementById('toastContainer');
-            const bgColor = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
-            const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle';
-            const toast = document.createElement('div');
-            toast.className = `toast show align-items-center text-white ${bgColor} border-0`;
-            toast.setAttribute('role', 'alert');
-            toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class="fas ${icon} me-2"></i>${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
-            toastContainer.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-    </script>
+    <script type="module" src="backend/login_auth.js"></script>
 </body>
 </html>
