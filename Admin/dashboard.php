@@ -568,10 +568,10 @@
                             <i class="fas fa-history"></i> Activity Logs
                         </a>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="refreshDashboard()">
+                        <button class="dropdown-item" id="refreshDashboard">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button class="dropdown-item" onclick="exportDashboard()">
+                        <button class="dropdown-item" id="exportDashboard">
                             <i class="fas fa-download"></i> Export Report
                         </button>
                     </div>
@@ -663,7 +663,7 @@
 
                     <p class="text-muted">Edit the public About section of the website.</p>
 
-                    <button class="btn btn-primary" onclick="openAboutEditor()">
+                    <button class="btn btn-primary" id="openAboutEditor">
                         <i class="fas fa-pen"></i> Edit About Section
                     </button>
                 </div>
@@ -833,7 +833,7 @@
 
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-success" onclick="saveAboutContent()">Save Changes</button>
+                    <button class="btn btn-success" id="saveAboutContent">Save Changes</button>
                 </div>
 
             </div>

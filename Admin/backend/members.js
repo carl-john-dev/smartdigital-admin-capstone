@@ -78,7 +78,7 @@ function renderConfigModal() {
     });
 }
 
-window.saveFieldConfig = function() {
+function saveFieldConfig() {
     document.querySelectorAll('.config-enabled').forEach(cb => { if (fieldConfigs[cb.dataset.field]) fieldConfigs[cb.dataset.field].enabled = cb.checked; });
     document.querySelectorAll('.config-required').forEach(cb => { if (fieldConfigs[cb.dataset.field] && !cb.disabled) fieldConfigs[cb.dataset.field].required = cb.checked; });
     saveFieldConfigToLocal();
@@ -87,7 +87,7 @@ window.saveFieldConfig = function() {
     showToast('Form configuration updated!', 'success');
 };
 
-window.resetFieldConfig = function() {
+function resetFieldConfig() {
     Object.assign(fieldConfigs, {
         firstName: { label: 'First Name', enabled: true, required: true, validation: 'letters' },
         lastName: { label: 'Last Name', enabled: true, required: true, validation: 'letters' },
@@ -143,6 +143,7 @@ async function loadusers() {
             allusers.push({ id: docSnap.id, ...data, firstName, lastName, attendance, attendanceCount, status });
         }
         displayusers(allusers);
+        attachMemberRowListeners();
         updateStats();
         updateAttendanceTracker();
     } catch (error) { console.error("Error loading members:", error); showToast("Error loading members", "error"); }
@@ -171,21 +172,39 @@ function displayusers(users) {
         if (member.status === 'Active') { statusClass = 'member-active'; statusIcon = '<i class="fas fa-check-circle"></i>'; }
         else if (member.status === 'Pending') { statusClass = 'member-pending'; statusIcon = '<i class="fas fa-hourglass-half"></i>'; }
         else { statusClass = 'member-inactive'; statusIcon = '<i class="fas fa-user-slash"></i>'; }
-        html += `<tr>
+        html += `<tr data-member-id="${member.id}">
             <td>
-                <small class="text-muted" onclick="navigator.clipboard.writeText('${member.id}'); showToast('UID: ${member.id} copied to clipboard!', 'success')" style="cursor:pointer">
+                <small class="text-muted uid-copy" style="cursor:pointer">
                     ${member.id.substring(0,8)}...
                 </small>
             </td>
-            <td><div class="d-flex align-items-center"><div class="users-avatar" style="width:40px;height:40px;font-size:0.9rem;" onclick="viewusers('${member.id}')">${initials}</div><div class="ms-3"><div class="fw-bold">${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</div><small class="text-muted">${escapeHtml(member.company || 'No Company')}</small></div></div></td>
-            <td><div>${escapeHtml(member.email)}</div><small class="text-muted">${escapeHtml(member.phone || 'No phone')}</small></td>
-            <td><span class="badge bg-primary">${member.attendanceCount || 0}</span> events<br><small class="text-muted">Joined: ${joinDate}</small></td>
-            <td><span class="member-status ${statusClass}">${statusIcon} ${member.status || 'Pending'}</span></td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="users-avatar" style="width:40px;height:40px;font-size:0.9rem;">
+                        ${initials}
+                    </div>
+                    <div class="ms-3">
+                        <div class="fw-bold">${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</div>
+                        <small class="text-muted">${escapeHtml(member.company || 'No Company')}</small>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div>${escapeHtml(member.email)}</div>
+                <small class="text-muted">${escapeHtml(member.phone || 'No phone')}</small>
+            </td>
+            <td>
+                <span class="badge bg-primary">${member.attendanceCount || 0}</span> events<br>
+                <small class="text-muted">Joined: ${joinDate}</small>
+            </td>
+            <td>
+                <span class="member-status ${statusClass}">${statusIcon} ${member.status || 'Pending'}</span>
+            </td>
             <td class="action-buttons">
-                <button class="btn btn-sm btn-outline-success me-1" onclick="recordAttendance('${member.id}')" title="Record Attendance"><i class="fas fa-calendar-check"></i></button>
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="viewusers('${member.id}')"><i class="fas fa-eye"></i></button>
-                <button class="btn btn-sm btn-outline-warning me-1" onclick="editusers('${member.id}')"><i class="fas fa-edit"></i></button>
-                <!-- <button class="btn btn-sm btn-outline-danger" onclick="deleteusers('${member.id}')"><i class="fas fa-trash"></i></button> -->
+                <button class="btn btn-sm btn-outline-success me-1 record-attendance" title="Record Attendance"><i class="fas fa-calendar-check"></i></button>
+                <button class="btn btn-sm btn-outline-primary me-1 view-user"><i class="fas fa-eye"></i></button>
+                <button class="btn btn-sm btn-outline-warning me-1 edit-user"><i class="fas fa-edit"></i></button>
+                <!-- <button class="btn btn-sm btn-outline-danger delete-user"><i class="fas fa-trash"></i></button> -->
             </td>
         </tr>`;
     });
@@ -259,7 +278,7 @@ window.recordAttendance = async function(id) {
     new bootstrap.Modal(document.getElementById('attendanceModal')).show();
 };
 
-window.saveAttendance = async function() {
+async function saveAttendance() {
     if (!currentAttendanceMember) return;
     const eventName = document.getElementById('eventName').value.trim();
     const eventDate = document.getElementById('eventDate').value;
@@ -289,7 +308,7 @@ window.saveAttendance = async function() {
 };
 
 // Add new member
-window.addusers = async function() {
+async function addusers() {
     const userData = {};
     let isValid = true;
     for (const [key, config] of Object.entries(fieldConfigs)) {
@@ -368,7 +387,7 @@ window.editusers = async function(id) {
     new bootstrap.Modal(document.getElementById('editusersModal')).show();
 };
 
-window.updateusers = async function() {
+async function updateusers() {
     const id = document.getElementById('editusersId').value;
     const firstName = document.getElementById('editFirstName').value.trim();
     const lastName = document.getElementById('editLastName').value.trim();
@@ -408,8 +427,14 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', async func
     catch (error) { showToast('Error deleting member', 'error'); }
 });
 
-window.editFromView = async function() { bootstrap.Modal.getInstance(document.getElementById('viewusersModal')).hide(); setTimeout(() => { editusers(currentusersId); }, 500); };
-window.filterusers = function() {
+async function editFromView() {
+    bootstrap.Modal.getInstance(document.getElementById('viewusersModal')).hide();
+    setTimeout(() => {
+        editusers(currentusersId);
+    }, 500);
+};
+
+function filterusers() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     let statusFilter = document.getElementById('statusFilter').value;
     const filtered = allusers.filter(member => {
@@ -432,7 +457,7 @@ window.showToast = function(message, type) {
     setTimeout(() => toast.remove(), 3000);
 }
 
-window.exportUsers = function() {
+function exportUsers() {
     if (allusers.length === 0) { showToast('No members to export', 'warning'); return; }
     const dataStr = JSON.stringify(allusers, null, 2);
     const link = document.createElement('a');
@@ -442,8 +467,11 @@ window.exportUsers = function() {
     showToast('Members exported successfully!', 'success');
 };
 
-window.printUsers = function() { window.print(); };
-window.showHelp = function() {
+function printUsers() {
+    window.print();
+};
+
+function showHelp() {
     alert(`Member Management Help:
 - Member status is AUTOMATICALLY updated based on event attendance:
 • ACTIVE: Attended 3 or more events
@@ -453,7 +481,16 @@ window.showHelp = function() {
 - Each attendance record includes event name and date
 - Status updates in real-time as attendance is recorded`);
 };
-window.refreshusers = async function() { loadusers(); };
+
+async function refreshusers() {
+    try {
+        await loadusers();
+        showToast("Members refreshed", "success");
+    } catch (error) {
+        console.error(error);
+        showToast("Failed to refresh members", "danger");
+    }
+};
 
 // Initialize
 loadFieldConfig();
@@ -474,6 +511,64 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function() { dotsDropdown.classList.remove('show'); });
     document.getElementById('configModal').addEventListener('show.bs.modal', renderConfigModal);
     document.getElementById('searchInput').addEventListener('input', filterusers);
+
     loadusers();
     renderDynamicForm();
 });
+
+function attachMemberRowListeners() {
+    document.querySelectorAll('tr[data-member-id]').forEach(row => {
+        const memberId = row.getAttribute('data-member-id');
+
+        // UID copy
+        const uidCopy = row.querySelector('.uid-copy');
+        if (uidCopy) {
+            uidCopy.addEventListener('click', () => {
+                navigator.clipboard.writeText(memberId);
+                showToast(`UID: ${memberId} copied to clipboard!`, 'success');
+            });
+        }
+
+        // Avatar click → view user
+        const avatar = row.querySelector('.users-avatar');
+        if (avatar) {
+            avatar.addEventListener('click', () => viewusers(memberId));
+        }
+
+        // Record Attendance button
+        const recordBtn = row.querySelector('.record-attendance');
+        if (recordBtn) {
+            recordBtn.addEventListener('click', () => recordAttendance(memberId));
+        }
+
+        // View User button
+        const viewBtn = row.querySelector('.view-user');
+        if (viewBtn) {
+            viewBtn.addEventListener('click', () => viewusers(memberId));
+        }
+
+        // Edit User button
+        const editBtn = row.querySelector('.edit-user');
+        if (editBtn) {
+            editBtn.addEventListener('click', () => editusers(memberId));
+        }
+
+        // Optional: Delete User button
+        // const deleteBtn = row.querySelector('.delete-user');
+        // if (deleteBtn) {
+        //     deleteBtn.addEventListener('click', () => deleteusers(memberId));
+        // }
+    });
+}
+
+document.getElementById("exportUsers").addEventListener("click", exportUsers);
+document.getElementById("printUsers").addEventListener("click", printUsers);
+document.getElementById("refreshusers").addEventListener("click", refreshusers);
+document.getElementById("showHelp").addEventListener("click", showHelp);
+document.getElementById("saveFieldConfig").addEventListener("click", saveFieldConfig);
+document.getElementById("resetFieldConfig").addEventListener("click", resetFieldConfig);
+document.getElementById("addusers").addEventListener("click", addusers);
+document.getElementById("saveAttendance").addEventListener("click", saveAttendance);
+document.getElementById("updateusers").addEventListener("click", updateusers);
+document.getElementById("editFromView").addEventListener("click", editFromView);
+document.getElementById("filterusers").addEventListener("change", filterusers);

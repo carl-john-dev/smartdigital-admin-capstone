@@ -4,7 +4,7 @@
  */
 document.addEventListener('DOMContentLoaded', function() {
     // Three Dots Menu Functions
-    window.exportPortfolio = function() {
+    function exportPortfolio() {
         const portfolioData = {
             name: document.getElementById('userName').textContent,
             title: document.getElementById('userTitle').textContent,
@@ -32,15 +32,15 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification('Portfolio exported successfully!', 'success');
     };
 
-    window.printPortfolio = function() {
+    function printPortfolio() {
         window.print();
     };
 
-    window.refreshPortfolio = function() {
+    function refreshPortfolio() {
         location.reload();
     };
 
-    window.showPortfolioHelp = function() {
+    function showPortfolioHelp() {
         alert(`
 E-Portfolio Help:
 - Digital business card with NFC capability
@@ -88,7 +88,7 @@ E-Portfolio Help:
     updateCustomColorPreview();
 
     // Apply custom color function
-    window.applyCustomColor = function() {
+    function applyCustomColor() {
         const color1 = customColor1.value;
         const color2 = customColor2.value;
         
@@ -105,7 +105,7 @@ E-Portfolio Help:
     };
 
     // Simulate NFC functionality
-    window.simulateNFCTap = function() {
+    function simulateNFCTap() {
         const nfcTap = document.getElementById('nfcTap');
         const nfcCard = document.getElementById('nfcCard');
         
@@ -139,7 +139,7 @@ E-Portfolio Help:
     };
 
     // Update portfolio information
-    window.updatePortfolio = function() {
+    function updatePortfolio() {
         // Get values from form
         const name = document.getElementById('editName').value;
         const title = document.getElementById('editTitle').value;
@@ -179,7 +179,7 @@ E-Portfolio Help:
     };
 
     // Download card as PDF (simulated)
-    window.downloadCard = function() {
+    function downloadCard() {
         showNotification('Preparing PDF download...', 'info');
         setTimeout(() => {
             showNotification('Portfolio downloaded as PDF!', 'success');
@@ -396,4 +396,13 @@ E-Portfolio Help:
             }, 500);
         });
     }, 1000);
+
+    document.getElementById("exportPortfolio").addEventListener("click", exportPortfolio);
+    document.getElementById("printPortfolio").addEventListener("click", printPortfolio);
+    document.getElementById("refreshPortfolio").addEventListener("click", refreshPortfolio);
+    document.getElementById("showPortfolioHelp").addEventListener("click", showPortfolioHelp);
+    document.getElementById("applyCustomColor").addEventListener("click", applyCustomColor);
+    document.getElementById("updatePortfolio").addEventListener("click", updatePortfolio);
+    document.getElementById("simulateNFCTap").addEventListener("click", simulateNFCTap);
+    document.getElementById("downloadCard").addEventListener("click", downloadCard);
 });

@@ -1096,17 +1096,17 @@
                             <i class="fas fa-history"></i> Activity Logs
                         </a>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="exportPortfolio()">
+                        <button class="dropdown-item" id="exportPortfolio">
                             <i class="fas fa-download"></i> Export Portfolio
                         </button>
-                        <button class="dropdown-item" onclick="printPortfolio()">
+                        <button class="dropdown-item" id="printPortfolio">
                             <i class="fas fa-print"></i> Print Card
                         </button>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="refreshPortfolio()">
+                        <button class="dropdown-item" id="refreshPortfolio">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button class="dropdown-item" onclick="showPortfolioHelp()">
+                        <button class="dropdown-item" id="showPortfolioHelp">
                             <i class="fas fa-question-circle"></i> Help
                         </button>
                     </div>
@@ -1393,19 +1393,19 @@
                     <div class="color-preview" id="customColorPreview">
                         Custom Preview
                     </div>
-                    <button class="btn btn-sm btn-primary mt-2" onclick="applyCustomColor()">
+                    <button class="btn btn-sm btn-primary mt-2" id="applyCustomColor">
                         <i class="fas fa-palette me-1"></i> Apply Custom Color
                     </button>
                 </div>
                 
                 <div class="d-grid gap-2 mt-3">
-                    <button class="btn btn-custom" onclick="updatePortfolio()">
+                    <button class="btn btn-custom" id="updatePortfolio">
                         <i class="fas fa-sync me-2"></i>Update Portfolio
                     </button>
-                    <button class="btn btn-outline-custom" onclick="simulateNFCTap()">
+                    <button class="btn btn-outline-custom" id="simulateNFCTap">
                         <i class="fas fa-tap me-2"></i>Simulate NFC Tap
                     </button>
-                    <button class="btn btn-outline-custom" onclick="downloadCard()">
+                    <button class="btn btn-outline-custom" id="downloadCard">
                         <i class="fas fa-download me-2"></i>Download as PDF
                     </button>
                 </div>

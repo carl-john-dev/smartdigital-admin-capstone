@@ -276,5 +276,12 @@ export function exportDashboard() {
     // Add your export logic here
 }
 
-window.refreshDashboard = refreshDashboard;
-window.exportDashboard = exportDashboard;
+const refreshBtn = document.getElementById("refreshDashboard");
+if (refreshBtn) {
+    refreshBtn.addEventListener("click", refreshDashboard);
+}
+
+const exportBtn = document.getElementById("exportDashboard");
+if (exportBtn) {
+    exportBtn.addEventListener("click", exportDashboard);
+}

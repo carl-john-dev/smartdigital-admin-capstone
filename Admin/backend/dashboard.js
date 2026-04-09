@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Edit About Us Function
-window.openAboutEditor = async function () {
+export async function openAboutEditor() {
     const docRef = doc(db, "siteContent", "aboutCBOC");
     const docSnap = await getDoc(docRef);
 
@@ -101,7 +101,7 @@ window.openAboutEditor = async function () {
 }
 
 // Save About Us Function
-window.saveAboutContent = async function () {
+export async function saveAboutContent() {
     try {
         await setDoc(doc(db, "siteContent", "aboutCBOC"), {
             welcomeHeader: document.getElementById("editWelcomeHeader").value,
@@ -530,3 +530,6 @@ loadUpcomingEvents();
 loadRecentUsers();
 renderNewMembers();
 loadStats();
+
+document.getElementById("openAboutEditor").addEventListener("click", openAboutEditor);
+document.getElementById("saveAboutContent").addEventListener("click", saveAboutContent);

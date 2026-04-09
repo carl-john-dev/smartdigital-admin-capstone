@@ -386,17 +386,17 @@
                             <i class="fas fa-history"></i> Activity Logs
                         </a>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="exportUsers()">
+                        <button class="dropdown-item" id="exportUsers">
                             <i class="fas fa-download"></i> Export Members
                         </button>
-                        <button class="dropdown-item" onclick="printUsers()">
+                        <button class="dropdown-item" id="printUsers">
                             <i class="fas fa-print"></i> Print List
                         </button>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="refreshusers()">
+                        <button class="dropdown-item" id="refreshusers">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button class="dropdown-item" onclick="showHelp()">
+                        <button class="dropdown-item" id="showHelp">
                             <i class="fas fa-question-circle"></i> Help
                         </button>
                     </div>
@@ -441,7 +441,7 @@
                     <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addusersModal">
                         <i class="fas fa-user-plus me-1"></i> Add Member
                     </button>
-                    <button class="btn btn-outline-secondary me-2" onclick="refreshusers()">
+                    <button class="btn btn-outline-secondary me-2" id="refreshusers">
                         <i class="fas fa-sync-alt me-1"></i> Refresh
                     </button>
                     <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#configModal">
@@ -450,7 +450,7 @@
                 </div>
                 <div class="d-flex gap-2">
                     <input type="text" class="form-control" id="searchInput" placeholder="Search Members..." style="width: 250px;">
-                    <select class="form-select" id="statusFilter" style="width: 150px;" onchange="filterusers()">
+                    <select class="form-select" id="statusFilter" style="width: 150px;" id="filterusers">
                         <option value="all">All Status</option>
                         <option value="Active">Active (≥3 events)</option>
                         <option value="Pending">Pending (1-2 events)</option>
@@ -543,8 +543,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveFieldConfig()">Save Configuration</button>
-                    <button type="button" class="btn btn-outline-danger" onclick="resetFieldConfig()">Reset to Default</button>
+                    <button type="button" class="btn btn-primary" id="saveFieldConfig">Save Configuration</button>
+                    <button type="button" class="btn btn-outline-danger" id="resetFieldConfig">Reset to Default</button>
                 </div>
             </div>
         </div>
@@ -565,7 +565,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="addusers()">Add Member</button>
+                    <button type="button" class="btn btn-primary" id="addusers">Add Member</button>
                 </div>
             </div>
         </div>
@@ -602,7 +602,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveAttendance()">Record Attendance</button>
+                    <button type="button" class="btn btn-primary" id="saveAttendance">Record Attendance</button>
                 </div>
             </div>
         </div>
@@ -649,7 +649,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="updateusers()">Update Member</button>
+                    <button type="button" class="btn btn-primary" id="updateusers">Update Member</button>
                 </div>
             </div>
         </div>
@@ -666,7 +666,7 @@
                 <div class="modal-body text-center" id="viewusersContent"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="editFromView()">Edit</button>
+                    <button type="button" class="btn btn-primary" id="editFromView">Edit</button>
                 </div>
             </div>
         </div>

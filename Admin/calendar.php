@@ -949,17 +949,17 @@
                             <i class="fas fa-history"></i> Activity Logs
                         </a>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="exportEvents()">
+                        <button class="dropdown-item" id="exportEvents">
                             <i class="fas fa-download"></i> Export Events
                         </button>
-                        <button class="dropdown-item" onclick="printCalendar()">
+                        <button class="dropdown-item" id="printCalendar">
                             <i class="fas fa-print"></i> Print Calendar
                         </button>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="refreshCalendar()">
+                        <button class="dropdown-item" id="refreshCalendar">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button class="dropdown-item" onclick="showCalendarHelp()">
+                        <button class="dropdown-item" id="showCalendarHelp">
                             <i class="fas fa-question-circle"></i> Help
                         </button>
                     </div>
@@ -1033,80 +1033,6 @@
 
             <!-- Pending Approval List (if there are any) -->
             <div id="pendingEventsContainer" class="d-none"></div>
-
-            <script type="module">
-                import { db } from "./Firebase/firebase_conn.js";
-                import { collection, query, where, getDocs, onSnapshot, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-                
-                const defaultUI = document.getElementById("defaultEventManagement");
-                const pendingContainer = document.getElementById("pendingEventsContainer");
-
-                function loadPendingEvents() {
-                    const q = query(
-                        collection(db, "events"),
-                        where("approved", "==", false)
-                    );
-
-                    //const snapshot = await getDocs(q);
-                    onSnapshot(q, (snapshot) => {
-
-                        // 🔹 No pending events → show original UI
-                        if (snapshot.empty) {
-                            pendingContainer.classList.add("d-none");
-                            return;
-                        }
-
-                        // 🔹 Pending events exist
-                        pendingContainer.classList.remove("d-none");
-
-                        pendingContainer.innerHTML = `
-                            <div class="col-lg-4">
-                                <div class="calendar-container">
-                                    <h3 class="section-title">
-                                        <i class="fas fa-clock"></i> Pending Event Approvals
-                                    </h3>
-                                    <div class="list-group" id="pendingList"></div>
-                                </div>
-                            </div>
-                        `;
-
-                        const list = document.getElementById("pendingList");
-
-                        snapshot.forEach(docSnap => {
-                            const event = docSnap.data();
-
-                            list.innerHTML += `
-                                <div class="list-group-item mb-2">
-                                    <h6 class="mb-1">${event.title ?? "Untitled Event"}</h6>
-                                    <p class="mb-2 text-muted">${event.description ?? ""}</p>
-
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-success btn-sm"
-                                            onclick="approveEvent('${docSnap.id}')">
-                                            Accept
-                                        </button>
-                                        <button class="btn btn-danger btn-sm"
-                                            onclick="rejectEvent('${docSnap.id}')">
-                                            Reject
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    });
-                }
-
-                window.approveEvent = async (id) => {
-                    await updateDoc(doc(db, "events", id), {
-                        approved: true
-                    });
-                };
-
-                window.rejectEvent = async (id) => {
-                    await deleteDoc(doc(db, "events", id));
-                };
-                loadPendingEvents();
-            </script>
         </div>
 
         <!-- Calendar Container -->

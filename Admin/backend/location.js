@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
     renderUserCards();
 
     // Three Dots Menu Functions
-    window.exportLocations = function() {
+    function exportLocations() {
         const usersData = users.map(u => ({
             name: u.name,
             email: u.email,
@@ -60,15 +60,15 @@ document.addEventListener('DOMContentLoaded', function () {
         showNotification('Locations exported successfully!', 'success');
     };
 
-    window.printMap = function() {
+    function printMap() {
         window.print();
     };
 
-    window.refreshMap = function() {
+    function refreshMap() {
         location.reload();
     };
 
-    window.showMapHelp = function() {
+    function showMapHelp() {
         alert(`
 Location Map Help:
 - Click on user markers to view details
@@ -196,8 +196,10 @@ Location Map Help:
                                 : business.status === 'rejected' ? '❌ Rejected'
                                 : '⏳ Pending Review';
 
-            const marker = L.marker(business.coords, {icon: markerIcon(business.status || "pending", business.logoUrl || defPFP)}).bindPopup(`
-                <div class="user-popup">
+            const marker = L.marker(business.coords, {
+                icon: markerIcon(business.status || "pending", business.logoUrl || defPFP)
+            }).bindPopup(`
+                <div class="user-popup" data-biz-id="${business.id}">
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <div class="user-profile-pic"
                             style="background-image:url('${business.logoUrl || defPFP}')">
@@ -221,17 +223,27 @@ Location Map Help:
                     </p>
 
                     <div class="d-flex gap-2 mt-2">
-                        <button class="btn btn-sm btn-primary w-100"
-                            onclick="focusUserOnMap('${business.id}')">
+                        <button class="btn btn-sm btn-primary w-100 btn-view-map"> 
                             <i class="fas fa-map-marker-alt"></i> View
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary w-100"
-                            onclick="window._openBizDetail('${business.id}')">
+                        <button class="btn btn-sm btn-outline-secondary w-100 btn-details">
                             <i class="fas fa-info-circle"></i> Details
                         </button>
                     </div>
                 </div>
             `);
+
+            // Attach event listeners when popup opens
+            marker.on('popupopen', function(e) {
+                const popupEl = e.popup.getElement();
+                const bizId = business.id;
+
+                const viewBtn = popupEl.querySelector('.btn-view-map');
+                const detailBtn = popupEl.querySelector('.btn-details');
+
+                if (viewBtn) viewBtn.addEventListener('click', () => focusUserOnMap(bizId));
+                if (detailBtn) detailBtn.addEventListener('click', () => window._openBizDetail(bizId));
+            });
 
             if (userMarkersVisible) marker.addTo(map);
 
@@ -301,17 +313,22 @@ Location Map Help:
                     </small>
 
                     <div class="d-flex gap-1 mt-2">
-                        <button class="btn btn-sm btn-outline-primary flex-fill"
-                            onclick="focusUserOnMap('${business.id}')">
+                        <button class="btn btn-sm btn-outline-primary flex-fill btn-view-map">
                             <i class="fas fa-map-marker-alt"></i> View on Map
                         </button>
-                        <button class="btn btn-sm btn-outline-secondary flex-fill"
-                            onclick="window._openBizDetail('${business.id}')">
+                        <button class="btn btn-sm btn-outline-secondary flex-fill btn-details">
                             <i class="fas fa-info-circle"></i> Details
                         </button>
                     </div>
                 </div>
             `;
+
+            // Attach event listeners after the card is added to the DOM
+            const viewBtn = card.querySelector('.btn-view-map');
+            const detailBtn = card.querySelector('.btn-details');
+
+            if (viewBtn) viewBtn.addEventListener('click', () => focusUserOnMap(business.id));
+            if (detailBtn) detailBtn.addEventListener('click', () => window._openBizDetail(business.id));
 
             card.addEventListener('click', function(e) {
                 if (!e.target.closest('button')) {
@@ -407,30 +424,53 @@ Location Map Help:
                 </div>` : ''}
         `;
 
-        // Footer buttons depend on the current status
-        let footerHtml = `<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>`;
-        if (biz.status === 'pending') {
-            footerHtml += `
-                <button class="btn btn-danger" onclick="bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();setTimeout(()=>window._promptReject('${biz.id}','${biz.name.replace(/'/g,"\\'")}'),350)">
-                    <i class="fas fa-times me-1"></i>Reject
-                </button>
-                <button class="btn btn-success" onclick="bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();setTimeout(()=>window._promptApprove('${biz.id}','${biz.name.replace(/'/g,"\\'")}'),350)">
-                    <i class="fas fa-check me-1"></i>Approve
-                </button>`;
-        } else if (biz.status === 'approved') {
-            footerHtml += `
-                <button class="btn btn-outline-danger" onclick="bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();setTimeout(()=>window._promptReject('${biz.id}','${biz.name.replace(/'/g,"\\'")}'),350)">
-                    <i class="fas fa-ban me-1"></i>Revoke Approval
-                </button>`;
-        } else {
-            // rejected — offer to approve instead
-            footerHtml += `
-                <button class="btn btn-success" onclick="bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();setTimeout(()=>window._promptApprove('${biz.id}','${biz.name.replace(/'/g,"\\'")}'),350)">
-                    <i class="fas fa-check me-1"></i>Approve Instead
-                </button>`;
-        }
-        document.getElementById('bizDetailFooter').innerHTML = footerHtml;
+        // Footer buttons depend on the current status. Start with the Close button
+        const footer = document.getElementById('bizDetailFooter');
+        footer.innerHTML = `<button class="btn btn-secondary btn-close-modal" data-bs-dismiss="modal">Close</button>`;
 
+        // Add other buttons dynamically based on status
+        if (biz.status === 'pending') {
+            const rejectBtn = document.createElement('button');
+            rejectBtn.className = 'btn btn-danger';
+            rejectBtn.innerHTML = `<i class="fas fa-times me-1"></i> Reject`;
+            rejectBtn.addEventListener('click', () => {
+                bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();
+                setTimeout(() => window._promptReject(biz.id, biz.name), 350);
+            });
+
+            const approveBtn = document.createElement('button');
+            approveBtn.className = 'btn btn-success';
+            approveBtn.innerHTML = `<i class="fas fa-check me-1"></i> Approve`;
+            approveBtn.addEventListener('click', () => {
+                bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();
+                setTimeout(() => window._promptApprove(biz.id, biz.name), 350);
+            });
+
+            footer.appendChild(rejectBtn);
+            footer.appendChild(approveBtn);
+
+        } else if (biz.status === 'approved') {
+            const revokeBtn = document.createElement('button');
+            revokeBtn.className = 'btn btn-outline-danger';
+            revokeBtn.innerHTML = `<i class="fas fa-ban me-1"></i> Revoke Approval`;
+            revokeBtn.addEventListener('click', () => {
+                bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();
+                setTimeout(() => window._promptReject(biz.id, biz.name), 350);
+            });
+            footer.appendChild(revokeBtn);
+
+        } else { // rejected
+            const approveInsteadBtn = document.createElement('button');
+            approveInsteadBtn.className = 'btn btn-success';
+            approveInsteadBtn.innerHTML = `<i class="fas fa-check me-1"></i> Approve Instead`;
+            approveInsteadBtn.addEventListener('click', () => {
+                bootstrap.Modal.getInstance(document.getElementById('bizDetailModal')).hide();
+                setTimeout(() => window._promptApprove(biz.id, biz.name), 350);
+            });
+            footer.appendChild(approveInsteadBtn);
+        }
+
+        // Finally, show the modal
         new bootstrap.Modal(document.getElementById('bizDetailModal')).show();
     };
 
@@ -939,9 +979,9 @@ Location Map Help:
     initImageSourceOptions();
     // initFileUploadHandlers();
     // updateNewProfilePreview();
-});
 
-document.getElementById("exportLocations").addEventListener("click", exportLocations);
-document.getElementById("printMap").addEventListener("click", printMap);
-document.getElementById("refreshMap").addEventListener("click", refreshMap);
-document.getElementById("showMapHelp").addEventListener("click", showMapHelp);
+    document.getElementById("exportLocations").addEventListener("click", exportLocations);
+    document.getElementById("printMap").addEventListener("click", printMap);
+    document.getElementById("refreshMap").addEventListener("click", refreshMap);
+    document.getElementById("showMapHelp").addEventListener("click", showMapHelp);
+});

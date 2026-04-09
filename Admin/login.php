@@ -1,4 +1,6 @@
 <?php
+    define('SECURE_ACCESS', true);
+    
     /* Secure session cookie */
     session_set_cookie_params([
         'lifetime' => 0,
@@ -21,9 +23,6 @@
     header("X-Content-Type-Options: nosniff");
     header("X-XSS-Protection: 1; mode=block");
     header("Referrer-Policy: strict-origin-when-cross-origin");
-
-    /* Strict Content Security Policy */
-    header("Content-Security-Policy: default-src 'self'; script-src 'self' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: https://images.unsplash.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self' https://www.gstatic.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; frame-ancestors 'self';");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -440,7 +439,7 @@
                     </div>
                 </div>
 
-                <input type="hidden" id="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                <input type="hidden" name="csrf_token" id="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
                 <button type="submit" class="btn" id="loginBtn">
                     <span class="btn-text">Login</span>
