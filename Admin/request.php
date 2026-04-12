@@ -658,17 +658,17 @@
                             <i class="fas fa-history"></i> Activity Logs
                         </a>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="exportRequests()">
+                        <button class="dropdown-item" id="exportRequests">
                             <i class="fas fa-download"></i> Export Approvals
                         </button>
-                        <button class="dropdown-item" onclick="printRequests()">
+                        <button class="dropdown-item" id="printRequests">
                             <i class="fas fa-print"></i> Print List
                         </button>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="refreshRequests()">
+                        <button class="dropdown-item" id="refreshRequests">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button class="dropdown-item" onclick="showRequestHelp()">
+                        <button class="dropdown-item" id="showRequestHelp">
                             <i class="fas fa-question-circle"></i> Help
                         </button>
                     </div>

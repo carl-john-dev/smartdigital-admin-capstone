@@ -1,7 +1,12 @@
 <?php
+    $nonce = bin2hex(random_bytes(16));
+
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-$nonce' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://firestore.googleapis.com https://www.googleapis.com https://www.gstatic.com https://api.qrserver.com https://firebasestorage.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;");
+
     $uid = $_GET['uid'] ?? null;
 
-    if (!$uid) {
+    // Only allow safe UID format (Firebase UID = alphanumeric, usually 28 chars)
+    if (!$uid || !preg_match('/^[a-zA-Z0-9]{20,40}$/', $uid)) {
         http_response_code(400);
         die("Invalid portfolio link.");
     }
@@ -980,7 +985,7 @@
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="stats-grid" id="statsGrid">
+                <!-- <div class="stats-grid" id="statsGrid">
                     <div class="stat-item">
                         <div class="stat-number" id="statProjects">47</div>
                         <div class="stat-label">Projects Completed</div>
@@ -997,7 +1002,7 @@
                         <div class="stat-number" id="statRating">4.9</div>
                         <div class="stat-label">Client Rating</div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Contact Information -->
                 <div class="contact-info">
@@ -1027,7 +1032,7 @@
                 </div>
 
                 <!-- Portfolio Gallery -->
-                <div class="portfolio-gallery">
+                <!-- <div class="portfolio-gallery">
                     <div class="portfolio-item">
                         <div class="portfolio-img">
                             <i class="fas fa-mobile-alt"></i>
@@ -1055,10 +1060,10 @@
                             <p>Real-time data visualization and reporting system with interactive charts</p>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Skills Section -->
-                <div class="skills-section">
+                <!-- <div class="skills-section">
                     <h4><i class="fas fa-code me-2"></i>Technical Skills</h4>
                     <div class="skill-item">
                         <div class="skill-info">
@@ -1093,7 +1098,7 @@
                             <div class="skill-progress" style="width: 80%;"></div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- QR Code (positioned inside card, bottom-right) -->
                 <!--
@@ -1128,7 +1133,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script type="module">
+    <script type="module" nonce="<?= $nonce ?>">
         import { db } from "./Firebase/firebase_conn.js";
         import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
@@ -1148,7 +1153,7 @@
             const snap = await getDoc(ref);
 
             if (!snap.exists()) {
-                document.body.innerHTML = "<h2>User not found</h2>";
+                document.body.textContent = "User not found";
                 return;
             }
 
@@ -1160,15 +1165,20 @@
             }
 
             // ── Populate profile UI ──────────────────────────────────────────────────
-            document.getElementById("userName").textContent    = data.name;
-            document.getElementById("userTitle").textContent   = data.professionalTitle;
-            document.getElementById("userCompany").innerHTML   =
-                `<i class="fas fa-building"></i> ${data.businessName}`;
+            document.getElementById("userName").textContent    = data.name || "Unknown";
+            document.getElementById("userTitle").textContent   = data.professionalTitle || "Unknown";
+            const companyEl = document.getElementById("userCompany");
+            companyEl.innerHTML = ""; // clear safely
 
-            document.getElementById("emailText").textContent    = data.email;
-            document.getElementById("phoneText").textContent    = data.phone;
-            document.getElementById("locationText").textContent = data.location;
-            document.getElementById("addressText").textContent  = data.address;
+            const icon = document.createElement("i");
+            icon.className = "fas fa-building";
+
+            companyEl.append(icon, " ", data.businessName || "Unknown");
+
+            document.getElementById("emailText").textContent    = data.email || "Unknown";
+            document.getElementById("phoneText").textContent    = data.phone || "Unknown";
+            document.getElementById("locationText").textContent = data.location || "Unknown";
+            document.getElementById("addressText").textContent  = data.address || "Unknown";
 
             // Avatar initials — first letter of each word, max 2 chars
             const initials = data.name
@@ -1185,8 +1195,14 @@
             // On subsequent visits the stored Firebase Storage URL is used directly.
             try {
                 const qrURL = await getOrCreateQR(uid);
-                document.getElementById("qrCode").innerHTML =
-                    `<img src="${qrURL}" alt="Portfolio QR Code">`;
+                const qrContainer = document.getElementById("qrCode");
+                qrContainer.innerHTML = "";
+
+                const img = document.createElement("img");
+                img.src = qrURL;
+                img.alt = "Portfolio QR Code";
+
+                qrContainer.appendChild(img);
             } catch (err) {
                 // Fallback: generate on-the-fly without saving (e.g. Storage write failed)
                 console.warn("[check_portfolio] QR storage failed, using live fallback:", err);
@@ -1199,9 +1215,6 @@
         }
 
         loadPortfolio();
-    </script>
-
-    <script>
         function downloadCard() {
             const card     = document.getElementById("nfcCard");
             const userName = document.getElementById("userName");

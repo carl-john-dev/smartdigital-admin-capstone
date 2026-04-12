@@ -17,19 +17,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="icon" href="CBOC LOGO.jpg"/>
-    <script type="text/javascript"
-            src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-    </script>
-    <script type="text/javascript">
-    (function(){
-        emailjs.init({
-            publicKey: "z8UU6_zG2JRpqhc-m",
-        });
-    })();
-    </script>
-    <script>
-        console.log("The auto-email sender only works if the receiver E-mail is a valid existing E-mail.\nOtherwise, it returns an error.\n\n  -Arjon");
-    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript" src="backend/emailjs_conn.js"></script>
 </head>
 <style>
     /* Add these styles to your existing style.css */
@@ -381,17 +370,17 @@
                             <i class="fas fa-history"></i> Activity Logs
                         </a>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="exportCardOrders()">
+                        <button class="dropdown-item" id="exportCardOrders">
                             <i class="fas fa-download"></i> Export Orders
                         </button>
-                        <button class="dropdown-item" onclick="printOrders()">
+                        <button class="dropdown-item" id="printOrders">
                             <i class="fas fa-print"></i> Print Summary
                         </button>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="refreshDashboard()">
+                        <button class="dropdown-item" id="refreshDashboard">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button class="dropdown-item" onclick="showCardHelp()">
+                        <button class="dropdown-item" id="showCardHelp">
                             <i class="fas fa-question-circle"></i> Help
                         </button>
                     </div>
@@ -557,7 +546,7 @@
                         <h3 class="section-title mb-0">
                             <i class="fas fa-sync-alt fa-spin text-primary"></i> NFC Cards in Process
                         </h3>
-                        <!-- <button class="btn btn-primary btn-sm" onclick="openCreateNFCModal()">
+                        <!-- <button class="btn btn-primary btn-sm" id="openCreateNFCModal()">
                             <i class="fas fa-plus"></i> Create NFC
                         </button> -->
                     </div>
@@ -704,7 +693,7 @@
 
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" onclick="createNFCCard()">Create Card</button>
+                    <button class="btn btn-primary" id="createNFCCard()">Create Card</button>
                 </div>
 
             </div>
@@ -712,10 +701,10 @@
     </div>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script nonce="<?= $nonce ?>" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript for Interactive Elements -->
-    <script type="module" src="backend/ordercard.js"></script>
-    <script type="module" src="backend/backend.js"></script>
+    <script nonce="<?= $nonce ?>" type="module" src="backend/ordercard.js"></script>
+    <script nonce="<?= $nonce ?>" type="module" src="backend/backend.js"></script>
 </body>
 </html>

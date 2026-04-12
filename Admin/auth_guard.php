@@ -8,7 +8,7 @@
 
     // Security Headers
     $nonce = bin2hex(random_bytes(16));
-    // header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-$nonce' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com; img-src 'self' data: https:; connect-src 'self' https://firestore.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.googleapis.com https://www.gstatic.com; font-src 'self' https://cdnjs.cloudflare.com;");
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-$nonce' https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://cdn.quilljs.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://cdn.quilljs.com; img-src 'self' data: https:; connect-src 'self' https://firestore.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.googleapis.com https://www.gstatic.com https://cdn.jsdelivr.net https://api.emailjs.com; font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;");
     header("X-Frame-Options: SAMEORIGIN");
     header("X-Content-Type-Options: nosniff");
     header("Referrer-Policy: no-referrer-when-downgrade");

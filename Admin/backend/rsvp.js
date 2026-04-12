@@ -18,19 +18,19 @@ let currentBoothData = {
 };
 
 // Three Dots Menu Functions
-window.exportRSVPs = function() {
+function exportRSVPs() {
     showNotification('Export feature available in the export buttons below', 'info');
 };
 
-window.printRSVPList = function() {
+function printRSVPList() {
     window.print();
 };
 
-window.refreshRSVPs = function() {
+function refreshRSVPs() {
     location.reload();
 };
 
-window.showRSVPHelp = function() {
+function showRSVPHelp() {
     alert(`
 RSVP Tracker Help:
 - Add RSVPs using the "Add RSVP" button
@@ -136,7 +136,7 @@ document.getElementById('eventDate')?.addEventListener('change', async function(
 });
 
 // NEW: Open Add Event Modal
-window.openAddEventModal = function() {
+function openAddEventModal() {
     document.getElementById('addEventForm').reset();
     document.getElementById('conflictWarning').style.display = 'none';
     document.getElementById('submitEventBtn').disabled = false;
@@ -193,9 +193,10 @@ window.addSampleEvent = async function() {
     openAddEventModal();
 };
 
-// Load events from Firestore
 async function loadUpcomingEvents() {
     const container = document.getElementById("eventsListContainer");
+    container.innerHTML = ""; // safe clear
+
     const today = new Date();
     today.setHours(0,0,0,0);
     upcomingEvents = [];
@@ -242,43 +243,95 @@ async function loadUpcomingEvents() {
             return a.parsedDate - b.parsedDate;
         });
 
+        // ✅ EMPTY STATE (SAFE)
         if (upcomingEvents.length === 0) {
-            container.innerHTML = `
-                <div class="text-center text-muted py-4">
-                    <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                    <div>No upcoming events found.</div>
-                    <small>Click "Add New Event" to create your first event.</small>
-                </div>
-            `;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'text-center text-muted py-4';
+
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-calendar-times fa-2x mb-2';
+
+            const text = document.createElement('div');
+            text.textContent = 'No upcoming events found.';
+
+            const small = document.createElement('small');
+            small.textContent = 'Click "Add New Event" to create your first event.';
+
+            wrapper.append(icon, text, small);
+            container.appendChild(wrapper);
             return;
         }
 
-        let html = `<div class="list-group">`;
+        // ✅ LIST GROUP
+        const listGroup = document.createElement('div');
+        listGroup.className = 'list-group';
+
         upcomingEvents.forEach(event => {
-            const dateStr = event.parsedDate ? event.parsedDate.toLocaleDateString() : 'Date TBD';
+            const item = document.createElement('div');
+            item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center event-item';
+            
+            if (selectedEventId === event.id) {
+                item.classList.add('active');
+            }
+
+            item.style.cursor = 'pointer';
+
+            // CLICK (replaces onclick)
+            item.addEventListener('click', () => {
+                selectEventForRSVP(event.id);
+            });
+
+            const leftDiv = document.createElement('div');
+
+            const title = document.createElement('strong');
+            title.textContent = event.title || "Untitled Event";
+
+            const meta = document.createElement('div');
+            meta.className = 'text-muted small';
+
+            const dateStr = event.parsedDate 
+                ? event.parsedDate.toLocaleDateString() 
+                : 'Date TBD';
+
             const availableBooths = (event.totalBooths || 0) - (event.reservedBooths || 0);
-            html += `
-            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center event-item ${selectedEventId === event.id ? 'active' : ''}" 
-                    onclick="selectEventForRSVP('${event.id}')" style="cursor:pointer;">
-                <div>
-                    <strong>${event.title || "Untitled Event"}</strong>
-                    <div class="text-muted small">
-                        <i class="fas fa-calendar-alt"></i> ${dateStr}
-                        ${event.venue ? `<span class="mx-2">|</span> <i class="fas fa-map-marker-alt"></i> ${event.venue}` : ""}
-                        <span class="mx-2">|</span> <i class="fas fa-booth-curtain"></i> Booths: ${availableBooths} available
-                    </div>
-                </div>
-                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); selectEventForRSVP('${event.id}')">
-                    View Attendance
-                </button>
-            </div>
-            `;
+
+            // Build meta text safely
+            let metaText = `📅 ${dateStr}`;
+
+            if (event.venue) {
+                metaText += ` | 📍 ${event.venue}`;
+            }
+
+            metaText += ` | Booths: ${availableBooths} available`;
+
+            meta.textContent = metaText;
+
+            leftDiv.append(title, meta);
+
+            // BUTTON
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-sm btn-primary';
+            btn.textContent = 'View Attendance';
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectEventForRSVP(event.id);
+            });
+
+            item.append(leftDiv, btn);
+            listGroup.appendChild(item);
         });
-        html += `</div>`;
-        container.innerHTML = html;
+
+        container.appendChild(listGroup);
+
     } catch (error) {
         console.error("Error loading events:", error);
-        container.innerHTML = `<div class="text-center text-danger py-3">Error loading events</div>`;
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'text-center text-danger py-3';
+        errorDiv.textContent = 'Error loading events';
+
+        container.appendChild(errorDiv);
     }
 }
 
@@ -387,74 +440,162 @@ function updateAggregateDisplay() {
 
 function renderAttendeesTable() {
     const tableBody = document.getElementById("tableBody");
-    
+    tableBody.innerHTML = ""; // safe clear
+
     if (currentRSVPs.length === 0 && currentWalkins.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No attendees yet. Add RSVP or walk-in guests.</td></tr>`;
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+
+        td.colSpan = 6;
+        td.className = "text-center text-muted";
+        td.textContent = "No attendees yet. Add RSVP or walk-in guests.";
+
+        tr.appendChild(td);
+        tableBody.appendChild(tr);
         return;
     }
 
-    let html = '';
-    
+    // ✅ RSVP ROWS
     currentRSVPs.forEach(rsvp => {
-        const boothBadge = rsvp.appliedForBooth ? 
-            `<span class="booth-applied-badge"><i class="fas fa-booth-curtain"></i> ${rsvp.boothType || 'Standard'}</span>` : 
-            `<span class="text-muted">—</span>`;
-        html += `
-            <tr>
-                <td><i class="fas fa-envelope text-primary me-2"></i> ${escapeHtml(rsvp.name || 'Unnamed')}</td>
-                <td>${escapeHtml(rsvp.email || '-')}</td>
-                <td><span class="rsvp-badge">📧 RSVP</span></td>
-                <td>${boothBadge}</td>
-                <td>${rsvp.plusOne ? `+1: ${escapeHtml(rsvp.plusOne)}` : 'No plus one'}${rsvp.boothPreferences ? `<br><small class="text-muted">Pref: ${escapeHtml(rsvp.boothPreferences)}</small>` : ''}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteAttendee('${rsvp.id}', 'rsvp')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
+        const tr = document.createElement("tr");
+
+        // NAME
+        const tdName = document.createElement("td");
+        const icon = document.createElement("i");
+        icon.className = "fas fa-envelope text-primary me-2";
+
+        const nameText = document.createTextNode(rsvp.name || "Unnamed");
+
+        tdName.append(icon, nameText);
+
+        // EMAIL
+        const tdEmail = document.createElement("td");
+        tdEmail.textContent = rsvp.email || "-";
+
+        // TYPE
+        const tdType = document.createElement("td");
+        const badge = document.createElement("span");
+        badge.className = "rsvp-badge";
+        badge.textContent = "📧 RSVP";
+        tdType.appendChild(badge);
+
+        // BOOTH
+        const tdBooth = document.createElement("td");
+
+        if (rsvp.appliedForBooth) {
+            const boothSpan = document.createElement("span");
+            boothSpan.className = "booth-applied-badge";
+
+            const boothIcon = document.createElement("i");
+            boothIcon.className = "fas fa-booth-curtain";
+
+            boothSpan.append(boothIcon, " ", rsvp.boothType || "Standard");
+            tdBooth.appendChild(boothSpan);
+        } else {
+            tdBooth.textContent = "—";
+            tdBooth.className = "text-muted";
+        }
+
+        // NOTES / PLUS ONE
+        const tdNotes = document.createElement("td");
+
+        if (rsvp.plusOne) {
+            tdNotes.append(`+1: ${rsvp.plusOne}`);
+        } else {
+            tdNotes.append("No plus one");
+        }
+
+        if (rsvp.boothPreferences) {
+            const br = document.createElement("br");
+            const small = document.createElement("small");
+            small.className = "text-muted";
+            small.textContent = `Pref: ${rsvp.boothPreferences}`;
+            tdNotes.append(br, small);
+        }
+
+        // ACTION
+        const tdAction = document.createElement("td");
+        const btn = document.createElement("button");
+        btn.className = "btn btn-sm btn-outline-danger";
+
+        const trashIcon = document.createElement("i");
+        trashIcon.className = "fas fa-trash";
+
+        btn.appendChild(trashIcon);
+
+        btn.addEventListener("click", () => {
+            deleteAttendee(rsvp.id, "rsvp");
+        });
+
+        tdAction.appendChild(btn);
+
+        tr.append(tdName, tdEmail, tdType, tdBooth, tdNotes, tdAction);
+        tableBody.appendChild(tr);
     });
-    
+
+    // ✅ WALK-IN ROWS
     currentWalkins.forEach(walkin => {
-        html += `
-            <tr>
-                <td><i class="fas fa-person-walking-arrow-right text-warning me-2"></i> ${escapeHtml(walkin.name || 'Unnamed')}</td>
-                <td>${escapeHtml(walkin.contact || '-')}</td>
-                <td><span class="walkin-badge">🚶 Walk-in</span></td>
-                <td>—</td>
-                <td>${escapeHtml(walkin.notes || 'No notes')}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteAttendee('${walkin.id}', 'walkin')">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
+        const tr = document.createElement("tr");
+
+        const tdName = document.createElement("td");
+        const icon = document.createElement("i");
+        icon.className = "fas fa-person-walking-arrow-right text-warning me-2";
+        tdName.append(icon, document.createTextNode(walkin.name || "Unnamed"));
+
+        const tdContact = document.createElement("td");
+        tdContact.textContent = walkin.contact || "-";
+
+        const tdType = document.createElement("td");
+        const badge = document.createElement("span");
+        badge.className = "walkin-badge";
+        badge.textContent = "🚶 Walk-in";
+        tdType.appendChild(badge);
+
+        const tdBooth = document.createElement("td");
+        tdBooth.textContent = "—";
+
+        const tdNotes = document.createElement("td");
+        tdNotes.textContent = walkin.notes || "No notes";
+
+        const tdAction = document.createElement("td");
+        const btn = document.createElement("button");
+        btn.className = "btn btn-sm btn-outline-danger";
+
+        const trashIcon = document.createElement("i");
+        trashIcon.className = "fas fa-trash";
+        btn.appendChild(trashIcon);
+
+        btn.addEventListener("click", () => {
+            deleteAttendee(walkin.id, "walkin");
+        });
+
+        tdAction.appendChild(btn);
+
+        tr.append(tdName, tdContact, tdType, tdBooth, tdNotes, tdAction);
+        tableBody.appendChild(tr);
     });
-    
-    tableBody.innerHTML = html;
 }
 
-window.deleteAttendee = async function(id, type) {
+function deleteAttendee(id, type) {
     if (!confirm(`Are you sure you want to delete this ${type === 'rsvp' ? 'RSVP' : 'walk-in'}?`)) return;
     
     try {
         const collectionName = type === 'rsvp' ? 'rsvp' : 'walkins';
-        await deleteDoc(doc(db, "events", selectedEventId, collectionName, id));
+        deleteDoc(doc(db, "events", selectedEventId, collectionName, id));
         
-        await updateDoc(doc(db, "events", selectedEventId), {
+        updateDoc(doc(db, "events", selectedEventId), {
             updatedAt: serverTimestamp()
         });
         
         showNotification(`${type === 'rsvp' ? 'RSVP' : 'Walk-in'} deleted successfully`, 'success');
-        await loadRSVPsAndWalkins(selectedEventId);
+        loadRSVPsAndWalkins(selectedEventId);
     } catch (error) {
         console.error("Error deleting:", error);
         showNotification('Error deleting attendee', 'error');
     }
 };
 
-window.selectEventForRSVP = async function(eventId) {
+function selectEventForRSVP(eventId) {
     selectedEventId = eventId;
     const event = upcomingEvents.find(ev => ev.id === eventId);
     
@@ -466,11 +607,11 @@ window.selectEventForRSVP = async function(eventId) {
     }
     
     document.getElementById('eventContent').style.display = 'block';
-    await loadRSVPsAndWalkins(selectedEventId);
+    loadRSVPsAndWalkins(selectedEventId);
     loadUpcomingEvents();
 };
 
-window.addRSVPBtn = function() {
+function addRSVPBtn() {
     if (!selectedEventId) {
         showNotification('Please select an event first', 'warning');
         return;
@@ -481,7 +622,7 @@ window.addRSVPBtn = function() {
     new bootstrap.Modal(document.getElementById('rsvpModal')).show();
 };
 
-window.addWalkinBtn = function() {
+function addWalkinBtn() {
     if (!selectedEventId) {
         showNotification('Please select an event first', 'warning');
         return;
@@ -490,7 +631,7 @@ window.addWalkinBtn = function() {
     new bootstrap.Modal(document.getElementById('walkinModal')).show();
 };
 
-window.openBoothModal = function() {
+function openBoothModal() {
     if (!selectedEventId) {
         showNotification('Please select an event first', 'warning');
         return;
@@ -631,7 +772,7 @@ document.getElementById('walkinForm').addEventListener('submit', async function(
     }
 });
 
-window.exportCSV = function() {
+function exportCSV() {
     if (!selectedEventId) {
         showNotification('Select an event first', 'warning');
         return;
@@ -657,7 +798,7 @@ window.exportCSV = function() {
     showNotification('CSV exported!', 'success');
 };
 
-window.exportPDF = function() {
+function exportPDF() {
     if (!selectedEventId) {
         showNotification('Select an event first', 'warning');
         return;
@@ -761,3 +902,14 @@ window.addWalkinBtn = addWalkinBtn;
 window.exportCSV = exportCSV;
 window.exportPDF = exportPDF;
 window.openBoothModal = openBoothModal;
+
+document.getElementById("exportRSVPs").addEventListener("click", exportRSVPs);
+document.getElementById("printRSVPList").addEventListener("click", printRSVPList);
+document.getElementById("refreshRSVPs").addEventListener("click", refreshRSVPs);
+document.getElementById("showRSVPHelp").addEventListener("click", showRSVPHelp);
+document.getElementById("openAddEventModal").addEventListener("click", openAddEventModal);
+document.getElementById("addRSVPBtn").addEventListener("click", addRSVPBtn);
+document.getElementById("addWalkinBtn").addEventListener("click", addWalkinBtn);
+document.getElementById("openBoothModal").addEventListener("click", openBoothModal);
+document.getElementById("exportCSV").addEventListener("click", exportCSV);
+document.getElementById("exportPDF").addEventListener("click", exportPDF);

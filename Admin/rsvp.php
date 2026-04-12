@@ -752,17 +752,17 @@
                             <i class="fas fa-history"></i> Activity Logs
                         </a>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="exportRSVPs()">
+                        <button class="dropdown-item" id="exportRSVPs">
                             <i class="fas fa-download"></i> Export RSVPs
                         </button>
-                        <button class="dropdown-item" onclick="printRSVPList()">
+                        <button class="dropdown-item" id="printRSVPList">
                             <i class="fas fa-print"></i> Print List
                         </button>
                         <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" onclick="refreshRSVPs()">
+                        <button class="dropdown-item" id="refreshRSVPs">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button class="dropdown-item" onclick="showRSVPHelp()">
+                        <button class="dropdown-item" id="showRSVPHelp">
                             <i class="fas fa-question-circle"></i> Help
                         </button>
                     </div>
@@ -781,7 +781,7 @@
         <div class="card mt-3 mb-3">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="fas fa-calendar"></i> Upcoming Events</h5>
-                <button class="btn btn-sm btn-primary" onclick="openAddEventModal()">
+                <button class="btn btn-sm btn-primary" id="openAddEventModal">
                     <i class="fas fa-plus"></i> Add New Event
                 </button>
             </div>
@@ -856,10 +856,10 @@
                         </p>
                     </div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-light" onclick="addRSVPBtn()">
+                        <button class="btn btn-light" id="addRSVPBtn">
                             <i class="fas fa-plus"></i> Add RSVP
                         </button>
-                        <button class="btn btn-warning" onclick="addWalkinBtn()">
+                        <button class="btn btn-warning" id="addWalkinBtn">
                             <i class="fas fa-person-walking-arrow-right"></i> Add Walk-in
                         </button>
                     </div>
@@ -905,7 +905,7 @@
             <div class="booth-card">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0"><i class="fas fa-booth-curtain"></i> Booth Availability</h5>
-                    <button class="btn btn-booth btn-sm" onclick="openBoothModal()">
+                    <button class="btn btn-booth btn-sm" id="openBoothModal">
                         <i class="fas fa-edit"></i> Manage Booths
                     </button>
                 </div>
@@ -982,10 +982,10 @@
 
                 <!-- Export Controls -->
                 <div class="d-flex justify-content-end gap-2 mt-4">
-                    <button class="btn btn-outline-secondary" onclick="exportCSV()">
+                    <button class="btn btn-outline-secondary" id="exportCSV">
                         <i class="fas fa-file-csv"></i> Export CSV
                     </button>
-                    <button class="btn btn-outline-secondary" onclick="exportPDF()">
+                    <button class="btn btn-outline-secondary" id="exportPDF">
                         <i class="fas fa-file-pdf"></i> Export PDF
                     </button>
                 </div>

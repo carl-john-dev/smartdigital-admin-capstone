@@ -49,10 +49,13 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-TOKEN": csrf
+                "X-Csrf-Token": csrf
             },
             credentials: "same-origin",
-            body: JSON.stringify({ token: idToken })
+            body: JSON.stringify({ 
+                token: idToken ,
+    			csrf: csrf
+            })
         });
 
         if (!response.ok) {

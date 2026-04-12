@@ -20,7 +20,7 @@ import { collection,
 
 document.addEventListener('DOMContentLoaded', function() {
     // Three Dots Menu Functions
-    window.exportCardOrders = function() {
+    function exportCardOrders() {
         // Sample data - in real app, this would come from your database
         const orders = [
             { member: 'John Doe', cardId: 'NFC-2024-001', status: 'Ready for Pickup', readySince: 'Today, 10:30 AM' },
@@ -42,15 +42,15 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification('NFC card orders exported successfully!', 'success');
     };
 
-    window.printOrders = function() {
+    function printOrders() {
         window.print();
     };
 
-    window.refreshDashboard = function() {
+    function refreshDashboard() {
         location.reload();
     };
 
-    window.showCardHelp = function() {
+    function showCardHelp() {
         alert(`
 NFC Card Dashboard Help:
 - Cards Processed: Completed NFC cards
@@ -61,6 +61,11 @@ NFC Card Dashboard Help:
 - Notifications show recent pickup alerts
         `);
     };
+
+    document.getElementById("exportCardOrders").addEventListener("click", exportCardOrders);
+    document.getElementById("printOrders").addEventListener("click", printOrders);
+    document.getElementById("refreshDashboard").addEventListener("click", refreshDashboard);
+    document.getElementById("showCardHelp").addEventListener("click", showCardHelp);
 
     // Three Dots Menu Toggle
     const dotsMenuBtn = document.getElementById('dotsMenuBtn');
@@ -252,7 +257,6 @@ NFC Card Dashboard Help:
     // Pulls data from DB about NFC Card Processed section
     function loadProcessedCards() {
         const tableBody = document.getElementById("processedCardsTable");
-
         if (!tableBody) return;
 
         const q = query(
@@ -264,7 +268,11 @@ NFC Card Dashboard Help:
         onSnapshot(q, (snapshot) => {
             tableBody.innerHTML = "";
 
+            let hasData = false;
+
             snapshot.forEach(docSnap => {
+                hasData = true;
+
                 const data = docSnap.data();
 
                 const name = data.member_name || "Unknown";
@@ -284,32 +292,59 @@ NFC Card Dashboard Help:
                     });
                 }
 
-                const row = `
-                    <tr>
-                        <td>${name}</td>
-                        <td><code>${cardId}</code></td>
-                        <td>${processedDate}</td>
-                        <td><span class="status status-resolve">${status}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-success"
-                                onclick="markCardReady('${docSnap.ref.path}', this)">
-                                <i class="fas fa-check"></i> Mark as Ready
-                            </button>
-                        </td>
-                    </tr>
-                `;
+                const tr = document.createElement("tr");
 
-                tableBody.innerHTML += row;
+                // NAME
+                const tdName = document.createElement("td");
+                tdName.textContent = name;
+
+                // CARD ID
+                const tdCard = document.createElement("td");
+                const code = document.createElement("code");
+                code.textContent = cardId;
+                tdCard.appendChild(code);
+
+                // DATE
+                const tdDate = document.createElement("td");
+                tdDate.textContent = processedDate;
+
+                // STATUS
+                const tdStatus = document.createElement("td");
+                const span = document.createElement("span");
+                span.className = "status status-resolve";
+                span.textContent = status;
+                tdStatus.appendChild(span);
+
+                // ACTION
+                const tdAction = document.createElement("td");
+                const btn = document.createElement("button");
+                btn.className = "btn btn-sm btn-success";
+
+                const icon = document.createElement("i");
+                icon.className = "fas fa-check";
+
+                btn.append(icon, " Mark as Ready");
+
+                btn.addEventListener("click", () => {
+                    markCardReady(docSnap.ref.path, btn);
+                });
+
+                tdAction.appendChild(btn);
+
+                tr.append(tdName, tdCard, tdDate, tdStatus, tdAction);
+                tableBody.appendChild(tr);
             });
 
-            if (tableBody.innerHTML === "") {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">
-                            No processed NFC cards
-                        </td>
-                    </tr>
-                `;
+            if (!hasData) {
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+
+                td.colSpan = 5;
+                td.className = "text-center text-muted";
+                td.textContent = "No processed NFC cards";
+
+                tr.appendChild(td);
+                tableBody.appendChild(tr);
             }
         });
     }
@@ -317,7 +352,6 @@ NFC Card Dashboard Help:
     // Pulls data from DB about NFC Card In Process section
     function loadActiveCards() {
         const tableBody = document.getElementById("activeCardsTable");
-
         if (!tableBody) return;
 
         const q = query(
@@ -329,10 +363,14 @@ NFC Card Dashboard Help:
         onSnapshot(q, (snapshot) => {
             tableBody.innerHTML = "";
 
+            let hasData = false;
+
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
 
                 if (data.status === "Ready for Pickup") return;
+
+                hasData = true;
 
                 const name = data.member_name || "Unknown";
                 const cardId = data.card_id || "N/A";
@@ -351,32 +389,59 @@ NFC Card Dashboard Help:
                     });
                 }
 
-                const row = `
-                    <tr>
-                        <td>${name}</td>
-                        <td><code>${cardId}</code></td>
-                        <td>${startedDate}</td>
-                        <td><span class="status status-pending">${status}</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-success"
-                                onclick="markCardProcessed('${docSnap.ref.path}', this)">
-                                <i class="fas fa-check"></i> Process
-                            </button>
-                        </td>
-                    </tr>
-                `;
+                const tr = document.createElement("tr");
 
-                tableBody.innerHTML += row;
+                // NAME
+                const tdName = document.createElement("td");
+                tdName.textContent = name;
+
+                // CARD ID
+                const tdCard = document.createElement("td");
+                const code = document.createElement("code");
+                code.textContent = cardId;
+                tdCard.appendChild(code);
+
+                // DATE
+                const tdDate = document.createElement("td");
+                tdDate.textContent = startedDate;
+
+                // STATUS
+                const tdStatus = document.createElement("td");
+                const span = document.createElement("span");
+                span.className = "status status-pending";
+                span.textContent = status;
+                tdStatus.appendChild(span);
+
+                // ACTION
+                const tdAction = document.createElement("td");
+                const btn = document.createElement("button");
+                btn.className = "btn btn-sm btn-success";
+
+                const icon = document.createElement("i");
+                icon.className = "fas fa-check";
+
+                btn.append(icon, " Process");
+
+                btn.addEventListener("click", () => {
+                    markCardProcessed(docSnap.ref.path, btn);
+                });
+
+                tdAction.appendChild(btn);
+
+                tr.append(tdName, tdCard, tdDate, tdStatus, tdAction);
+                tableBody.appendChild(tr);
             });
 
-            if (tableBody.innerHTML === "") {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-center text-muted">
-                            No active NFC card processes
-                        </td>
-                    </tr>
-                `;
+            if (!hasData) {
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+
+                td.colSpan = 4;
+                td.className = "text-center text-muted";
+                td.textContent = "No active NFC card processes";
+
+                tr.appendChild(td);
+                tableBody.appendChild(tr);
             }
         });
     }
@@ -430,7 +495,7 @@ NFC Card Dashboard Help:
     }
 
     // Mark a card as Processed
-    window.markCardProcessed = async function(cardPath, btn) {
+    async function markCardProcessed(cardPath, btn) {
         btn.disabled = true;
         btn.innerHTML = "Processing...";
 
@@ -453,7 +518,7 @@ NFC Card Dashboard Help:
     }
 
     // Mark a card as Ready for Pickup
-    window.markCardReady = async function(cardPath, btn) {
+    async function markCardReady(cardPath, btn) {
         btn.disabled = true;
         btn.innerHTML = "Processing...";
 

@@ -446,7 +446,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (!eventsByDate[eventDate]) eventsByDate[eventDate] = [];
-            eventsByDate[eventDate].push(data);
+            eventsByDate[eventDate].push({
+                id: doc.id,
+                ...data
+            });
         });
 
         // Helper function to create day element synchronously
@@ -584,8 +587,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Render published events
     async function renderPublishedEvents() {
-        const publishedEventsContainer = document.getElementById('publishedEvents');
-        publishedEventsContainer.innerHTML = '';
+        const container = document.getElementById('publishedEvents');
+        container.innerHTML = ''; // OK: clearing only
 
         try {
             const q = query(
@@ -595,158 +598,146 @@ document.addEventListener('DOMContentLoaded', function() {
                     where("approved", "==", true)
                 )
             );
+
             const querySnapshot = await getDocs(q);
 
             const publishedEvents = [];
-            querySnapshot.forEach(doc => {
-                const data = doc.data();
+            querySnapshot.forEach(docSnap => {
+                const data = docSnap.data();
                 publishedEvents.push({
-                    id: doc.id,
+                    id: docSnap.id,
                     ...data
                 });
             });
 
-            // Sort by date ascending
             publishedEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             if (publishedEvents.length === 0) {
-                const emptyDiv = document.createElement('div');
-                emptyDiv.className = 'text-center py-5';
+                const wrapper = document.createElement('div');
+                wrapper.className = 'text-center py-5';
 
                 const icon = document.createElement('i');
                 icon.className = 'fas fa-calendar-plus fa-3x text-muted mb-3';
-                emptyDiv.appendChild(icon);
 
-                const msg = document.createElement('p');
-                msg.className = 'text-muted';
-                msg.textContent = "No published events yet";
-                emptyDiv.appendChild(msg);
+                const text = document.createElement('p');
+                text.className = 'text-muted';
+                text.textContent = 'No published events yet';
 
-                const createBtn = document.createElement('button');
-                createBtn.className = 'btn btn-primary';
-                createBtn.type = 'button';
-                createBtn.innerHTML = `<i class="fas fa-plus me-2"></i> Create First Event`;
-                createBtn.addEventListener('click', () => {
-                    const modalEl = document.getElementById('eventModal');
-                    new bootstrap.Modal(modalEl).show();
-                });
-                emptyDiv.appendChild(createBtn);
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-primary';
+                btn.setAttribute('data-bs-toggle', 'modal');
+                btn.setAttribute('data-bs-target', '#eventModal');
+                btn.innerHTML = `<i class="fas fa-plus me-2"></i> Create First Event`;
 
-                publishedEventsContainer.appendChild(emptyDiv);
+                wrapper.append(icon, text, btn);
+                container.appendChild(wrapper);
                 return;
             }
 
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
             publishedEvents.forEach(event => {
                 let eventDate;
-                if (event.date && typeof event.date.toDate === "function") {
+
+                if (event.date?.toDate) {
                     eventDate = event.date.toDate();
-                } else if (typeof event.date === "string") {
+                } else {
                     eventDate = new Date(event.date);
                 }
 
-                const today = new Date();
-                today.setHours(0,0,0,0);
                 if (eventDate < today) return;
 
-                const eventElement = document.createElement('div');
-                eventElement.className = 'event-card';
+                const card = document.createElement('div');
+                card.className = 'event-card';
 
-                // Image
+                // IMAGE
                 if (event.imageUrl) {
                     const img = document.createElement('img');
                     img.src = event.imageUrl;
-                    img.alt = event.title;
                     img.className = 'event-card-image';
-                    eventElement.appendChild(img);
-                } else {
-                    const imgDiv = document.createElement('div');
-                    imgDiv.className = 'event-card-image d-flex align-items-center justify-content-center bg-light';
-                    const icon = document.createElement('i');
-                    icon.className = 'fas fa-calendar-alt fa-3x text-muted';
-                    imgDiv.appendChild(icon);
-                    eventElement.appendChild(imgDiv);
+                    img.alt = event.title || 'Event image';
+                    card.appendChild(img);
                 }
 
-                // Title
-                const titleEl = document.createElement('h4');
-                titleEl.className = 'event-card-title';
-                titleEl.textContent = event.title;
-                eventElement.appendChild(titleEl);
+                // TITLE
+                const title = document.createElement('h4');
+                title.className = 'event-card-title';
+                title.textContent = event.title || 'Untitled Event';
 
-                // Meta
-                const metaDiv = document.createElement('div');
-                metaDiv.className = 'event-card-meta';
+                // META
+                const meta = document.createElement('div');
+                meta.className = 'event-card-meta';
 
                 const dateSpan = document.createElement('span');
                 dateSpan.className = 'event-meta-item';
-                dateSpan.innerHTML = `<i class="fas fa-calendar"></i> ${eventDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
-                metaDiv.appendChild(dateSpan);
+                dateSpan.textContent = eventDate.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                meta.appendChild(dateSpan);
 
                 if (event.startTime) {
                     const timeSpan = document.createElement('span');
                     timeSpan.className = 'event-meta-item';
-                    timeSpan.innerHTML = `<i class="fas fa-clock"></i> ${event.startTime}${event.endTime ? ' - ' + event.endTime : ''}`;
-                    metaDiv.appendChild(timeSpan);
+                    timeSpan.textContent = `${event.startTime}${event.endTime ? ' - ' + event.endTime : ''}`;
+                    meta.appendChild(timeSpan);
                 }
 
                 if (event.venue) {
                     const venueSpan = document.createElement('span');
                     venueSpan.className = 'event-meta-item';
-                    venueSpan.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${event.venue}`;
-                    metaDiv.appendChild(venueSpan);
+                    venueSpan.textContent = event.venue;
+                    meta.appendChild(venueSpan);
                 }
 
-                eventElement.appendChild(metaDiv);
+                // DESCRIPTION (SAFE)
+                const desc = document.createElement('div');
+                desc.className = 'event-card-description';
+                desc.textContent = event.description
+                    ? event.description.replace(/<[^>]*>?/gm, '').substring(0, 200)
+                    : 'No description';
 
-                // Description
-                const descDiv = document.createElement('div');
-                descDiv.className = 'event-card-description';
-                descDiv.textContent = event.description ? event.description.substring(0, 200) + '...' : 'No description';
-                eventElement.appendChild(descDiv);
+                // FOOTER
+                const footer = document.createElement('div');
+                footer.className = 'event-card-footer';
 
-                // Footer
-                const footerDiv = document.createElement('div');
-                footerDiv.className = 'event-card-footer';
-
-                const statusDiv = document.createElement('div');
-                statusDiv.className = 'event-status';
-                statusDiv.innerHTML = `
-                    <span class="status-published"><i class="fas fa-check-circle"></i> Published</span>
-                    <span class="badge bg-${getCategoryColor(event.category)}">${event.category || "Uncategorized"}</span>
-                `;
-                footerDiv.appendChild(statusDiv);
-
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'event-actions';
+                const actions = document.createElement('div');
+                actions.className = 'event-actions';
 
                 const viewBtn = document.createElement('button');
-                viewBtn.className = 'btn btn-sm btn-outline-primary view-event';
-                viewBtn.type = 'button';
-                viewBtn.innerHTML = `<i class="fas fa-eye"></i> View`;
-                viewBtn.addEventListener('click', () => showEventDetails(event));
-                actionsDiv.appendChild(viewBtn);
+                viewBtn.className = 'btn btn-sm btn-outline-primary';
+                viewBtn.textContent = 'View';
+                viewBtn.addEventListener('click', () => {
+                    showEventDetails(event);
+                });
 
                 const editBtn = document.createElement('button');
-                editBtn.className = 'btn btn-sm btn-outline-warning edit-event';
-                editBtn.type = 'button';
-                editBtn.innerHTML = `<i class="fas fa-edit"></i> Edit`;
-                editBtn.addEventListener('click', () => editEvent(event.id));
-                actionsDiv.appendChild(editBtn);
+                editBtn.className = 'btn btn-sm btn-outline-warning';
+                editBtn.textContent = 'Edit';
+                editBtn.addEventListener('click', () => {
+                    editEvent(event.id);
+                });
 
-                footerDiv.appendChild(actionsDiv);
-                eventElement.appendChild(footerDiv);
+                actions.append(viewBtn, editBtn);
+                footer.appendChild(actions);
 
-                publishedEventsContainer.appendChild(eventElement);
+                // BUILD CARD
+                card.append(title, meta, desc, footer);
+                container.appendChild(card);
             });
 
         } catch (error) {
             console.error("Error fetching events:", error);
-            publishedEventsContainer.innerHTML = `<p class="text-danger">Failed to load events.</p>`;
+            container.textContent = "Failed to load events.";
         }
     }
     
     const selectedDate = document.getElementById('eventDate').value;
-        if(!isDateAllowed(selectedDate)) {
+    if(!isDateAllowed(selectedDate)) {
         alert("Cannot create event for past dates or dates beyond 5 months!");
         return;
     }

@@ -30,7 +30,7 @@ import {
 
 document.addEventListener('DOMContentLoaded', function() {
     // Three Dots Menu Functions
-    window.exportRequests = function() {
+    function exportRequests() {
         const requests = window.requests || [];
         if (requests.length === 0) {
             showNotification('No requests to export', 'warning');
@@ -49,15 +49,15 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification('Approvals exported successfully!', 'success');
     };
 
-    window.printRequests = function() {
+    function printRequests() {
         window.print();
     };
 
-    window.refreshRequests = function() {
+    function refreshRequests() {
         location.reload();
     };
 
-    window.showRequestHelp = function() {
+    function showRequestHelp() {
         alert(`
 Approval Management Help:
 - Click "New Approval" to create a Approval
@@ -68,6 +68,11 @@ Approval Management Help:
 - Stats cards show real-time Approval counts
         `);
     };
+
+    document.getElementById("exportRequests").addEventListener("click", exportRequests);
+    document.getElementById("printRequests").addEventListener("click", printRequests);
+    document.getElementById("refreshRequests").addEventListener("click", refreshRequests);
+    document.getElementById("showRequestHelp").addEventListener("click", showRequestHelp);
 
     // Three Dots Menu Toggle
     const dotsMenuBtn = document.getElementById('dotsMenuBtn');

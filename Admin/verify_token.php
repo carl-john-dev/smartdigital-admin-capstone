@@ -14,7 +14,7 @@
     }
 
     $headers = getallheaders();
-    $csrfHeader = $headers['X-CSRF-TOKEN'] ?? '';
+    $csrfHeader = $headers['X-Csrf-Token'] ?? '';
 
     if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrfHeader)) {
         http_response_code(403);
@@ -29,8 +29,6 @@
         echo json_encode(["error" => "Too many attempts"]);
         exit;
     }
-
-    $data = json_decode(file_get_contents("php://input"), true);
 
     $rawInput = file_get_contents("php://input");
     $data = json_decode($rawInput, true);
