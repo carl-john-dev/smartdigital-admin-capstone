@@ -24,14 +24,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
+            --primary: #1f2937;       /* dark slate */
+            --secondary: #4b5563;     /* muted gray */
+            --accent: #2563eb;        /* professional blue */
+            --bg: #f9fafb;            /* light gray background */
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
             --success: #4cc9f0;
             --light: #f8f9fa;
             --dark: #212529;
             --gray: #6c757d;
             --bg-color: #f5f7fb;
-            --card-bg: #ffffff;
             --text-color: #212529;
             --border-color: #dee2e6;
             --sidebar-width: 80px;
@@ -65,11 +68,12 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
             transition: background-color 0.3s, color 0.3s;
             display: flex;
             min-height: 100vh;
             overflow-x: hidden;
+            background: var(--bg);
         }
 
         /* Sidebar Styles */
@@ -176,13 +180,8 @@
 
         .main-content {
             flex: 1;
-            margin-left: var(--sidebar-width);
             padding: 20px;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-        }
-
-        .sidebar:hover ~ .main-content {
-            margin-left: var(--sidebar-expanded-width);
         }
 
         /* Top Bar */
@@ -225,19 +224,11 @@
         }
 
         .nfc-card {
-            background: var(--nfc-gradient);
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 30px;
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.3),
-                0 0 60px rgba(67, 97, 238, 0.1),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-                inset 0 0 20px rgba(0, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 24px;
+            border: 1px solid var(--border);
         }
 
         .nfc-card:hover {
@@ -319,17 +310,15 @@
 
         /* QR Code */
         .qr-code {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
+            position: static;
+            bottom: 16px;
+            right: 16px;
             width: 70px;
             height: 70px;
+            border: 1px solid var(--border);
+            padding: 4px;
             background: white;
-            border-radius: 8px;
-            padding: 5px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 6px;
         }
 
         .qr-code:hover {
@@ -347,48 +336,43 @@
         .profile-header {
             display: flex;
             align-items: center;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
         }
 
         .profile-avatar {
-            width: 150px;
-            height: 150px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 64px;
+            height: 64px;
+            border-radius: 6px;
+            background: #e5e7eb;
+
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.5rem;
-            font-weight: bold;
-            color: white;
-            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.3);
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            flex-shrink: 0;
+
+            font-weight: 600;
+            font-size: 1rem;
+            color: #374151;
+
+            overflow: hidden; /* VERY important for image cropping */
         }
 
         .profile-info h1 {
-            font-size: 2.8rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, white, var(--success));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0;
         }
 
-        .profile-info .title {
-            font-size: 1.3rem;
-            color: #cbd5e1;
-            margin-bottom: 10px;
+        .title {
+            font-size: 0.9rem;
+            color: var(--secondary);
         }
 
-        .profile-info .company {
-            font-size: 1.1rem;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .company {
+            font-size: 0.85rem;
+            color: var(--secondary);
         }
 
         /* Stats Grid */
@@ -429,39 +413,33 @@
 
         /* Contact Info */
         .contact-info {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            margin-top: 20px;
+        }
+
+        .contact-info h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--secondary);
+            margin-bottom: 12px;
         }
 
         .contact-item {
             display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px;
-            margin-bottom: 12px;
-            border-radius: 10px;
-            transition: background 0.3s ease;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
         }
 
-        .contact-item:hover {
-            background: rgba(67, 97, 238, 0.1);
+        .contact-item:last-child {
+            border-bottom: none;
         }
 
         .contact-icon {
-            width: 45px;
-            height: 45px;
-            background: rgba(67, 97, 238, 0.1);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 20px;
-            flex-shrink: 0;
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-top: 2px;
         }
 
         /* Portfolio Gallery */
@@ -825,14 +803,6 @@
                 width: 70px;
             }
             
-            .sidebar:hover ~ .main-content {
-                margin-left: 70px;
-            }
-            
-            .main-content {
-                margin-left: 70px;
-            }
-            
             .sidebar-header, .sidebar-menu span {
                 display: none;
             }
@@ -932,19 +902,15 @@
         }
 
         .btn-outline-custom {
+            border: 1px solid var(--accent);
+            color: var(--accent);
             background: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            padding: 10px 22px;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-weight: 500;
         }
 
         .btn-outline-custom:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
+            background: var(--accent);
+            color: #fff;
         }
 
         .pdf-export {
@@ -963,7 +929,7 @@
         }
     </style>
 </head>
-<body>
+<body data-uid="<?= htmlspecialchars($uid); ?>">
     <!-- Main Content -->
     <div class="main-content">
         <!-- NFC Tap Animation -->
@@ -1117,7 +1083,7 @@
             <!-- Control Panel -->
             <div class="control-panel">                
                 <div class="d-grid gap-2 mt-3">
-                    <button class="btn btn-outline-custom" onclick="downloadCard()">
+                    <button class="btn btn-outline-custom" id="downloadCard">
                         <i class="fas fa-download me-2"></i>Download as PDF
                     </button>
                 </div>
@@ -1133,118 +1099,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script type="module" nonce="<?= $nonce ?>">
-        import { db } from "./Firebase/firebase_conn.js";
-        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-        // ─── Import QR helper ────────────────────────────────────────────────────────
-        // getOrCreateQR:
-        //   • Checks Firestore users/{uid}.qrCodeURL first.
-        //   • If found → returns the stored Firebase Storage URL immediately (no API call).
-        //   • If missing → calls goqr.me, uploads the PNG to Firebase Storage,
-        //     writes the URL back to Firestore, then returns it.
-        // This means the QR is only ever generated ONCE per user and reused after that.
-        import { getOrCreateQR } from "./Firebase/qr_generator.js";
-
-        const uid = "<?php echo htmlspecialchars($uid); ?>";
-
-        async function loadPortfolio() {
-            const ref  = doc(db, "users", uid);
-            const snap = await getDoc(ref);
-
-            if (!snap.exists()) {
-                document.body.textContent = "User not found";
-                return;
-            }
-
-            const data = snap.data();
-
-            if (!data.approved) {
-                document.body.innerHTML = "<h2>Portfolio not approved</h2>";
-                return;
-            }
-
-            // ── Populate profile UI ──────────────────────────────────────────────────
-            document.getElementById("userName").textContent    = data.name || "Unknown";
-            document.getElementById("userTitle").textContent   = data.professionalTitle || "Unknown";
-            const companyEl = document.getElementById("userCompany");
-            companyEl.innerHTML = ""; // clear safely
-
-            const icon = document.createElement("i");
-            icon.className = "fas fa-building";
-
-            companyEl.append(icon, " ", data.businessName || "Unknown");
-
-            document.getElementById("emailText").textContent    = data.email || "Unknown";
-            document.getElementById("phoneText").textContent    = data.phone || "Unknown";
-            document.getElementById("locationText").textContent = data.location || "Unknown";
-            document.getElementById("addressText").textContent  = data.address || "Unknown";
-
-            // Avatar initials — first letter of each word, max 2 chars
-            const initials = data.name
-                .split(" ")
-                .map(n => n[0])
-                .join("")
-                .substring(0, 2)
-                .toUpperCase();
-
-            document.getElementById("userAvatar").textContent = initials;
-
-            // ── QR Code: load from DB or auto-generate ───────────────────────────────
-            // getOrCreateQR() handles the "first time" case transparently.
-            // On subsequent visits the stored Firebase Storage URL is used directly.
-            try {
-                const qrURL = await getOrCreateQR(uid);
-                const qrContainer = document.getElementById("qrCode");
-                qrContainer.innerHTML = "";
-
-                const img = document.createElement("img");
-                img.src = qrURL;
-                img.alt = "Portfolio QR Code";
-
-                qrContainer.appendChild(img);
-            } catch (err) {
-                // Fallback: generate on-the-fly without saving (e.g. Storage write failed)
-                console.warn("[check_portfolio] QR storage failed, using live fallback:", err);
-                const fallbackURL =
-                    `https://api.qrserver.com/v1/create-qr-code/?size=150x150` +
-                    `&data=${encodeURIComponent(window.location.href)}`;
-                document.getElementById("qrCode").innerHTML =
-                    `<img src="${fallbackURL}" alt="Portfolio QR Code">`;
-            }
-        }
-
-        loadPortfolio();
-        function downloadCard() {
-            const card     = document.getElementById("nfcCard");
-            const userName = document.getElementById("userName");
-
-            // FORCE browser paint
-            userName.style.display = "none";
-            userName.offsetHeight; // <-- forces reflow
-            userName.style.display = "";
-
-            card.classList.add("pdf-export");
-
-            const options = {
-                margin:       0,
-                filename:     `${document.getElementById('userName').innerText}'s Portfolio.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  {
-                    scale: 2,          // Higher = sharper text
-                    scrollX: 0,
-                    scrollY: 0
-                },
-                jsPDF: {
-                    unit: 'mm',
-                    format: 'a4',
-                    orientation: 'portrait'
-                }
-            };
-
-            html2pdf().set(options).from(card).save().then(() => {card.classList.remove("pdf-export");});;
-        }
-    </script>
+    <script type="module" nonce="<?= $nonce ?>" src="backend/check_portfolio.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>
