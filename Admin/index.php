@@ -1188,7 +1188,7 @@
             <p id="welcomeText"></p>
             
             <div class="cta-buttons">
-                <a href="login.php" class="btn btn-primary btn-pulse">
+                <a href="#features" class="btn btn-primary btn-pulse">
                     <i class="fas fa-sign-in-alt"></i>
                     Get Started
                 </a>
