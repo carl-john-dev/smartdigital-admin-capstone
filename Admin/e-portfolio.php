@@ -1154,8 +1154,8 @@
                         CJ
                     </div>
                     <div class="profile-info">
-                        <h1 id="userName">Carl John D. Anthony</h1>
-                        <div class="title" id="userTitle">Front-end Developer</div>
+                        <h1 id="userName">Name</h1>
+                        <div class="title" id="userTitle">Title</div>
                         <div class="company" id="userCompany">
                             <i class="fas fa-building"></i>
                             TechVision Inc.
@@ -1192,7 +1192,7 @@
                         </div>
                         <div>
                             <div class="fw-bold">Email</div>
-                            <div class="text-muted">tc.carljohn.anthony@cvsu.edu.ph</div>
+                            <div class="text-muted">name@domainname.com</div>
                         </div>
                     </div>
                     <div class="contact-item" id="contactPhone">
@@ -1210,7 +1210,7 @@
                         </div>
                         <div>
                             <div class="fw-bold">Location</div>
-                            <div class="text-muted">Kawit, Cavite</div>
+                            <div class="text-muted">City/Municipality, Province</div>
                         </div>
                     </div>
                 </div>
