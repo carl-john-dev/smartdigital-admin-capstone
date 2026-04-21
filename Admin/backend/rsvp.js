@@ -41,8 +41,9 @@ RSVP Tracker Help:
 - Click on event date/venue to edit
 - Manage booths using the "Manage Booths" button
 - Export data as CSV or PDF
-- NEW: Event conflict detection - cannot create two events on the same day
-- NEW: Apply for booth when adding RSVP
+- Event conflict detection - cannot create two events on the same day
+- Apply for booth when adding RSVP
+- Mobile app RSVPs are shown with a 📱 badge
     `);
 };
 
@@ -90,7 +91,7 @@ document.getElementById('applyForBooth')?.addEventListener('change', function(e)
     detailsDiv.style.display = e.target.checked ? 'block' : 'none';
 });
 
-// NEW: Check for event conflicts on a specific date
+// Check for event conflicts on a specific date
 async function checkEventConflict(dateToCheck, excludeEventId = null) {
     if (!dateToCheck) return false;
     
@@ -107,7 +108,7 @@ async function checkEventConflict(dateToCheck, excludeEventId = null) {
     return conflictingEvents.length > 0 ? conflictingEvents : false;
 }
 
-// NEW: Real-time conflict detection when date is selected
+// Real-time conflict detection when date is selected
 document.getElementById('eventDate')?.addEventListener('change', async function(e) {
     const selectedDate = new Date(this.value);
     if (!selectedDate || isNaN(selectedDate.getTime())) return;
@@ -135,7 +136,7 @@ document.getElementById('eventDate')?.addEventListener('change', async function(
     }
 });
 
-// NEW: Open Add Event Modal
+// Open Add Event Modal
 function openAddEventModal() {
     document.getElementById('addEventForm').reset();
     document.getElementById('conflictWarning').style.display = 'none';
@@ -145,7 +146,7 @@ function openAddEventModal() {
     new bootstrap.Modal(document.getElementById('addEventModal')).show();
 };
 
-// NEW: Add Event with Conflict Validation (replaces addSampleEvent)
+// Add Event with Conflict Validation
 document.getElementById('addEventForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -195,7 +196,7 @@ window.addSampleEvent = async function() {
 
 async function loadUpcomingEvents() {
     const container = document.getElementById("eventsListContainer");
-    container.innerHTML = ""; // safe clear
+    container.innerHTML = "";
 
     const today = new Date();
     today.setHours(0,0,0,0);
@@ -243,7 +244,6 @@ async function loadUpcomingEvents() {
             return a.parsedDate - b.parsedDate;
         });
 
-        // ✅ EMPTY STATE (SAFE)
         if (upcomingEvents.length === 0) {
             const wrapper = document.createElement('div');
             wrapper.className = 'text-center text-muted py-4';
@@ -262,7 +262,6 @@ async function loadUpcomingEvents() {
             return;
         }
 
-        // ✅ LIST GROUP
         const listGroup = document.createElement('div');
         listGroup.className = 'list-group';
 
@@ -276,7 +275,6 @@ async function loadUpcomingEvents() {
 
             item.style.cursor = 'pointer';
 
-            // CLICK (replaces onclick)
             item.addEventListener('click', () => {
                 selectEventForRSVP(event.id);
             });
@@ -295,7 +293,6 @@ async function loadUpcomingEvents() {
 
             const availableBooths = (event.totalBooths || 0) - (event.reservedBooths || 0);
 
-            // Build meta text safely
             let metaText = `📅 ${dateStr}`;
 
             if (event.venue) {
@@ -308,7 +305,6 @@ async function loadUpcomingEvents() {
 
             leftDiv.append(title, meta);
 
-            // BUTTON
             const btn = document.createElement('button');
             btn.className = 'btn btn-sm btn-primary';
             btn.textContent = 'View Attendance';
@@ -368,7 +364,7 @@ function calculateAndDisplayHitRate() {
     }
 }
 
-// Load RSVPs and Walk-ins for selected event
+
 async function loadRSVPsAndWalkins(eventId) {
     if (!eventId) return;
 
@@ -376,7 +372,7 @@ async function loadRSVPsAndWalkins(eventId) {
     tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Loading attendees...</td></tr>`;
 
     try {
-        // Load RSVPs
+        // Load RSVPs (includes both web-added and mobile-app RSVPs)
         const rsvpRef = collection(db, "events", eventId, "rsvp");
         const rsvpSnapshot = await getDocs(rsvpRef);
         currentRSVPs = [];
@@ -438,9 +434,10 @@ function updateAggregateDisplay() {
     document.getElementById('totalGuests').innerText = totalCount;
 }
 
+
 function renderAttendeesTable() {
     const tableBody = document.getElementById("tableBody");
-    tableBody.innerHTML = ""; // safe clear
+    tableBody.innerHTML = "";
 
     if (currentRSVPs.length === 0 && currentWalkins.length === 0) {
         const tr = document.createElement("tr");
@@ -455,72 +452,77 @@ function renderAttendeesTable() {
         return;
     }
 
-    // ✅ RSVP ROWS
+
     currentRSVPs.forEach(rsvp => {
+        const isMobileRSVP = rsvp.source === 'mobile_app';
         const tr = document.createElement("tr");
 
-        // NAME
+
         const tdName = document.createElement("td");
         const icon = document.createElement("i");
         icon.className = "fas fa-envelope text-primary me-2";
+        tdName.append(icon, document.createTextNode(rsvp.name || "Unnamed"));
 
-        const nameText = document.createTextNode(rsvp.name || "Unnamed");
+        if (isMobileRSVP) {
+            const mobileBadge = document.createElement("span");
+            mobileBadge.className = "badge bg-info text-dark ms-2";
+            mobileBadge.style.fontSize = "0.65rem";
+            mobileBadge.textContent = "📱 App";
+            tdName.appendChild(mobileBadge);
+        }
 
-        tdName.append(icon, nameText);
-
-        // EMAIL
         const tdEmail = document.createElement("td");
         tdEmail.textContent = rsvp.email || "-";
 
-        // TYPE
         const tdType = document.createElement("td");
         const badge = document.createElement("span");
         badge.className = "rsvp-badge";
         badge.textContent = "📧 RSVP";
         tdType.appendChild(badge);
 
-        // BOOTH
         const tdBooth = document.createElement("td");
-
-        if (rsvp.appliedForBooth) {
+        if (!isMobileRSVP && rsvp.appliedForBooth) {
             const boothSpan = document.createElement("span");
             boothSpan.className = "booth-applied-badge";
-
-            const boothIcon = document.createElement("i");
-            boothIcon.className = "fas fa-booth-curtain";
-
-            boothSpan.append(boothIcon, " ", rsvp.boothType || "Standard");
+            boothSpan.textContent = rsvp.boothType || "Standard";
             tdBooth.appendChild(boothSpan);
         } else {
             tdBooth.textContent = "—";
             tdBooth.className = "text-muted";
         }
 
-        // NOTES / PLUS ONE
         const tdNotes = document.createElement("td");
 
-        if (rsvp.plusOne) {
-            tdNotes.append(`+1: ${rsvp.plusOne}`);
+        if (isMobileRSVP) {
+            const guestCount = (typeof rsvp.plusOne === 'number') ? rsvp.plusOne : 0;
+            if (guestCount > 0) {
+                tdNotes.textContent = `+${guestCount} guest`;
+            } else {
+                tdNotes.textContent = "No plus one";
+            }
         } else {
-            tdNotes.append("No plus one");
+            if (rsvp.plusOne && typeof rsvp.plusOne === 'string' && rsvp.plusOne.trim()) {
+                tdNotes.textContent = `+1: ${rsvp.plusOne}`;
+            } else {
+                tdNotes.textContent = "No plus one";
+            }
+
+            if (rsvp.boothPreferences) {
+                const br = document.createElement("br");
+                const small = document.createElement("small");
+                small.className = "text-muted";
+                small.textContent = `Pref: ${rsvp.boothPreferences}`;
+                tdNotes.append(br, small);
+            }
         }
 
-        if (rsvp.boothPreferences) {
-            const br = document.createElement("br");
-            const small = document.createElement("small");
-            small.className = "text-muted";
-            small.textContent = `Pref: ${rsvp.boothPreferences}`;
-            tdNotes.append(br, small);
-        }
-
-        // ACTION
         const tdAction = document.createElement("td");
         const btn = document.createElement("button");
         btn.className = "btn btn-sm btn-outline-danger";
+        btn.title = isMobileRSVP ? "Remove from web tracker (mobile attendance record remains)" : "Delete RSVP";
 
         const trashIcon = document.createElement("i");
         trashIcon.className = "fas fa-trash";
-
         btn.appendChild(trashIcon);
 
         btn.addEventListener("click", () => {
@@ -533,7 +535,7 @@ function renderAttendeesTable() {
         tableBody.appendChild(tr);
     });
 
-    // ✅ WALK-IN ROWS
+    // WALK-IN ROWS (unchanged)
     currentWalkins.forEach(walkin => {
         const tr = document.createElement("tr");
 
@@ -700,6 +702,7 @@ document.getElementById('rsvpForm').addEventListener('submit', async function(e)
         name: name,
         email: email,
         plusOne: plusOne || null,
+        source: 'web',   // tag web-added RSVPs for clarity
         createdAt: new Date()
     };
 
@@ -778,14 +781,18 @@ function exportCSV() {
         return;
     }
 
-    let csv = "Attendee Name,Email/Contact,Type,Booth Applied,Plus One/Notes\n";
+    let csv = "Attendee Name,Email/Contact,Type,Source,Booth Applied,Plus One/Notes\n";
     
     currentRSVPs.forEach(r => {
-        csv += `"${r.name || ''}","${r.email || ''}","RSVP","${r.appliedForBooth ? `Yes (${r.boothType || ''})` : 'No'}","${r.plusOne || ''} ${r.boothPreferences || ''}"\n`;
+        const isMobile = r.source === 'mobile_app';
+        const plusOneDisplay = isMobile
+            ? (r.plusOne > 0 ? `+${r.plusOne} guest` : '')
+            : (r.plusOne || '');
+        csv += `"${r.name || ''}","${r.email || ''}","RSVP","${isMobile ? 'Mobile App' : 'Web'}","${r.appliedForBooth ? `Yes (${r.boothType || ''})` : 'No'}","${plusOneDisplay} ${r.boothPreferences || ''}"\n`;
     });
     
     currentWalkins.forEach(w => {
-        csv += `"${w.name || ''}","${w.contact || ''}","Walk-in","No","${w.notes || ''}"\n`;
+        csv += `"${w.name || ''}","${w.contact || ''}","Walk-in","Web","No","${w.notes || ''}"\n`;
     });
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -814,6 +821,7 @@ function exportPDF() {
     const actualAttendees = currentRSVPs.length + currentWalkins.length;
     const hitRate = totalRSVPs > 0 ? ((actualAttendees / totalRSVPs) * 100).toFixed(1) : 0;
     const boothApplicants = currentRSVPs.filter(r => r.appliedForBooth).length;
+    const mobileRSVPs = currentRSVPs.filter(r => r.source === 'mobile_app').length;
     
     pdf.setFontSize(18);
     pdf.text(`Event: ${eventTitle}`, 14, 20);
@@ -822,19 +830,31 @@ function exportPDF() {
     pdf.text(`Booth Availability: ${availableBooths} / ${currentBoothData.totalBooths} booths available`, 14, 40);
     pdf.text(`Booth Applications: ${boothApplicants}`, 14, 50);
     pdf.text(`Total Attendance: ${actualAttendees} (RSVP: ${totalRSVPs} | Walk-ins: ${currentWalkins.length})`, 14, 60);
+    pdf.text(`Mobile App RSVPs: ${mobileRSVPs}`, 14, 70);
     
     const tableBody = [];
     currentRSVPs.forEach(r => {
-        tableBody.push([r.name || '', r.email || '', 'RSVP', r.appliedForBooth ? `Yes (${r.boothType || ''})` : 'No', r.plusOne || '']);
+        const isMobile = r.source === 'mobile_app';
+        const plusOneDisplay = isMobile
+            ? (r.plusOne > 0 ? `+${r.plusOne} guest` : '')
+            : (r.plusOne || '');
+        tableBody.push([
+            r.name || '',
+            r.email || '',
+            'RSVP',
+            isMobile ? '📱 App' : '🌐 Web',
+            r.appliedForBooth ? `Yes (${r.boothType || ''})` : 'No',
+            plusOneDisplay
+        ]);
     });
     currentWalkins.forEach(w => {
-        tableBody.push([w.name || '', w.contact || '', 'Walk-in', 'No', w.notes || '']);
+        tableBody.push([w.name || '', w.contact || '', 'Walk-in', '🌐 Web', 'No', w.notes || '']);
     });
     
     pdf.autoTable({
-        head: [['Name', 'Contact', 'Type', 'Booth?', 'Details']],
+        head: [['Name', 'Contact', 'Type', 'Source', 'Booth?', 'Details']],
         body: tableBody,
-        startY: 70,
+        startY: 80,
         headStyles: { fillColor: [102, 126, 234] }
     });
     
